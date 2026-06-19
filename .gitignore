@@ -1,0 +1,16 @@
+# Build / binary files
+*.exe
+*.o
+*.obj
+build/
+
+# Visual Studio Code
+.vscode/
+
+# Temporary files
+*.exe~
+*.stackdump
+
+# OS files
+Thumbs.db
+.DS_Store
