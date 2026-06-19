@@ -1,13 +1,10 @@
-#include <graphics.h>
-#include <stdio.h>
-
+#include <graphics.h>   // 包含 EasyX 图形库头文件
+#include <stdio.h>       // 包含标准输入输出头文件，用于 getchar()
+#include "DrawPage.h"  // 包含自定义的 DrawPage.h 头文件，声明了 DrawFirstPage 函数
 int main() {
-    initgraph(640, 480);        // 创建 640x480 窗口
-    setbkcolor(WHITE); 
-    cleardevice();          // 设置背景颜色为白色
-    setcolor(RED);              // 设置颜色为红色
-    circle(320, 240, 100);      // 在中心画半径为100的圆
-    getchar();                  // 按任意键继续
-    closegraph();               // 关闭图形窗口
-    return 0;
+    initgraph(480, 640);        // 初始化图形窗口，宽 480 像素，高 640 像素
+    setbkcolor(WHITE);          // 设置背景颜色为白色
+    cleardevice();              // 清空窗口并用背景颜色填充
+    DrawFirstPage();            // 调用 DrawFirstPage 函数绘制首页界面
+    return 0;                    // 返回 0 表示程序正常结束
 }
