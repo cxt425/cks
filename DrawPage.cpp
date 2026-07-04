@@ -44,6 +44,6 @@ void DrawFirstPage() {
     settextcolor(RGB(0,75,132));                   // 设置文字颜色为蓝色
     outtextxy(130, 250, _T("电动车登记系统")); // 在坐标 (130, 250) 位置显示文字
 
-    getchar();                  // 等待用户按键，防止窗口立即关闭
+    getchar();                   // 等待用户按键，防止窗口立即关闭
     closegraph();               // 关闭图形窗口并释放资源
 }
