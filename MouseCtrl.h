@@ -19,6 +19,8 @@ typedef enum {       // 定义 MouseTarget 枚举类型，表示所有可点击�
     PERSON_BTN_CHANGE,    // 表示个人电动车管理系统页面信息变更按钮
     PERSON_BTN_REPAIR,   // 表示个人电动车管理系统页面报废管理按钮
     PERSON_BTN_ENTRY_EXIT    // 表示个人电动车管理系统页面出入校园管理按钮
+
+    
 } MouseTarget;         // 定义 MouseTarget 枚举类型，表示所有可点击控件
 
 extern MouseTarget currentMouseCtrl;     // 声明全局变量 currentMouseCtrl，表示当前选中的控件

@@ -25,6 +25,7 @@ int main() {
             case PAGE_HOME: DrawFirstPage(); break;
             case PAGE_LOGIN: DrawSharedSignoutPage(); break;
             case PAGE_PERSONAL_MANAGEMENT: DrawPersonalManagementPage(); break;
+            case PAGE_PERSONAL_REGISTRATION: DrawPersonalRegistrationPage(); break;
         }
 
         EndBatchDraw();             // 提交一帧绘制内容

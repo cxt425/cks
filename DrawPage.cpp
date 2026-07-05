@@ -20,7 +20,6 @@ void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制
     outtextxy(50, 470, _T("信息变更|报废管理|")); // 在坐标 (50, 470) 位置显示文字
     outtextxy(50, 490, _T("出入校园管理")); // 在坐标 (50, 490) 位置显示文字
 
-
     setfillcolor(RGB(0,146,198));        // 再次设置填充颜色为浅蓝色 
     fillrectangle(280,400,440,550);     // 绘制右边的填充矩形
     setbkmode(TRANSPARENT);
@@ -156,6 +155,7 @@ void DrawPersonalManagementPage()    // 定义 DrawPersonalManagementPage 函数
 
 void DrawPersonalRegistrationPage()//定义 DrawPersonalregistrationPage 函数，用于绘制个人电动车注册界面
 {
+    cleardevice();              // 清空窗口并用背景颜色填充
     setfillcolor(RGB(0,146,198)); // 设置填充颜色为青蓝色
     fillrectangle(0,0,480,80); //顶部通栏色块
     
@@ -210,7 +210,4 @@ void DrawPersonalRegistrationPage()//定义 DrawPersonalregistrationPage 函数�
     settextcolor(WHITE);
     settextstyle(25,0,_T("黑体"));
     outtextxy(190,570,_T("确认注册"));//提交按钮文字
-
-    getchar();                  //按任意键继续
-    closegraph();               //关闭图形窗口
 }

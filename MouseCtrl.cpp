@@ -12,12 +12,12 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
     switch(nowPage)                                 // 根据当前页面类型进行不同的鼠标事件处理
     {
         case PAGE_HOME:                             // 如果当前页面是首页，则判断鼠标点击位置是否在个人电动车管理系统按钮或共享电动车登录按钮的范围内
-            if(m.x >=40 && m.x <=340 && m.y >=400 && m.y <=550)             // 如果鼠标点击位置在个人电动车管理系统按钮的范围内，则将当前选中的控件设置为 HOME_BTN_PERSON
+            if(m.x >=40 && m.x <=200 && m.y >=400 && m.y <=550)             // 如果鼠标点击位置在个人电动车管理系统按钮的范围内，则将当前选中的控件设置为 HOME_BTN_PERSON
                 {
                     currentMouseCtrl = HOME_BTN_PERSON;
                     currentPage = PAGE_PERSONAL_MANAGEMENT; // 切换到个人电动车管理系统页面
                 }
-            else if(m.x >=280 && m.x <=580 && m.y >=400 && m.y <=550)        // 如果鼠标点击位置在共享电动车登录按钮的范围内，则将当前选中的控件设置为 HOME_BTN_SHARE
+            else if(m.x >=280 && m.x <=440 && m.y >=400 && m.y <=550)        // 如果鼠标点击位置在共享电动车登录按钮的范围内，则将当前选中的控件设置为 HOME_BTN_SHARE
                 {
                     currentMouseCtrl = HOME_BTN_SHARE;
                     currentPage = PAGE_LOGIN; // 切换到共享电动车登录页面
@@ -49,7 +49,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
             if(m.x >=30 && m.x <=210 && m.y >=335 && m.y <=420)
                {
                   currentMouseCtrl = PERSON_BTN_REG;
-                  currentPage = PAGE_PERSONAL_MANAGEMENT; // 保持在个人电动车管理系统页面
+                  currentPage = PAGE_PERSONAL_REGISTRATION; // 切换到个人电动车注册页面
                }
             else if(m.x >=270 && m.x <=450 && m.y >=335 && m.y <=420)
                {
@@ -76,6 +76,13 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                   currentMouseCtrl = PERSON_BTN_ENTRY_EXIT;
                   currentPage = PAGE_PERSONAL_MANAGEMENT; // 保持在个人电动车管理系统页面
                }
+            break;
+        case PAGE_PERSONAL_REGISTRATION:
+             if(m.x >=0 && m.x <=50 && m.y >=0 && m.y <=40)// 左上角返回按钮（坐标和你DrawPersonalRegistrationPage里返回框一致）
+             {
+                currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
+                currentPage = PAGE_PERSONAL_MANAGEMENT;
+            }
             break;
     }
 }

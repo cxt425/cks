@@ -5,7 +5,8 @@
 typedef enum {
     PAGE_HOME,
     PAGE_LOGIN,
-    PAGE_PERSONAL_MANAGEMENT
+    PAGE_PERSONAL_MANAGEMENT,
+    PAGE_PERSONAL_REGISTRATION
 } PageType;
 extern PageType currentPage;   // 声明全局变量 currentPage，表示当前页面类型
 
