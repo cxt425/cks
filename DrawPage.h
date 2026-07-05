@@ -12,4 +12,5 @@ extern PageType currentPage;   // 声明全局变量 currentPage，表示当前�
 void DrawFirstPage(void);    // 声明 DrawFirstPage 函数，用于绘制首页界面
 void DrawSharedSignoutPage(void);  // 声明 DrawSharedSignoutPage 函数，用于绘制共享电动车登录首页
 void DrawPersonalManagementPage(void);    // 声明 DrawPersonalManagementPage 函数，用于绘制个人电动车管理系统界面
+void DrawPersonalRegistrationPage(void);    // 声明 DrawPersonalPage 函数，用于绘制个人电动车管理界面
 #endif                       // 结束包含保护
