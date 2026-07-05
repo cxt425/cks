@@ -357,3 +357,14 @@ void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，�
     settextstyle(25,0,_T("黑体"));
     outtextxy(165,560,_T("保存年审信息"));//底部【保存年审信息】按钮
 }
+
+void DrawPersonalInformatiaonPage() //声明，用于绘制个人电动车信息变更习题界面
+    setfillcolor(RGB(0,130,220));
+    fillrectangle(0,0,480,120);//顶部蓝色标题栏
+
+    setlinecolor(WHITE);
+    setlinestyle(PS_SOLID,3);
+    line(30,55,60,35);
+    line(30,50,60,75);//返回左箭头
+
+    settextcolor
