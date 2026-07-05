@@ -158,3 +158,64 @@ void DrawPersonalManagementPage()    // 定义 DrawPersonalManagementPage 函数
     getchar();                  //按任意键继续
     closegraph();               //关闭图形窗口
 }
+
+void DrawPersonalRegistrationPage()//定义 DrawPersonalregistrationPage 函数，用于绘制个人电动车注册界面
+{
+    setfillcolor(RGB(0,146,198)); // 设置填充颜色为青蓝色
+    fillrectangle(0,0,480,80); //顶部通栏色块
+    
+    settextstyle(25,0,_T("黑体"));
+    settextcolor(WHITE);
+    setbkmode(TRANSPARENT);
+    outtextxy(150,30,_T("车辆注册上牌"));//顶部居中标题
+    
+    setlinecolor(WHITE);
+    setlinestyle(PS_SOLID, 3); // 线条粗细为3
+    line(30, 40, 40, 30);
+    line(30, 40, 40, 50);//左上角返回箭头
+    
+    setfillcolor(WHITE);
+    setlinecolor(RGB(220,220,220));
+    fillroundrect(30,140,450,460,12,12);//表单大圆角矩形框
+
+    settextstyle(18,0,_T("黑体"));
+    settextcolor(BLACK);
+    outtextxy(50,175,_T("车牌号:"));//车牌号
+    outtextxy(50,215,_T("车主姓名:"));//车主姓名
+    outtextxy(50,255,_T("院系:"));//院系
+    outtextxy(50,295,_T("学号/工号:"));//学号/工号
+    outtextxy(50,335,_T("联系方式:"));//电话
+    outtextxy(50,375,_T("车型:"));//车型
+    outtextxy(50,415,_T("注册日期:"));//注册日期
+    
+    setfillcolor(RGB(245,245,245));
+    fillroundrect(240,170,420,200,6,6);//车牌号输入框
+    fillroundrect(240,210,420,240,6,6);//车主姓名输入框
+    fillroundrect(240,250,420,280,6,6);//院系输入框
+    fillroundrect(240,290,420,320,6,6);//学号输入框
+    fillroundrect(240,330,420,360,6,6);//电话输入框
+    fillroundrect(240,370,420,400,6,6);//车型输入框
+    fillroundrect(240,410,420,440,6,6);//注册日期输入框
+
+    setlinecolor(RGB(230,230,230));
+    line(30, 205, 450, 205);//车牌号输入框下划线
+    line(30, 245, 450, 245);//车主姓名输入框下划线
+    line(30, 285, 450, 285);//院系输入框下划线
+    line(30, 325, 450, 325);//学号输入框下划线
+    line(30, 365, 450, 365);//电话输入框下划线
+    line(30, 405, 450, 405);//车型输入框下划线
+
+    circle(120, 508, 8);
+    settextcolor(RGB(80,80,80));
+    settextstyle(20,0,_T("黑体"));
+    outtextxy(135,500,_T("车牌号将进行唯一性校验"));//电动车单选圆圈
+    
+    setfillcolor(RGB(0,146,198));
+    fillroundrect(40,560,440,610,25,25);//提交按钮
+    settextcolor(WHITE);
+    settextstyle(25,0,_T("黑体"));
+    outtextxy(190,570,_T("确认注册"));//提交按钮文字
+
+    getchar();                  //按任意键继续
+    closegraph();               //关闭图形窗口
+}

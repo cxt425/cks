@@ -5,8 +5,9 @@ int main() {
     initgraph(480, 640);        // 初始化图形窗口，宽 480 像素，高 640 像素
     setbkcolor(WHITE);          // 设置背景颜色为白色
     cleardevice();              // 清空窗口并用背景颜色填充
-    DrawFirstPage();            // 调用 DrawFirstPage 函数绘制首页界面
-    DrawSharedSignoutPage();    // 调用 DrawSharedSignoutPage 函数绘制共享电动车登录首页
-    DrawPersonalManagementPage(); // 调用 DrawPersonalManagementPage 函数绘制个人电动车管理系统界面
+    //DrawFirstPage();            // 调用 DrawFirstPage 函数绘制首页界面
+    //DrawSharedSignoutPage();    // 调用 DrawSharedSignoutPage 函数绘制共享电动车登录首页
+    //DrawPersonalManagementPage(); // 调用 DrawPersonalManagementPage 函数绘制个人电动车管理系统界面
+    DrawPersonalRegistrationPage(); // 调用 DrawPersonalRegistrationPage 函数绘制个人电动车注册界面
     return 0;                   // 返回 0 表示程序正常结束
 }
