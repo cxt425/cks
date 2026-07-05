@@ -23,7 +23,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                     currentPage = PAGE_LOGIN; // 切换到共享电动车登录页面
                 }
             break;
-        case PAGE_LOGIN:                      // 如果当前页面是登录页面，则判断鼠标点击位置是否在返回按钮、用户名输入框、手机号输入框或验证码输入框的范围内
+        case PAGE_LOGIN:                      // 如果当前页面是登录页面，则判断鼠标点击位置是否在返回按钮、用户名输入框、手机号输入框、验证码输入框或登录按钮的范围内
             if(m.x >=0 && m.x <=50 && m.y >=0 && m.y <=40)          // 如果鼠标点击位置在返回按钮的范围内，则将当前选中的控件设置为 LOGIN_BACK
                 {
                     currentMouseCtrl = LOGIN_BACK;
@@ -44,6 +44,11 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                     currentMouseCtrl = LOGIN_INPUT_CODE;
                     currentPage = PAGE_LOGIN; // 保持在登录页面
                 }
+            else if(m.x >=170 && m.x <=310 && m.y >=520 && m.y <=570)        // 如果鼠标点击位置在登录按钮的范围内，则执行登录按钮操作
+                {
+                    currentMouseCtrl = LOGIN_SUBMIT;
+                    currentPage = PAGE_LOGIN; // 保持在登录页面，此处可添加登录逻辑
+                }
             break;
         case PAGE_PERSONAL_MANAGEMENT:
             if(m.x >=30 && m.x <=210 && m.y >=335 && m.y <=420)
@@ -54,7 +59,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
             else if(m.x >=270 && m.x <=450 && m.y >=335 && m.y <=420)
                {
                   currentMouseCtrl = PERSON_BTN_YEAR;
-                  currentPage = PAGE_PERSONAL_MANAGEMENT; // 保持在个人电动车管理系统页面
+                  currentPage = PAGE_PERSONAL_INSPECTION; // 保持在个人电动车年审管理系统页面
                }
             else if(m.x >=30 && m.x <=210 && m.y >=440 && m.y <=530)
                {
@@ -84,5 +89,11 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                 currentPage = PAGE_PERSONAL_MANAGEMENT;
             }
             break;
+        case PAGE_PERSONAL_INSPECTION:
+             if(m.x >=0 && m.x <=50 && m.y >=0 && m.y <=40)// 左上角返回按钮（坐标和你DrawPersonalInspectionPage里返回框一致）
+             {
+                currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
+                currentPage = PAGE_PERSONAL_MANAGEMENT;
+            }
     }
 }

@@ -24,15 +24,18 @@ int main() {
             case PAGE_LOGIN: DrawSharedSignoutPage(); break;
             case PAGE_PERSONAL_MANAGEMENT: DrawPersonalManagementPage(); break;
             case PAGE_PERSONAL_REGISTRATION: DrawPersonalRegistrationPage(); break;
+            case PAGE_PERSONAL_INSPECTION: DrawPersonalInspectionPage(); break;
         }
 
         EndBatchDraw();             // 提交一帧绘制内容
         Sleep(10);                  // 暂停一小段时间，降低 CPU 占用率
         BeginBatchDraw();           // 开始下一帧批量绘制
-
-        if(_kbhit() && _getch()==27) break;      // 如果检测到键盘按下事件且按下的键是 ESC 键，则跳出循环，结束程序
+        if(_kbhit())
+        {
+        if(_getch() == 27)
+            break;
+        }
     }
-    EndBatchDraw();               // 结束批量绘制
     closegraph();                 // 关闭图形窗口并释放资源
     return 0;                     // 返回 0 表示程序正常结束
 }
