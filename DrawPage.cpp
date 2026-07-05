@@ -219,3 +219,78 @@ void DrawPersonalRegistrationPage()//定义 DrawPersonalregistrationPage 函数�
     getchar();                  //按任意键继续
     closegraph();               //关闭图形窗口
 }
+
+void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，用于绘制个人电动车年审管理系统界面
+{
+    setfillcolor(RGB(0,146,198)); // 设置填充颜色为蓝色
+    fillrectangle(0,0,480,80); //顶部蓝色标题栏
+
+    setlinecolor(WHITE);
+    setlinestyle(PS_SOLID, 3); // 线条粗细为3
+    line(30, 40, 40, 30);
+    line(30, 40, 40, 50);//左上角返回箭头白色
+    
+    setbkmode(TRANSPARENT);//设置文字背景为透明
+    settextcolor(WHITE);
+    settextstyle(25,0,_T("黑体"));
+    outtextxy(150,32,_T("车辆年审管理"));//顶部居中标题
+
+    setfillcolor(WHITE);
+    setlinecolor(RGB(220,220,220));
+    fillroundrect(30,95,450,230,18,18);
+    settextcolor(BLACK);
+    settextstyle(20,0,_T("黑体"));//顶部信息卡片:车牌号、车主、状态
+
+    outtextxy(50,110,_T("车牌号:鄂A12345"));//车牌号
+    line(40, 140, 440, 140);//分割线
+
+    outtextxy(50,155,_T("车主姓名:张三"));//车主姓名
+    line(40, 185, 440, 185);//分割线
+
+    outtextxy(50,200,_T("当前状态:正常"));//当前年审状态
+
+    fillroundrect(30,245,450,315,18,18);//更新年审日期
+
+    setfillcolor(RGB(220,245,235));
+    fillcircle(70, 280, 25);//圆形图标
+    setlinecolor(RGB(0,160,110));
+    circle(70, 280, 25);//左侧浅绿色圆形图标
+
+    settextcolor(BLACK);
+    settextstyle(20,0,_T("黑体"));
+    outtextxy(110,260,_T("更新年审日期"));//更新年审日期文字
+    settextstyle(14,0,_T("黑体"));
+    settextcolor(RGB(90,90,90));
+    outtextxy(110,290,_T("设置下次年审时间"));//更新年审日期说明文字
+
+    fillroundrect(30,330,450,400,18,18);//更新年审状态
+
+    setfillcolor(RGB(220,238,250));
+    fillcircle(70, 365, 25);
+    setlinecolor(RGB(0,120,200));
+    circle(70, 365, 25);//左侧浅蓝色圆形图标
+
+    settextcolor(BLACK);
+    settextstyle(20,0,_T("黑体"));
+    outtextxy(110,345,_T("更新年审状态"));//更新年审状态文字
+    settextstyle(14,0,_T("黑体"));
+    settextcolor(RGB(90,90,90));
+    outtextxy(110,375,_T("年审通过或标记待审核"));//更新年审状态说明文字
+
+    fillroundrect(30,415,450,485,18,18);
+    setfillcolor(WHITE);
+    settextstyle(18,0,_T("黑体"));
+    outtextxy(70,430,_T("年审通过后状态更新为正常"));//提交更新按钮文字
+    settextstyle(15,0,_T("黑体"));
+    outtextxy(70,460,_T("过期车辆将被标记为待审核"));//底部提示文字框
+
+    setfillcolor(RGB(0,185,175));
+    fillroundrect(140,550,340,600,25,25);
+    settextcolor(WHITE);
+    settextstyle(25,0,_T("黑体"));
+    outtextxy(165,560,_T("保存年审信息"));//底部【保存年审信息】按钮
+    
+    
+    getchar();                  //按任意键继续
+    closegraph();               //关闭图形窗口
+}
