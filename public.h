@@ -3,6 +3,7 @@
 
 #include <graphics.h>
 
+// 页面类型枚举：定义整个程序中有哪些页面
 typedef enum {
     PAGE_HOME,
     PAGE_LOGIN,
@@ -11,6 +12,7 @@ typedef enum {
     PAGE_PERSONAL_INSPECTION
 } PageType;
 
+// 鼠标目标枚举：定义界面中可点击的控件
 typedef enum {
     MOUSE_NONE,
     HOME_BTN_PERSON,
@@ -28,6 +30,7 @@ typedef enum {
     PERSON_BTN_ENTRY_EXIT
 } MouseTarget;
 
+// 全局变量声明：由 MouseCtrl.cpp 中定义
 extern PageType currentPage;
 extern MouseTarget currentMouseCtrl;
 
