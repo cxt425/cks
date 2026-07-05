@@ -3,7 +3,6 @@
 #include "DrawPage.h"  // 包含自定义的 DrawPage.h 头文件，声明函数
 #include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 
-IMAGE img; // 声明全局变量 img，用于存储图片对象
 
 void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制首页界面
     cleardevice();              // 清空窗口并用背景颜色填充
@@ -32,6 +31,8 @@ void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制
     outtextxy(290, 450, _T("车辆租借|还车结算|")); // 在坐标 (290, 450) 位置显示文字
     outtextxy(290, 470, _T("费用支付|故障报修")); // 在坐标 (290, 470) 位置显示文字
 
+    IMAGE img;    // 声明一个 IMAGE 类型的对象 img，用于存储图片
+    loadimage(&img, _T("xiaohui.png"), 120, 110);  // 加载图片文件 "xiaohui.png"，并将其缩放为 120x110
     putimage(0, 70, &img);               // 在坐标 (0, 70) 位置显示图片
 
     settextstyle(50, 0, _T("华文行楷"));      // 设置文字样式：字号 50、方向 0、字体为“华文行楷”
@@ -58,6 +59,8 @@ void DrawSharedSignoutPage() {// 在这里实现共享电动车登录首页的�
     setlinestyle(PS_SOLID, 2); // 线条粗细为2
     line(0, 40, 640, 40);// 绘制一条水平线，起点坐标为 (0, 40)，终点坐标为 (640, 40)
 
+    IMAGE img;    // 声明一个 IMAGE 类型的对象 img，用于存储图片
+    loadimage(&img, _T("xiaohui.png"), 120, 110);  // 加载图片文件 "xiaohui.png"，并将其缩放为 120x110
     putimage(0, 70, &img);               // 在坐标 (0, 70) 位置显示图片
 
     settextstyle(50, 0, _T("华文行楷"));      // 设置文字样式：字号 50、方向 0、字体为“华文行楷”
@@ -106,6 +109,8 @@ void DrawPersonalManagementPage()    // 定义 DrawPersonalManagementPage 函数
     fillrectangle(270,440,450,530);//右下框【车辆报废管理】
     fillrectangle(30,545,450,605);//底部通栏长框【出入校园管理】
 
+    IMAGE img;    // 声明一个 IMAGE 类型的对象 img，用于存储图片
+    loadimage(&img, _T("xiaohui.png"), 120, 110);  // 加载图片文件 "xiaohui.png"，并将其缩放为 120x110
     putimage(0, 70, &img);// 在坐标 (0, 70) 位置显示图片
 
     settextstyle(50, 0, _T("华文行楷"));//设置文字样式：字号 50、方向 0、字体为“华文行楷”

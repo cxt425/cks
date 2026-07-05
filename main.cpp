@@ -4,13 +4,11 @@
 #include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include <conio.h>      // 包含控制台输入输出头文件，用于 _kbhit() 和 _getch() 函数
 
-extern IMAGE img; // 声明全局变量 img，用于存储图片对象
 
 int main() {
     initgraph(480, 640);        // 初始化图形窗口，宽 480 像素，高 640 像素, 显示控制台窗口
     setbkcolor(WHITE);          // 设置背景颜色为白色
     BeginBatchDraw();           // 开始批量绘制，防止闪烁
-    loadimage(&img, _T("xiaohui.png"), 120, 110);  // 加载图片文件 "xiaohui.png"，并将其缩放为 120x110
     MOUSEMSG m;
     while(1)
     {
