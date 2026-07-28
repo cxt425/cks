@@ -14,8 +14,7 @@ static void DrawTextAt(int x, int y, const char* text)         // 定义 DrawTex
 
     setbkmode(TRANSPARENT);          // 设置背景模式为透明，以便文本不会覆盖背景
 
-    // 直接使用 EasyX 当前版本支持的字符输出接口，避免宽字符类型不兼容。
-    outtextxy(x, y, text);
+    outtextxy(x, y, text);          // 在指定位置绘制文本
 }
 
 void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制首页界面
