@@ -1,9 +1,22 @@
 #include <graphics.h>   // 包含 EasyX 图形库头文件
 #include <stdio.h>       // 包含标准输入输出头文件，用于 getchar()
 #include <string.h>
+#include <stdlib.h>
+#include <windows.h>       // 包含 Windows 键盘状态接口
 #include "DrawPage.h"  // 包含自定义的 DrawPage.h 头文件，声明函数
 #include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
+#include "sharedsignout.h"
 
+static void DrawTextAt(int x, int y, const char* text)         // 定义 DrawTextAt 函数，用于在指定位置绘制文本
+{
+    if (text == NULL || text[0] == '\0')         // 如果文本为空或首字符为空，则直接返回，不进行绘制
+        return;
+
+    setbkmode(TRANSPARENT);          // 设置背景模式为透明，以便文本不会覆盖背景
+
+    // 直接使用 EasyX 当前版本支持的字符输出接口，避免宽字符类型不兼容。
+    outtextxy(x, y, text);
+}
 
 void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制首页界面
     cleardevice();              // 清空窗口并用背景颜色填充
@@ -50,57 +63,102 @@ void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制
 
 }
 
-void DrawSharedSignoutPage() {// 在这里实现共享电动车登录首页的绘制
-    cleardevice();              // 清空窗口并用背景颜色填充
-    settextstyle(30, 0, _T("黑体"));      // 设置文字样式：字号 30、方向 0、字体为“黑体”
-    settextcolor(BLACK);                   // 设置文字颜色为黑色
-    outtextxy(180, 0, _T("账号登录")); // 在坐标 (180, 0) 位置显示文字
-    outtextxy(0, 0, _T(" < ")); // 在坐标 (0, 0) 位置显示文字
-    setlinecolor(RGB(87,87,80));   // 设置线条颜色为灰色
-    setlinestyle(PS_SOLID, 2); // 线条粗细为2
-    line(0, 40, 640, 40);// 绘制一条水平线，起点坐标为 (0, 40)，终点坐标为 (640, 40)
+void DrawSharedSignoutPage(void)
+{
+    cleardevice();
+    settextstyle(30, 0, _T("黑体"));
+    settextcolor(BLACK);
+    outtextxy(180, 0, _T("账号登录"));
+    outtextxy(0, 0, _T(" < "));
+    setlinecolor(RGB(87,87,80));
+    setlinestyle(PS_SOLID, 2);
+    line(0, 40, 640, 40);
 
-    IMAGE img;    // 声明一个 IMAGE 类型的对象 img，用于存储图片
-    loadimage(&img, _T("xiaohui.png"), 120, 110);  // 加载图片文件 "xiaohui.png"，并将其缩放为 120x110
-    putimage(0, 70, &img);               // 在坐标 (0, 70) 位置显示图片
+    IMAGE img;
+    loadimage(&img, _T("xiaohui.png"), 120, 110);
+    putimage(0, 70, &img);
 
-    settextstyle(50, 0, _T("华文行楷"));      // 设置文字样式：字号 50、方向 0、字体为“华文行楷”
-    settextcolor(RGB(0,75,132));                   // 设置文字颜色为蓝色
-    outtextxy(120, 100, _T("华中科技大学")); // 在坐标 (120, 100) 位置显示文字
-     
-    settextstyle(15, 0, _T("Spectral"));      // 设置文字样式：字号 15、方向 0、字体为“Spectral”
-    settextcolor(RGB(0,75,132));                   // 设置文字颜色为蓝色
-    outtextxy(100, 145, _T("HUAZHONG UNIVERSITY OF SCIENCE AND TECHNOLOGY")); // 在坐标 (100, 145) 位置显示文字
+    settextstyle(50, 0, _T("华文行楷"));
+    settextcolor(RGB(0,75,132));
+    outtextxy(120, 100, _T("华中科技大学"));
 
-    settextstyle(30, 0, _T("黑体"));      // 设置文字样式：字号 30、方向 0、字体为“黑体”
-    settextcolor(RGB(0,75,132));                   // 设置文字颜色为蓝色
-    outtextxy(130, 250, _T("共享电动车系统")); // 在坐标 (130, 250) 位置显示文字
+    settextstyle(15, 0, _T("Spectral"));
+    settextcolor(RGB(0,75,132));
+    outtextxy(100, 145, _T("HUAZHONG UNIVERSITY OF SCIENCE AND TECHNOLOGY"));
 
-    setfillcolor(RGB(200,230,245));  // 设置填充颜色为浅蓝色
-    solidroundrect(20,320,460,540,12,12);    // 绘制一个填充的圆角矩形，左上角坐标为 (20, 320)，右下角坐标为 (460, 540)，圆角宽度和高度均为 12
+    settextstyle(30, 0, _T("黑体"));
+    settextcolor(RGB(0,75,132));
+    outtextxy(130, 250, _T("共享电动车系统"));
 
-    // 登录按钮
+    setfillcolor(RGB(200,230,245));
+    solidroundrect(20,320,460,540,12,12);
+    setfillcolor(WHITE);
+    solidroundrect(145,365,435,395,4,4);
+    solidroundrect(145,415,435,445,4,4);
+    solidroundrect(145,465,435,495,4,4);
+
     setfillcolor(RGB(0,75,132));
-    fillroundrect(170, 550, 310, 600, 12, 12);
+    fillroundrect(70, 550, 190, 600, 12, 12);
     settextcolor(WHITE);
     settextstyle(24, 0, _T("黑体"));
-    outtextxy(200, 560, _T("登录"));
+    outtextxy(105, 560, _T("登录"));
 
-    setlinecolor(RGB(0,75,132));   // 设置线条颜色为深蓝色
-    setlinestyle(PS_SOLID,2);      // 设置线条样式为实线，粗细为 2
-    roundrect(20,320,460,540,12,12);   // 绘制一个圆角矩形，左上角坐标为 (20, 320)，右下角坐标为 (460, 540)，圆角宽度和高度均为 12
-    setlinecolor(RGB(87,87,80));   // 设置线条颜色为灰色
-    setlinestyle(PS_SOLID, 2); // 线条粗细为2
-    rectangle(40, 360, 440, 510);// 绘制一个矩形，左上角坐标为 (40, 360)，右下角坐标为 (440, 510)
-    line(40, 410, 440, 410);// 绘制一条水平线，起点坐标为 (40, 410)，终点坐标为 (440, 410)
-    line(40, 460, 440, 460);// 绘制一条水平线，起点坐标为 (40, 460)，终点坐标为 (440, 460)
-    line(140, 360, 140, 510);// 绘制一条垂直线，起点坐标为 (140, 360)，终点坐标为 (140, 510)
-    setbkmode(TRANSPARENT);       // 设置背景模式为透明
-    settextstyle(30, 0, _T("黑体"));      // 设置文字样式：字号 30、方向 0、字体为“黑体”
-    settextcolor(RGB(35,35,35));         // 设置文字颜色为灰色
-    outtextxy(40, 370, _T("用户名")); // 在坐标 (40, 370) 位置显示文字
-    outtextxy(40, 420, _T("手机号")); // 在坐标 (40, 420) 位置显示文字
-    outtextxy(40, 470, _T("验证码")); // 在坐标 (40, 470) 位置显示文字
+    setfillcolor(RGB(0,75,132));
+    fillroundrect(290, 550, 410, 600, 12, 12);
+    settextcolor(WHITE);
+    settextstyle(20, 0, _T("黑体"));
+    outtextxy(305, 560, _T("获取验证码"));
+
+    setlinecolor(RGB(0,75,132));
+    setlinestyle(PS_SOLID,2);
+    roundrect(20,320,460,540,12,12);
+    setlinecolor(RGB(87,87,80));
+    setlinestyle(PS_SOLID, 2);
+    rectangle(40, 360, 440, 510);
+    line(40, 410, 440, 410);
+    line(40, 460, 440, 460);
+    line(140, 360, 140, 510);
+
+    setbkmode(TRANSPARENT);
+    settextstyle(18, 0, _T("黑体"));
+    settextcolor(RGB(35,35,35));
+    outtextxy(40, 370, _T("用户名"));
+    outtextxy(40, 420, _T("手机号"));
+    outtextxy(40, 470, _T("验证码"));
+
+    const SharedUserInfo* state = GetSharedSignoutState();        // 获取共享登录状态信息的指针
+
+    settextstyle(18, 0, _T("黑体"));
+    if (state->username[0] != '\0') {
+        settextcolor(BLACK);
+        DrawTextAt(150, 372, state->username);
+    } else {
+        settextcolor(RGB(140, 140, 140));
+        outtextxy(150, 372, _T("请输入用户名"));
+    }
+
+    if (state->phone[0] != '\0') {
+        settextcolor(BLACK);
+        DrawTextAt(150, 422, state->phone);
+    } else {
+        settextcolor(RGB(140, 140, 140));
+        outtextxy(150, 422, _T("请输入手机号"));
+    }
+
+    if (state->code[0] != '\0') {
+        settextcolor(BLACK);
+        DrawTextAt(150, 472, state->code);
+    } else {
+        settextcolor(RGB(140, 140, 140));
+        outtextxy(150, 472, _T("请输入验证码"));
+    }
+
+    settextstyle(12, 0, _T("黑体"));
+    if (state->loginSuccess)
+        settextcolor(GREEN);
+    else
+        settextcolor(RGB(180, 60, 60));
+    DrawTextAt(40, 610, state->message);
 }
 
 void DrawPersonalManagementPage()    // 定义 DrawPersonalManagementPage 函数，用于绘制个人电动车管理系统界面

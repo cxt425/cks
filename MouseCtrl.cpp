@@ -1,4 +1,5 @@
 #include "MouseCtrl.h"    // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
+#include "sharedsignout.h"
 #include <graphics.h>      // 包含 EasyX 图形库头文件
 
 MouseTarget currentMouseCtrl = MOUSE_NONE;      // 声明全局变量 currentMouseCtrl，表示当前选中的控件
@@ -8,6 +9,8 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
 {
     if(m.uMsg != WM_LBUTTONDOWN) return;           // 如果鼠标消息不是左键按下事件，则直接返回，不进行处理
     currentMouseCtrl = MOUSE_NONE;                 // 将当前选中的控件设置为 MOUSE_NONE，表示没有选中任何控件
+
+    SharedUserInfo* state = GetSharedSignoutState();
 
     switch(nowPage)                                 // 根据当前页面类型进行不同的鼠标事件处理
     {
@@ -32,22 +35,32 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
             else if(m.x >=140 && m.x <=440 && m.y >=360 && m.y <=410)        // 如果鼠标点击位置在用户名输入框的范围内，则将当前选中的控件设置为 LOGIN_INPUT_USER
                 {
                     currentMouseCtrl = LOGIN_INPUT_USER;
+                    state->focus = 0;
                     currentPage = PAGE_LOGIN; // 保持在登录页面
                 }
             else if(m.x >=140 && m.x <=440 && m.y >=410 && m.y <=460)        // 如果鼠标点击位置在手机号输入框的范围内，则将当前选中的控件设置为 LOGIN_INPUT_PHONE
                 {
                     currentMouseCtrl = LOGIN_INPUT_PHONE;
+                    state->focus = 1;
                     currentPage = PAGE_LOGIN; // 保持在登录页面
                 }
             else if(m.x >=140 && m.x <=440 && m.y >=460 && m.y <=510)        // 如果鼠标点击位置在验证码输入框的范围内，则将当前选中的控件设置为 LOGIN_INPUT_CODE
                 {
                     currentMouseCtrl = LOGIN_INPUT_CODE;
+                    state->focus = 2;
                     currentPage = PAGE_LOGIN; // 保持在登录页面
                 }
-            else if(m.x >=170 && m.x <=310 && m.y >=520 && m.y <=570)        // 如果鼠标点击位置在登录按钮的范围内，则执行登录按钮操作
+            else if(m.x >=70 && m.x <=190 && m.y >=550 && m.y <=600)        // 如果鼠标点击位置在登录按钮的范围内，则执行登录按钮操作
                 {
                     currentMouseCtrl = LOGIN_SUBMIT;
-                    currentPage = PAGE_LOGIN; // 保持在登录页面，此处可添加登录逻辑
+                    TrySharedLogin();
+                    currentPage = PAGE_LOGIN; // 保持在登录页面
+                }
+            else if(m.x >=290 && m.x <=410 && m.y >=550 && m.y <=600)        // 如果鼠标点击位置在获取验证码按钮的范围内，则执行获取验证码操作
+                {
+                    currentMouseCtrl = LOGIN_GET_CODE;
+                    GenerateSharedVerificationCode();
+                    currentPage = PAGE_LOGIN; // 保持在登录页面
                 }
             break;
         case PAGE_PERSONAL_MANAGEMENT:
@@ -83,14 +96,14 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                }
             break;
         case PAGE_PERSONAL_REGISTRATION:
-             if(m.x >=0 && m.x <=50 && m.y >=0 && m.y <=40)// 左上角返回按钮（坐标和你DrawPersonalRegistrationPage里返回框一致）
+             if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮（坐标和你DrawPersonalRegistrationPage里返回框一致）
              {
                 currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
                 currentPage = PAGE_PERSONAL_MANAGEMENT;
             }
             break;
         case PAGE_PERSONAL_INSPECTION:
-             if(m.x >=0 && m.x <=50 && m.y >=0 && m.y <=40)// 左上角返回按钮（坐标和你DrawPersonalInspectionPage里返回框一致）
+             if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮（坐标和你DrawPersonalInspectionPage里返回框一致）
              {
                 currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
                 currentPage = PAGE_PERSONAL_MANAGEMENT;
