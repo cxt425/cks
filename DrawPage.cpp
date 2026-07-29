@@ -300,7 +300,7 @@ void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，�
 }
 
 void DrawPersonalInformationPage() // 声明，用于绘制个人电动车信息变更页面界面
-{
+{ 
     setfillcolor(RGB(0,130,220));
     fillrectangle(0,0,480,120);//顶部蓝色标题栏
 
