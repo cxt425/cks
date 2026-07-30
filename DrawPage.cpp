@@ -302,75 +302,74 @@ void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，�
 void DrawPersonalInformationPage() // 声明，用于绘制个人电动车信息变更页面界面
 { 
     setfillcolor(RGB(0,130,220));
-    fillrectangle(0,0,480,120);//顶部蓝色标题栏
+    fillrectangle(0,0,480,80);//顶部蓝色标题栏
 
     setlinecolor(WHITE);
     setlinestyle(PS_SOLID,3);
-    line(30,55,60,35);
-    line(30,50,60,75);//返回左箭头
+    line(30,40,40,30);
+    line(30,40,40,50);//返回左箭头
 
     settextcolor(WHITE);
-    settextstyle(32,0,_T("黑体"));
-    outtextxy(130,45,_T("车辆信息变更"));//顶部居中标题
+    settextstyle(30,0,_T("黑体"));
+    outtextxy(138,25,_T("车辆信息变更"));//顶部居中标题
     
     setfillcolor(WHITE);
-    fillroundrect(20,140,460,270,12,12);//车辆查询白色卡片
+    fillroundrect(0,80,480,640,8,8);//车辆查询白色卡片
 
     settextcolor(BLACK);
-    settextstyle(26,0,_T("黑体"));
-    outtextxy(35,155,_T("车辆查询"));//卡片标题
+    settextstyle(24,0,_T("黑体"));
+    outtextxy(35,100,_T("车辆查询"));//卡片标题
 
     setlinecolor(RGB(220,220,220));
-    rectangle(35,190,320,240);//车牌号输入框
+    rectangle(35,145,320,185);//车牌号输入框
 
-    settextstyle(20,0,_T("黑体"));
+    settextstyle(18,0,_T("黑体"));
     settextcolor(RGB(160,160,160));
-    outtextxy(50,202,_T("请输入车牌号"));//输入框提示文字
+    outtextxy(50,155,_T("请输入车牌号"));//输入框提示文字
 
     setfillcolor(RGB(0,130,220));
-    fillroundrect(350,190,430,240,8,8);//查询按钮
+    fillroundrect(350,145,430,185,8,8);//查询按钮
     settextcolor(WHITE);
-    outtextxy(370,202,_T("查询"));//查询按钮文字
+    outtextxy(370,155,_T("查询"));//查询按钮文字
 
     setfillcolor(WHITE);
-    fillroundrect(20,290,460,600,12,12);//车辆信息
+    fillroundrect(20,210,460,520,12,12);//车辆信息
     settextcolor(BLACK);
-    settextstyle(26,0,_T("黑体"));
-    outtextxy(35,305,_T("车辆信息"));//车主信息大卡片
+    settextstyle(20,0,_T("黑体"));
+    outtextxy(35,230,_T("车主姓名"));//车主信息大卡片
 
     setlinecolor(RGB(230,230,230));
-    line(35,345,440,345);//分割线
+    line(20,265,460,265);//分割线
 
-    settextstyle(22,0,_T("黑体"));
-    outtextxy(35,360,_T("院系"));
-    rectangle(280,350,440,385);//院系输入框
-    line(35,400,440,400);//院系行
+    settextstyle(18,0,_T("黑体"));
+    outtextxy(35,280,_T("院系"));
+    rectangle(280,270,440,305);//院系输入框
+    line(20,310,460,310);//院系行
 
-    outtextxy(35,415,_T("学号/工号"));
-    rectangle(280,405,440,440);//学号输入框
-    line(35,445,440,445);//学号行
+    outtextxy(35,325,_T("学号/工号"));
+    rectangle(280,315,440,350);//学号输入框
+    line(20,355,460,355);//学号行
 
-    outtextxy(35,460,_T("联系方式"));
-    rectangle(280,450,440,485);//联系方式输入框
-    line(35,490,440,490);//联系方式行
+    outtextxy(35,370,_T("联系方式"));
+    rectangle(280,360,440,395);//联系方式输入框
+    line(20,400,460,400);//联系方式行
 
-    outtextxy(35,505,_T("车型"));
-    rectangle(280,495,440,530);//车型输入框
-    line(35,535,440,535);//车型行
+    outtextxy(35,415,_T("车型"));
+    rectangle(280,405,440,440);//车型输入框
+    line(20,445,460,445);//车型行
 
-    outtextxy(35,550,_T("备注信息行"));
-    rectangle(280,540,440,575);//备注信息行
+    outtextxy(35,460,_T("备注信息"));
+    rectangle(280,450,440,485);//备注信息行
+    line(20,490,460,490);//备注信息行
 
     settextcolor(RGB(100,100,100));
     settextstyle(18,0,_T("黑体"));
-    outtextxy(35,580,_T("修改后请确认信息是否完整")); // 底部小字提醒
+    outtextxy(35,497,_T("修改后请确认信息是否完整")); // 底部小字提醒
 
     setfillcolor(RGB(0,130,220));
-    fillroundrect(30,625,450,690,35,35);
+    fillroundrect(30,560,450,610,35,35);
     settextcolor(WHITE);
     settextstyle(28,0,_T("黑体"));
-    outtextxy(175,645,_T("保存变更"));//底部【确认修改】按钮
+    outtextxy(175,570,_T("保存变更"));//底部【确认修改】按钮
 
-    _getch();
-    closegraph();
 }

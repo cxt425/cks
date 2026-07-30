@@ -64,7 +64,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
             else if(m.x >=30 && m.x <=210 && m.y >=440 && m.y <=530)
                {
                   currentMouseCtrl = PERSON_BTN_CHANGE;
-                  currentPage = PAGE_PERSONAL_MANAGEMENT; // 保持在个人电动车管理系统页面
+                  currentPage = PAGE_PERSONAL_INFORMATION; // 保持在个人电动车信息管理系统页面
                }
             else if(m.x >=270 && m.x <=450 && m.y >=440 && m.y <=530)
                {
