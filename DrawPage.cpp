@@ -804,5 +804,5 @@ void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校�
     settextcolor(WHITE);
     settextstyle(25,0,_T("黑体"));
     outtextxy(190,542,_T("提交记录"));//底部提交按钮
-
+    
 }
