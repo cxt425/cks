@@ -76,10 +76,10 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                   currentMouseCtrl = PERSON_BTN_BACK;
                   currentPage = PAGE_HOME; // 切换回首页
                }
-            else if(m.x >=270 && m.x <=450 && m.y >=545 && m.y <=605)
+            else if(m.x >=30 && m.x <=450 && m.y >=545 && m.y <=605)
                {
                   currentMouseCtrl = PERSON_BTN_ENTRY_EXIT;
-                  currentPage = PAGE_PERSONAL_MANAGEMENT; // 保持在个人电动车管理系统页面
+                  currentPage = PAGE_PERSONAL_ACCESSPAGE1; // 保持在个人电动车管理系统页面
                }
             break;
         case PAGE_PERSONAL_REGISTRATION:
@@ -91,6 +91,19 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
             break;
         case PAGE_PERSONAL_INSPECTION:
              if(m.x >=0 && m.x <=50 && m.y >=0 && m.y <=40)// 左上角返回按钮（坐标和你DrawPersonalInspectionPage里返回框一致）
+             {
+                currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
+                currentPage = PAGE_PERSONAL_MANAGEMENT;
+            }
+            break;
+        case PAGE_PERSONAL_INFORMATION:
+             if(m.x >=0 && m.x <=50 && m.y >=0 && m.y <=40)// 左上角返回按钮（坐标和你DrawPersonalInformationPage里返回框一致）
+             {
+                currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
+                currentPage = PAGE_PERSONAL_MANAGEMENT;
+            }
+        case PAGE_PERSONAL_ACCESSPAGE1:
+             if(m.x >=0 && m.x <=50 && m.y >=0 && m.y <=40)// 左上角返回按钮（坐标和你DrawPersonalAccessPage1里返回框一致）
              {
                 currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
                 currentPage = PAGE_PERSONAL_MANAGEMENT;

@@ -10,5 +10,6 @@ void DrawPersonalManagementPage(void);
 void DrawPersonalRegistrationPage(void);
 void DrawPersonalInspectionPage(void);
 void DrawPersonalInformationPage(void);
+void DrawPersonalAccessPage1(void);
 
 #endif

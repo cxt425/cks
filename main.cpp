@@ -26,6 +26,7 @@ int main() {
             case PAGE_PERSONAL_REGISTRATION: DrawPersonalRegistrationPage(); break;
             case PAGE_PERSONAL_INSPECTION: DrawPersonalInspectionPage(); break;
             case PAGE_PERSONAL_INFORMATION: DrawPersonalInformationPage(); break;
+            case PAGE_PERSONAL_ACCESSPAGE1: DrawPersonalAccessPage1(); break;
         }
 
         EndBatchDraw();             // 提交一帧绘制内容

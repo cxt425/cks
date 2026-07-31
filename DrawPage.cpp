@@ -373,3 +373,78 @@ void DrawPersonalInformationPage() // 声明，用于绘制个人电动车信息
     outtextxy(175,570,_T("保存变更"));//底部【确认修改】按钮
 
 }
+void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校园管理出入记录查询
+{
+   setfillcolor(RGB(0,130,220));
+    fillrectangle(0,0,480,80);//顶部蓝色标题栏
+    settextcolor(WHITE);
+    settextstyle(30,0,_T("黑体"));
+    outtextxy(138,25,_T("出入校园管理"));//顶部居中标题
+
+    setlinecolor(WHITE);
+    setlinestyle(PS_SOLID,2);
+    line(30,40,40,30);
+    line(30,40,40,50);//返回左箭头
+
+    setfillcolor(WHITE);
+    fillroundrect(0,80,480,640,8,8);//白色背景
+
+    setfillcolor(WHITE);
+    fillroundrect(20,90,460,150,12,12);
+    roundrect(20,90,460,150,12,12);
+    settextstyle(20,0,_T("黑体"));//Tab栏
+
+    settextcolor(RGB(0,130,220));
+    outtextxy(55,105,_T("出入记录添加"));
+    setlinecolor(RGB(0,130,220));
+    line(50,138,175,138);//激活Tab：出入记录添加
+
+    settextcolor(RGB(110,110,110));
+    outtextxy(270,105,_T("出入记录查询"));//未激活Tab：出入记录查询
+
+    setlinecolor(RGB(215,215,215));
+    line(240,98,240,132);//中间分隔竖线
+
+    setfillcolor(RGB(255,255,255));
+    fillroundrect(20,170,460,240,12,12);
+    roundrect(20,170,460,240,12,12);
+    settextcolor(RGB(0,0,0));
+    outtextxy(35,192,_T("车牌号:"));//车牌号卡片
+
+    setlinecolor(RGB(190,190,190));
+    roundrect(160,182,440,228,20,20);
+    settextcolor(RGB(110,110,110));
+    outtextxy(180,194,_T("请输入车牌号"));//车牌号输入框
+
+    setfillcolor(WHITE);
+    fillroundrect(20,260,460,470,12,12);
+    roundrect(20,260,460,470,12,12);
+    settextcolor(RGB(0,0,0));
+    outtextxy(35,282,_T("出入类型:"));//出入类型+时间卡片
+
+    setfillcolor(RGB(0,130,220));
+    fillroundrect(160,300,280,350,22,22);
+    settextcolor(WHITE);
+    outtextxy(198,312,_T("入校"));//入校按钮（默认选中）
+
+    setfillcolor(RGB(230,230,230));
+    fillroundrect(300,300,420,350,22,22);
+    settextcolor(RGB(110,110,110));
+    outtextxy(338,312,_T("出校"));//出校按钮
+
+    outtextxy(35,390,_T("出入时间:"));//记录时间
+
+    setlinecolor(RGB(160,160,160));
+    rectangle(65,418,95,448);//左侧复选框
+
+    setlinecolor(RGB(190,190,190));
+    roundrect(160,408,440,454,20,20);
+    settextcolor(RGB(110,110,110));
+    outtextxy(180,420,_T("请输入时间"));//时间输入框
+
+    setfillcolor(RGB(0,130,220));
+    fillroundrect(20,520,460,590,32,32);
+    settextcolor(WHITE);
+    settextstyle(25,0,_T("黑体"));
+    outtextxy(190,542,_T("提交记录"));//底部提交按钮
+}
