@@ -16,7 +16,7 @@ typedef enum {
 
 // 鼠标目标枚举：定义界面中可点击的控件
 typedef enum {
-    MOUSE_NONE,
+    MOUSE_NONE,       // 表示没有选中任何控件
     HOME_BTN_PERSON,
     HOME_BTN_SHARE,
     LOGIN_BACK,
@@ -24,6 +24,7 @@ typedef enum {
     LOGIN_INPUT_PHONE,
     LOGIN_INPUT_CODE,
     LOGIN_SUBMIT,
+    LOGIN_GET_CODE,
     PERSON_BTN_BACK,
     PERSON_BTN_REG,
     PERSON_BTN_YEAR,
