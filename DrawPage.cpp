@@ -353,6 +353,7 @@ void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，�
     settextcolor(WHITE);
     settextstyle(25,0,_T("黑体"));
     outtextxy(165,560,_T("保存年审信息"));//底部【保存年审信息】按钮
+<<<<<<< HEAD
 }
 #include <graphics.h>   // 包含 EasyX 图形库头文件
 #include <stdio.h>       // 包含标准输入输出头文件，用于 getchar()
@@ -803,4 +804,5 @@ void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校�
     settextcolor(WHITE);
     settextstyle(25,0,_T("黑体"));
     outtextxy(190,542,_T("提交记录"));//底部提交按钮
+
 }
