@@ -36,7 +36,7 @@ void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制
     fillrectangle(280,400,440,550);     // 绘制右边的填充矩形
     setbkmode(TRANSPARENT);
     settextstyle(25, 0, _T("黑体"));      // 设置文字样式：字号 25、方向 0、字体为“黑体”
-    settextcolor(WHITE);                   // 设置文字颜色为白色
+    settextcolor(WHITE);                    // 设置文字颜色为白色
     outtextxy(290, 420, _T("共享电动车")); // 在坐标 (290, 420) 位置显示文字
     setbkmode(TRANSPARENT);     // 设置背景模式为透明
     settextstyle(15, 0, _T("黑体"));      // 设置文字样式：字号 15、方向 0、字体为“黑体”
@@ -535,4 +535,73 @@ void DrawPersonalAccessPage2()
 
     setlinecolor(RGB(215,215,215));
     line(240,98,240,132);//中间分隔竖线
+
+    fillroundrect(30,185,450,265,16,16);//车牌号输入框
+    setlinecolor(RGB(130,130,130));
+    setfillcolor(RGB(255,255,255));
+    fillroundrect(50,200,320,245,22,22);//查询结果显示框
+    roundrect(50,200,320,245,22,22);
+    settextstyle(18,0,_T("黑体"));
+    settextcolor(RGB(110,110,110));
+    outtextxy(60,215,_T("请输入车牌号"));//查询结果显示框提示文字
+
+    setfillcolor(RGB(0,130,220));
+    fillroundrect(345,200,430,245,22,22);//查询按钮
+    settextstyle(20,0,_T("黑体"));
+    settextcolor(WHITE);
+    outtextxy(368,211,_T("查询"));//查询按钮文字
+
+    setfillcolor(RGB(255,255,255));
+    fillroundrect(30,280,450,525,16,16);
+    settextstyle(20,0,_T("黑体"));
+    settextcolor(BLACK);
+    outtextxy(45,302,_T("出入记录列表"));//出入记录列表
+
+    setfillcolor(RGB(225,242,255));
+    fillroundrect(45,340,435,375,12,12);//出入记录显示框
+    settextstyle(18,0,_T("黑体"));
+    settextcolor(RGB(110,110,110));
+    outtextxy(60,346,_T("车牌号"));
+    outtextxy(145,346,_T("车主姓名"));
+    outtextxy(245,346,_T("出入类型"));
+    outtextxy(335,346,_T("出入时间"));//表头底色
+
+    line(130,340,130,495);
+    line(240,340,240,495);
+    line(325,340,325,495);//表头竖线
+
+    rectangle(45,375,435,405);//出入记录显示框边框
+    settextstyle(12,0,_T("宋体"));
+    outtextxy(52,380,_T("鄂A12345"));
+    outtextxy(147,380,_T("张三"));
+    outtextxy(257,380,_T("入校"));
+    outtextxy(334,380,_T("2024-06-01 08:30"));//第一条出入记录
+
+    rectangle(45,405,435,435);//出入记录显示框边框
+    outtextxy(52,410,_T("鄂A67890"));
+    outtextxy(147,410,_T("李四"));
+    outtextxy(257,410,_T("离校"));
+    outtextxy(334,410,_T("2024-06-01 17:22"));//第二条出入记录
+
+    rectangle(45,435,435,465);//出入记录显示框边框
+    outtextxy(52,440,_T("鄂A54321"));
+    outtextxy(147,440,_T("李四"));
+    outtextxy(257,440,_T("入校"));
+    outtextxy(334,440,_T("2024-06-02 09:15"));//第三条出入记录
+
+    rectangle(45,465,435,495);//出入记录显示框边框
+    outtextxy(52,470,_T("鄂A98765"));
+    outtextxy(147,470,_T("张三"));
+    outtextxy(257,470,_T("离校"));
+    outtextxy(334,470,_T("2024-06-02 18:05"));//第四条出入记录
+
+    setfillcolor(RGB(255,255,255));
+    setlinecolor(RGB(200,200,200));
+    fillroundrect(40,545,220,600,22,22);//出入记录显示框底部
+    settextstyle(22,0,_T("宋体"));
+    settextcolor(RGB(130,130,130));
+    outtextxy(100,558,_T("上一页"));
+    fillroundrect(260,545,440,600,22,22);//出入记录显示框底部
+    outtextxy(320,558,_T("下一页"));
+
 }
