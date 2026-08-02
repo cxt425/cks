@@ -70,6 +70,7 @@ int main() {
             case PAGE_PERSONAL_INFORMATION: DrawPersonalInformationPage(); break;
             case PAGE_PERSONAL_ACCESSPAGE1: DrawPersonalAccessPage1(); break;
             case PAGE_PERSONAL_ACCESSPAGE2: DrawPersonalAccessPage2(); break;
+            case PAGE_PERSONAL_SCRAP: DrawPersonalScrapPage(); break;
         }
 
         EndBatchDraw();             // 提交一帧绘制内容

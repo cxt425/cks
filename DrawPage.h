@@ -12,4 +12,5 @@ void DrawPersonalInspectionPage(void);
 void DrawPersonalInformationPage(void);
 void DrawPersonalAccessPage1(void);
 void DrawPersonalAccessPage2(void);
+void DrawPersonalScrapPage(void);
 #endif

@@ -602,6 +602,83 @@ void DrawPersonalAccessPage2()
     settextcolor(RGB(130,130,130));
     outtextxy(100,558,_T("上一页"));
     fillroundrect(260,545,440,600,22,22);//出入记录显示框底部
-    outtextxy(320,558,_T("下一页"));
-
+    outtextxy(320,558,_T("下一页"));//出入记录显示框底部
 }
+void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘制个人电动车报废管理系统界面
+{
+    cleardevice();              // 清空窗口并用背景颜色填充
+    setfillcolor(RGB(0,146,198)); // 设置填充颜色为蓝色
+    fillrectangle(0,0,480,80); //顶部蓝色标题栏
+
+    setlinecolor(WHITE);
+    setlinestyle(PS_SOLID, 3); // 线条粗细为3
+    line(30, 40, 40, 30);
+    line(30, 40, 40, 50);//左上角返回箭头白色
+    
+    setbkmode(TRANSPARENT);//设置文字背景为透明
+    settextcolor(WHITE);
+    settextstyle(25,0,_T("黑体"));
+    outtextxy(150,32,_T("车辆报废管理"));//顶部居中标题
+    
+    setfillcolor(WHITE);
+    fillroundrect(0,80,480,640,8,8);//白色背景
+
+    setlinecolor(RGB(200,200,200));
+    fillroundrect(30,90,450,210,22,22);//车辆报废信息显示框
+    settextstyle(18,0,_T("宋体"));
+    settextcolor(BLACK);
+    outtextxy(50,108,_T("车牌号:鄂A12345"));
+    outtextxy(50,138,_T("车主姓名:张三"));
+    outtextxy(50,168,_T("当前状态:正常"));//车辆信息卡片
+
+    setfillcolor(RGB(255,255,255));
+    fillroundrect(30,225,450,460,18,18);//报废信息显示框
+
+    settextstyle(18,0,_T("黑体"));
+    outtextxy(50,240,_T("报废车辆处理"));//小标题
+
+    fillroundrect(40,270,125,310,22,22);
+    settextstyle(16,0,_T("黑体"));
+    settextcolor(BLACK);
+    outtextxy(50,280,_T("车体损坏"));//报废车辆处理按钮
+
+    setfillcolor(RGB(0,130,220));
+    fillroundrect(135,270,275,310,22,22);
+    settextcolor(WHITE);
+    outtextxy(160,280,_T("达到使用年限"));//达到使用年限按钮（选中蓝色按钮）
+
+    setfillcolor(RGB(255,255,255));
+    fillroundrect(285,270,415,310,22,22);
+    settextcolor(BLACK);
+    outtextxy(300,280,_T("丢失无法找回"));//丢失无法找回按钮
+
+    settextstyle(20,0,_T("宋体"));
+    settextcolor(BLACK);
+    rectangle(40,325,60,345);
+    outtextxy(75,325,_T("其他原因"));
+    fillroundrect(180,320,430,355,18,18);
+    settextcolor(RGB(110,110,110));
+    outtextxy(190,327,_T("请输入其他原因"));//其他原因复选栏+输入框
+
+    setfillcolor(RGB(255,210,0));
+    fillrectangle(30,365,450,400);
+    settextcolor(BLACK);
+    settextstyle(18,0,_T("宋体"));
+    outtextxy(80,373,_T("注意：标记报废后将禁止该车后续操作"));//黄色警告提示栏
+
+    settextcolor(BLACK);
+    settextstyle(18,0,_T("宋体"));
+    outtextxy(60,420,_T("报废时间"));
+    setfillcolor(RGB(245,245,245));
+    fillroundrect(180,410,430,445,20,20);
+    settextcolor(RGB(110,110,110));
+    settextstyle(14,0,_T("宋体"));
+    outtextxy(190,420,_T("请输入报废时间：年|月|日"));//报废时间输入框
+
+    setfillcolor(RGB(230,30,30));
+    fillroundrect(40,475,440,530,30,30);
+    settextstyle(28,0,_T("黑体"));
+    settextcolor(WHITE);
+    outtextxy(175,490,_T("确认报废"));//底部红色【确认报废】按钮
+}
+

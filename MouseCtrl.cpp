@@ -82,7 +82,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
             else if(m.x >=270 && m.x <=450 && m.y >=440 && m.y <=530)
                {
                   currentMouseCtrl = PERSON_BTN_REPAIR; 
-                  currentPage = PAGE_PERSONAL_MANAGEMENT; // 保持在个人电动车管理系统页面
+                  currentPage = PAGE_PERSONAL_SCRAP; // 保持在个人电动车报废管理系统页面
                }
             else if(m.x >=0 && m.x <=50 && m.y >=0 && m.y <=40)
                {
@@ -140,5 +140,13 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                     currentPage = PAGE_PERSONAL_ACCESSPAGE1; // 保持在个人电动车出入校园管理1页面
                 }
                 break;
+        case PAGE_PERSONAL_SCRAP:         // 如果当前页面是个人电动车报废管理页面，则判断鼠标点击位置是否在左上角返回按钮的范围内
+             if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮（坐标和你DrawPersonalScrapPage里返回框一致）
+               {
+                  currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
+                  currentPage = PAGE_PERSONAL_MANAGEMENT;
+                } 
+                break;
     }
+
 }
