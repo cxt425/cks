@@ -1,5 +1,6 @@
 #include "MouseCtrl.h"    // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
+#include "personalregistration.h"
 #include <graphics.h>      // 包含 EasyX 图形库头文件
 
 MouseTarget currentMouseCtrl = MOUSE_NONE;      // 声明全局变量 currentMouseCtrl，表示当前选中的控件
@@ -10,8 +11,8 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
     if(m.uMsg != WM_LBUTTONDOWN) return;           // 如果鼠标消息不是左键按下事件，则直接返回，不进行处理
     currentMouseCtrl = MOUSE_NONE;                 // 将当前选中的控件设置为 MOUSE_NONE，表示没有选中任何控件
 
-    SharedUserInfo* state = GetSharedSignoutState();
-
+    SharedUserInfo* state = GetSharedSignoutState();    // 获取共享登录状态信息的指针，用于在登录页面处理输入框和按钮的操作
+    PersonalUserInfo* regState = GetPersonalRegistrationState(); // 获取个人注册状态信息的指针，用于在注册页面处理输入框和按钮的操作
     switch(nowPage)                                 // 根据当前页面类型进行不同的鼠标事件处理
     {
         case PAGE_HOME:                             // 如果当前页面是首页，则判断鼠标点击位置是否在个人电动车管理系统按钮或共享电动车登录按钮的范围内
@@ -101,6 +102,46 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                   currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
                   currentPage = PAGE_PERSONAL_MANAGEMENT;
                 }
+            else if (m.x >=240 && m.x <=420 && m.y >=170 && m.y <=200) {
+                currentMouseCtrl = PERSON_REG_INPUT_LICENSE;
+                regState->focus = 0;
+                currentPage = PAGE_PERSONAL_REGISTRATION;
+            }
+            else if (m.x >=240 && m.x <=420 && m.y >=210 && m.y <=240) {
+                currentMouseCtrl = PERSON_REG_INPUT_OWNER;
+                regState->focus = 1;
+                currentPage = PAGE_PERSONAL_REGISTRATION;
+            }
+            else if (m.x >=240 && m.x <=420 && m.y >=250 && m.y <=280) {
+                currentMouseCtrl = PERSON_REG_INPUT_COLLEGE;
+                regState->focus = 2;
+                currentPage = PAGE_PERSONAL_REGISTRATION;
+            }
+            else if (m.x >=240 && m.x <=420 && m.y >=290 && m.y <=320) {
+                currentMouseCtrl = PERSON_REG_INPUT_ID;
+                regState->focus = 3;
+                currentPage = PAGE_PERSONAL_REGISTRATION;
+            }
+            else if (m.x >=240 && m.x <=420 && m.y >=330 && m.y <=360) {
+                currentMouseCtrl = PERSON_REG_INPUT_PHONE;
+                regState->focus = 4;
+                currentPage = PAGE_PERSONAL_REGISTRATION;
+            }
+            else if (m.x >=240 && m.x <=420 && m.y >=370 && m.y <=400) {
+                currentMouseCtrl = PERSON_REG_INPUT_TYPE;
+                regState->focus = 5;
+                currentPage = PAGE_PERSONAL_REGISTRATION;
+            }
+            else if (m.x >=240 && m.x <=420 && m.y >=410 && m.y <=440) {
+                currentMouseCtrl = PERSON_REG_INPUT_DATE;
+                regState->focus = 6;
+                currentPage = PAGE_PERSONAL_REGISTRATION;
+            }
+            else if (m.x >=40 && m.x <=440 && m.y >=560 && m.y <=610) {
+                currentMouseCtrl = PERSON_REG_SUBMIT;
+                TryPersonalRegistration();
+                currentPage = PAGE_PERSONAL_REGISTRATION;
+            }
             break;
         case PAGE_PERSONAL_INSPECTION:        // 如果当前页面是个人电动车年审管理页面，则判断鼠标点击位置是否在左上角返回按钮的范围内
              if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮（坐标和你DrawPersonalInspectionPage里返回框一致）
@@ -148,5 +189,4 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                 } 
                 break;
     }
-
 }

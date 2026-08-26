@@ -6,6 +6,7 @@
 #include "DrawPage.h"  // 包含自定义的 DrawPage.h 头文件，声明函数
 #include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
+#include "personalregistration.h"
 
 static void DrawTextAt(int x, int y, const char* text)         // 定义 DrawTextAt 函数，用于在指定位置绘制文本
 {
@@ -13,8 +14,7 @@ static void DrawTextAt(int x, int y, const char* text)         // 定义 DrawTex
         return;
 
     setbkmode(TRANSPARENT);          // 设置背景模式为透明，以便文本不会覆盖背景
-
-    outtextxy(x, y, text);          // 在指定位置绘制文本
+    outtextxy(x, y, text);
 }
 
 void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制首页界面
@@ -126,11 +126,11 @@ void DrawSharedSignoutPage(void)
     outtextxy(40, 470, _T("验证码"));
 
     const SharedUserInfo* state = GetSharedSignoutState();        // 获取共享登录状态信息的指针
-
+    // 根据共享登录状态信息的内容，绘制输入框中的文本或提示信息
     settextstyle(18, 0, _T("黑体"));
     if (state->username[0] != '\0') {
         settextcolor(BLACK);
-        DrawTextAt(150, 372, state->username);
+        DrawTextAt(150, 372, state->username);  // 绘制用户名输入框中的文本
     } else {
         settextcolor(RGB(140, 140, 140));
         outtextxy(150, 372, _T("请输入用户名"));
@@ -151,8 +151,8 @@ void DrawSharedSignoutPage(void)
         settextcolor(RGB(140, 140, 140));
         outtextxy(150, 472, _T("请输入验证码"));
     }
-
     settextstyle(12, 0, _T("黑体"));
+    // 根据登录状态信息的 loginSuccess 字段，设置状态提示信息的颜色
     if (state->loginSuccess)
         settextcolor(GREEN);
     else
@@ -281,6 +281,41 @@ void DrawPersonalRegistrationPage()//定义 DrawPersonalregistrationPage 函数�
     settextcolor(WHITE);
     settextstyle(25,0,_T("黑体"));
     outtextxy(190,570,_T("确认注册"));//提交按钮文字
+
+    const PersonalUserInfo* regState = GetPersonalRegistrationState(); // 获取个人注册状态信息的指针
+    // 根据注册状态绘制输入框中的文本或提示信息
+    settextstyle(16, 0, _T("黑体"));
+    if (regState->licensePlate[0] != '\0') {
+        settextcolor(BLACK);
+        DrawTextAt(250, 178, regState->licensePlate);
+    } else {
+        settextcolor(RGB(140,140,140)); outtextxy(250, 178, _T("请输入车牌号"));
+    }
+
+    if (regState->ownerName[0] != '\0') { settextcolor(BLACK); DrawTextAt(250, 212, regState->ownerName); }
+    else { settextcolor(RGB(140,140,140)); outtextxy(250, 212, _T("请输入车主姓名")); }
+
+    if (regState->college[0] != '\0') { settextcolor(BLACK); DrawTextAt(250, 252, regState->college); }
+    else { settextcolor(RGB(140,140,140)); outtextxy(250, 252, _T("请输入院系")); }
+
+    if (regState->personalID[0] != '\0') { settextcolor(BLACK); DrawTextAt(250, 292, regState->personalID); }
+    else { settextcolor(RGB(140,140,140)); outtextxy(250, 292, _T("请输入学号/工号")); }
+
+    if (regState->ownerPhone[0] != '\0') { settextcolor(BLACK); DrawTextAt(250, 332, regState->ownerPhone); }
+    else { settextcolor(RGB(140,140,140)); outtextxy(250, 332, _T("请输入手机号")); }
+
+    if (regState->vehicleType[0] != '\0') { settextcolor(BLACK); DrawTextAt(250, 372, regState->vehicleType); }
+    else { settextcolor(RGB(140,140,140)); outtextxy(250, 372, _T("请输入车型")); }
+
+    if (regState->registrationDate[0] != '\0') { settextcolor(BLACK); DrawTextAt(250, 412, regState->registrationDate); }
+    else { settextcolor(RGB(140,140,140)); outtextxy(250, 412, _T("YYYY-MM-DD")); }
+
+    // 消息提示
+    settextstyle(14,0,_T("黑体"));
+    if (regState->message[0] != '\0') {
+        if (regState->registered) settextcolor(GREEN); else settextcolor(RGB(180,60,60));
+        DrawTextAt(40, 520, regState->message);
+    }
 }
 
 void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，用于绘制个人电动车年审管理系统界面
@@ -595,14 +630,6 @@ void DrawPersonalAccessPage2()
     outtextxy(257,470,_T("离校"));
     outtextxy(334,470,_T("2024-06-02 18:05"));//第四条出入记录
 
-    setfillcolor(RGB(255,255,255));
-    setlinecolor(RGB(200,200,200));
-    fillroundrect(40,545,220,600,22,22);//出入记录显示框底部
-    settextstyle(22,0,_T("宋体"));
-    settextcolor(RGB(130,130,130));
-    outtextxy(100,558,_T("上一页"));
-    fillroundrect(260,545,440,600,22,22);//出入记录显示框底部
-    outtextxy(320,558,_T("下一页"));//出入记录显示框底部
 }
 void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘制个人电动车报废管理系统界面
 {
@@ -681,4 +708,7 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
     settextcolor(WHITE);
     outtextxy(175,490,_T("确认报废"));//底部红色【确认报废】按钮
 }
-
+void Drawsharedmanagementpage()//定义 Drawsharedmanagementpage 函数，用于绘制共享电动车管理系统界面
+{
+    
+}

@@ -4,6 +4,7 @@
 #include "DrawPage.h"  // 包含自定义的 DrawPage.h 头文件，声明函数
 #include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
+#include "personalregistration.h"
 
 static void PollKeyboardInput(void)
 {
@@ -37,8 +38,9 @@ static void PollKeyboardInput(void)
                 ch = ' ';
             }
 
-            if (ch != 0 && currentPage == PAGE_LOGIN) {
-                HandleSharedSignoutKey(ch);
+            if (ch != 0) {
+                if (currentPage == PAGE_LOGIN) HandleSharedSignoutKey(ch);
+                else if (currentPage == PAGE_PERSONAL_REGISTRATION) HandlePersonalRegistrationKey(ch);
             }
         } else if (!isDown) {
             keyDown[vk] = 0;
@@ -51,6 +53,7 @@ int main() {
     setbkcolor(WHITE);          // 设置背景颜色为白色
     BeginBatchDraw();           // 开始批量绘制，防止闪烁
     InitSharedSignoutState();
+    DWORD loginSuccessTime = 0;
     MOUSEMSG m;
     while(1)
     {
@@ -71,10 +74,24 @@ int main() {
             case PAGE_PERSONAL_ACCESSPAGE1: DrawPersonalAccessPage1(); break;
             case PAGE_PERSONAL_ACCESSPAGE2: DrawPersonalAccessPage2(); break;
             case PAGE_PERSONAL_SCRAP: DrawPersonalScrapPage(); break;
+            case PAGE_SHARED_MANAGEMENT: DrawSharedManagementPage(); break;
         }
 
         EndBatchDraw();             // 提交一帧绘制内容
         PollKeyboardInput();        // 检测当前按键并转发给登录页面
+// 检查共享登录状态，如果登录成功且当前页面是登录页面，则在 3 秒后自动切换到个人管理页面
+        SharedUserInfo* sharedState = GetSharedSignoutState();
+        if (currentPage == PAGE_LOGIN && sharedState->loginSuccess) {
+            if (loginSuccessTime == 0)
+                loginSuccessTime = GetTickCount();
+            else if (GetTickCount() - loginSuccessTime >= 3000) {
+                currentPage = PAGE_SHARED_MANAGEMENT;
+                loginSuccessTime = 0;
+            }
+        } else {
+            loginSuccessTime = 0;
+        }
+
         Sleep(10);                  // 暂停一小段时间，降低 CPU 占用率
         BeginBatchDraw();           // 开始下一帧批量绘制
     }

@@ -5,19 +5,19 @@
 #include <string.h>        // 包含字符串处理函数的头文件
 #include <time.h>         // 包含时间函数的头文件，用于获取当前时间作为随机数种子
 
-static SharedUserInfo gSharedUserInfo;
-
+static SharedUserInfo gSharedUserInfo;// 定义全局共享用户信息结构体，用于存储登录状态和输入信息
 SharedUserInfo* GetSharedSignoutState(void)      // 获取共享登录状态信息的指针
 {
-    return &gSharedUserInfo;
+    return &gSharedUserInfo;// 返回全局共享用户信息结构体的地址
 }
 
 // 检查手机号格式是否为 11 位纯数字
 static int IsPhoneValid(const char* phone)
 {
-    if (phone == NULL || strlen(phone) != 11)
+    if (phone == NULL || strlen(phone) != 11)       // 检查手机号是否为 NULL 或长度不为 11
         return 0;
-
+    if (phone[0] != '1')         // 检查手机号首位是否为 '1'
+        return 0;
     for (int i = 0; i < 11; ++i) {
         if (!isdigit((unsigned char)phone[i]))         // 检查每个字符是否为数字
             return 0;
@@ -59,7 +59,7 @@ static void DeleteCharFromField(char* dest)
 void InitSharedSignoutState(void)
 {
     SharedUserInfo* state = GetSharedSignoutState();
-    memset(state, 0, sizeof(*state));
+    memset(state, 0, sizeof(*state));       // 将结构体清零，初始化所有字段为默认值
     state->focus = 0;
     state->codeSent = 0;
     state->loginSuccess = 0;
@@ -70,7 +70,7 @@ void InitSharedSignoutState(void)
 void HandleSharedSignoutKey(char key)
 {
     SharedUserInfo* state = GetSharedSignoutState();
-
+// 处理退格键和删除键
     if (key == 8 || key == 127) {
         if (state->focus == 0)
             DeleteCharFromField(state->username);
@@ -80,17 +80,17 @@ void HandleSharedSignoutKey(char key)
             DeleteCharFromField(state->code);
         return;
     }
-
+// 处理回车键和换行键，尝试登录
     if (key == 13 || key == 10) {
         TrySharedLogin();
         return;
     }
-
+// 处理 Tab 键，切换输入框焦点
     if (key == 9) {
-        state->focus = (state->focus + 1) % 3;
+        state->focus = (state->focus + 1) % 3;         // 切换焦点到下一个输入框
         return;
     }
-
+// 处理其他字符输入，根据当前焦点追加到对应输入框
     if (state->focus == 0)
         AppendCharToField(state->username, sizeof(state->username), state->focus, key);
     else if (state->focus == 1)
@@ -98,7 +98,6 @@ void HandleSharedSignoutKey(char key)
     else
         AppendCharToField(state->code, sizeof(state->code), state->focus, key);
 }
-
 // 生成一次性验证码，并校验输入信息是否合法
 void GenerateSharedVerificationCode(void)
 {
@@ -110,56 +109,55 @@ void GenerateSharedVerificationCode(void)
         state->loginSuccess = 0;
         return;
     }
-
+// 生成随机验证码，确保每次生成的验证码不同
     static int seeded = 0;
     if (!seeded) {
-        srand((unsigned)time(NULL));
+        srand((unsigned)time(NULL));    // 使用当前时间作为随机数种子
         seeded = 1;
     }
-
+// 生成一个 6 位的随机验证码
     int codeValue = rand() % 1000000;
-    sprintf(state->generatedCode, "%06d", codeValue);
+    sprintf(state->generatedCode, "%06d", codeValue);// 将验证码格式化为 6 位字符串，前面补零
     state->codeSent = 1;
     state->loginSuccess = 0;
-    sprintf(state->message, "验证码已发送，当前验证码：%s", state->generatedCode);
+    sprintf(state->message, "验证码已发送，当前验证码：%s", state->generatedCode);// 显示生成的验证码，实际应用中应通过短信发送给用户
 }
 
 // 执行登录校验，只有验证码正确且信息完整时才能成功
 void TrySharedLogin(void)
 {
     SharedUserInfo* state = GetSharedSignoutState();
-
+// 检查用户名长度是否至少为 2 个字符
     if (strlen(state->username) < 2) {
         strcpy(state->message, "请输入用户名");
         state->loginSuccess = 0;
         return;
     }
-
+// 检查手机号格式是否为 11 位纯数字
     if (!IsPhoneValid(state->phone)) {
         strcpy(state->message, "手机号必须为11位数字");
         state->loginSuccess = 0;
         return;
     }
-
+// 检查验证码是否已经发送
     if (!state->codeSent) {
         strcpy(state->message, "请先获取验证码");
         state->loginSuccess = 0;
         return;
     }
-
+// 检查验证码长度是否为 6 位
     if (strlen(state->code) != 6) {
         strcpy(state->message, "请输入6位验证码");
         state->loginSuccess = 0;
         return;
     }
-
+// 检查输入的验证码是否与生成的验证码匹配
     if (strcmp(state->code, state->generatedCode) != 0) {
         strcpy(state->message, "验证码错误，请重新输入");
         state->loginSuccess = 0;
         return;
     }
-
+// 如果所有检查通过，登录成功
     state->loginSuccess = 1;
     strcpy(state->message, "登录成功，欢迎使用共享电动车系统");
 }
-

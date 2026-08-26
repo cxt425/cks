@@ -1,13 +1,12 @@
-#ifndef _SHAREDSIGNOUT_H_
+#ifndef _SHAREDSIGNOUT_H_  // 声明 sharedsignout.h 头文件，防止重复包含
 #define _SHAREDSIGNOUT_H_
 
 #include "public.h"
 
-void InitSharedSignoutState(void);
-void HandleSharedSignoutKey(char key);
-void GenerateSharedVerificationCode(void);
-void TrySharedLogin(void);
-void DrawSharedSignoutPage(void);
+void InitSharedSignoutState(void);     // 初始化共享登录页面的状态信息
+void HandleSharedSignoutKey(char key);      // 处理登录页面的键盘输入
+void GenerateSharedVerificationCode(void);    // 生成一次性验证码，并校验输入信息是否合法
+void TrySharedLogin(void);       // 尝试登录共享电动车系统，检查输入信息是否合法，并更新登录状态
 
 typedef struct {
     char username[20]; // 用户名
@@ -20,6 +19,6 @@ typedef struct {
     char message[64];  // 状态提示信息
 } SharedUserInfo;
 
-SharedUserInfo* GetSharedSignoutState(void);
+SharedUserInfo* GetSharedSignoutState(void);// 获取共享登录状态信息的指针
 
-#endif 
+#endif
