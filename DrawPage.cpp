@@ -708,7 +708,7 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
     settextcolor(WHITE);
     outtextxy(175,490,_T("确认报废"));//底部红色【确认报废】按钮
 }
-void Drawsharedmanagementpage()//定义 Drawsharedmanagementpage 函数，用于绘制共享电动车管理系统界面
+void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于绘制共享电动车管理系统界面
 {
-    
+    cleardevice();
 }
