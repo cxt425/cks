@@ -8,13 +8,29 @@
 static SharedUserInfo gSharedUserInfo;// 定义全局共享用户信息结构体，用于存储登录状态和输入信息
 static const char* SHARED_DATA_FILE = "shared_vehicle_data.txt";
 
+static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)
+{
+    if (!source || !destination || destinationSize <= 0) return 0;
+
+    wchar_t wideText[128];
+    int wideLength = MultiByteToWideChar(CP_ACP, 0, source, -1, wideText, sizeof(wideText) / sizeof(wideText[0]));
+    if (wideLength <= 0) return 0;
+
+    return WideCharToMultiByte(CP_UTF8, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
+}
+
 int SaveSharedVehicleData(const SharedUserInfo* info)
 {
     if (!info) return 0;
 
+    char username[128];
+    char phone[128];
+    if (!ConvertAnsiToUtf8(info->username, username, sizeof(username)) ||
+        !ConvertAnsiToUtf8(info->phone, phone, sizeof(phone))) return 0;
+
     FILE* file = fopen(SHARED_DATA_FILE, "a");
     if (!file) return 0;
-    int success = fprintf(file, "%s|%s\n", info->username, info->phone) >= 0;
+    int success = fprintf(file, "%s|%s\n", username, phone) >= 0;
     fclose(file);
     return success;
 }

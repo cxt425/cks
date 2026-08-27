@@ -13,6 +13,19 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
 
     SharedUserInfo* state = GetSharedSignoutState();    // 获取共享登录状态信息的指针，用于在登录页面处理输入框和按钮的操作
     PersonalUserInfo* regState = GetPersonalRegistrationState(); // 获取个人注册状态信息的指针，用于在注册页面处理输入框和按钮的操作
+    
+if(nowPage == PAGE_PERSONAL_REGISTRATION)
+{
+    //车主姓名输入框区域 x:240~420, y:210~240
+    if(m.x >=240 && m.x <=420 && m.y >=210 && m.y <=240)
+    {
+        g_nowInput = INPUT_OWNER_NAME;
+    }
+    else
+    {
+        g_nowInput = INPUT_NOTHING;
+    }
+}
     switch(nowPage)                                 // 根据当前页面类型进行不同的鼠标事件处理
     {
         case PAGE_HOME:                             // 如果当前页面是首页，则判断鼠标点击位置是否在个人电动车管理系统按钮或共享电动车登录按钮的范围内

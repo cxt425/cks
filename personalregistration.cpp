@@ -3,19 +3,47 @@
 #include <stdio.h>     // 包含标准输入输出头文件
 #include <stdlib.h>       // 包含标准库头文件，用于 rand() 和 srand() 函数
 #include <string.h>        // 包含字符串处理函数的头文件
-
+#include <windows.h>    
+int g_nowInput = INPUT_NOTHING;
 static PersonalUserInfo gPersonalUserInfo; // 定义全局个人用户信息结构体，用于存储注册状态和输入信息
 static const char* PERSONAL_DATA_FILE = "personal_vehicle_data.txt";
+
+static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)
+{
+    if (!source || !destination || destinationSize <= 0) return 0;
+
+    wchar_t wideText[128];
+    int wideLength = MultiByteToWideChar(CP_ACP, 0, source, -1, wideText, sizeof(wideText) / sizeof(wideText[0]));
+    if (wideLength <= 0) return 0;
+
+    return WideCharToMultiByte(CP_UTF8, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
+}
+
 // 保存个人电动车数据到文件中，返回保存是否成功
 int SavePersonalVehicleData(const PersonalUserInfo* info)
 {
     if (!info) return 0;
 
+    char licensePlate[128];
+    char ownerName[128];
+    char college[128];
+    char personalID[128];
+    char ownerPhone[128];
+    char vehicleType[128];
+    char registrationDate[128];
+    if (!ConvertAnsiToUtf8(info->licensePlate, licensePlate, sizeof(licensePlate)) ||
+        !ConvertAnsiToUtf8(info->ownerName, ownerName, sizeof(ownerName)) ||
+        !ConvertAnsiToUtf8(info->college, college, sizeof(college)) ||
+        !ConvertAnsiToUtf8(info->personalID, personalID, sizeof(personalID)) ||
+        !ConvertAnsiToUtf8(info->ownerPhone, ownerPhone, sizeof(ownerPhone)) ||
+        !ConvertAnsiToUtf8(info->vehicleType, vehicleType, sizeof(vehicleType)) ||
+        !ConvertAnsiToUtf8(info->registrationDate, registrationDate, sizeof(registrationDate))) return 0;
+
     FILE* file = fopen(PERSONAL_DATA_FILE, "a");
     if (!file) return 0;
     int success = fprintf(file, "%s|%s|%s|%s|%s|%s|%s\n",
-        info->licensePlate, info->ownerName, info->college, info->personalID,
-        info->ownerPhone, info->vehicleType, info->registrationDate) >= 0;
+        licensePlate, ownerName, college, personalID,
+        ownerPhone, vehicleType, registrationDate) >= 0;
     fclose(file);
     return success;
 }
@@ -54,7 +82,6 @@ static int IsPersonalIDValid(const char* personalID)
     }
     return 1;
 }
-
 // Helper: 判断当前输入框是否允许输入该字符
 static int IsValidInputChar(int focus, char key)
 {
@@ -62,8 +89,8 @@ static int IsValidInputChar(int focus, char key)
         return (key >= '0' && key <= '9');
     if (focus == 6) // date -> digits and -
         return (key >= '0' && key <= '9') || key == '-';
-    // 其他允许字母、数字、空格
-    return (key >= '0' && key <= '9') || (key >= 'a' && key <= 'z') || (key >= 'A' && key <= 'Z') || key == ' ';
+    // 其他字段允许中文、字母、数字、空格和常用符号
+    return (unsigned char)key >= 0x80 || (key >= 32 && key <= 126);
 }
 // Helper: 向当前输入框追加字符，限制输入长度
 static void AppendCharToField(char* dest, int maxLen, int focus, char key)
@@ -96,7 +123,6 @@ void InitPersonalRegistrationState(void)
     state->registered = 0;
     strcpy(state->message, "请填写注册信息，按 Tab 切换输入框");
 }
-
 // 提交注册并做基本校验
 void TryPersonalRegistration(void)
 {
@@ -151,4 +177,94 @@ void HandlePersonalRegistrationKey(char key)
         case 5: AppendCharToField(state->vehicleType, sizeof(state->vehicleType), state->focus, key); break;
         case 6: AppendCharToField(state->registrationDate, sizeof(state->registrationDate), state->focus, key); break;
     }
+}
+
+void HandlePersonalRegistrationChar(TCHAR key)
+{
+    if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
+        HandlePersonalRegistrationKey((char)key);
+        return;
+    }
+
+    char converted[MB_LEN_MAX] = {0};
+    int byteCount = 0;
+#ifdef UNICODE
+    byteCount = WideCharToMultiByte(CP_ACP, 0, &key, 1, converted, sizeof(converted), NULL, NULL);
+#else
+    converted[0] = (char)key;
+    byteCount = 1;
+#endif
+    if (byteCount <= 0) return;
+
+    PersonalUserInfo* state = GetPersonalRegistrationState();
+    for (int i = 0; i < byteCount; ++i) {
+        switch (state->focus) {
+            case 0: AppendCharToField(state->licensePlate, sizeof(state->licensePlate), state->focus, converted[i]); break;
+            case 1: AppendCharToField(state->ownerName, sizeof(state->ownerName), state->focus, converted[i]); break;
+            case 2: AppendCharToField(state->college, sizeof(state->college), state->focus, converted[i]); break;
+            case 3: AppendCharToField(state->personalID, sizeof(state->personalID), state->focus, converted[i]); break;
+            case 4: AppendCharToField(state->ownerPhone, sizeof(state->ownerPhone), state->focus, converted[i]); break;
+            case 5: AppendCharToField(state->vehicleType, sizeof(state->vehicleType), state->focus, converted[i]); break;
+            case 6: AppendCharToField(state->registrationDate, sizeof(state->registrationDate), state->focus, converted[i]); break;
+        }
+    }
+}
+
+// 接收键盘字符，转换为当前程序使用的 GBK 字节并写入车主姓名
+void RegisterPageKeyHandle(TCHAR ch)
+{
+    PersonalUserInfo* regState = GetPersonalRegistrationState();
+
+    //没有选中任何输入框，直接退出，不处理按键
+    if(g_nowInput == INPUT_NOTHING)
+        return;
+
+    // 退格键
+    if (ch == 8)
+    {
+        if(g_nowInput == INPUT_OWNER_NAME)
+        {
+            int len = (int)strlen(regState->ownerName);
+            if(len > 0)
+            {
+                regState->ownerName[len - 1] = '\0';
+            }
+        }
+        return;
+    }
+
+    // 回车交给原有提交逻辑
+    if(ch == 13)
+    {
+        return;
+    }
+
+    char buf[MB_LEN_MAX] = {0};
+    int byteCount = 0;
+#ifdef UNICODE
+    byteCount = WideCharToMultiByte(CP_ACP, 0, &ch, 1, buf, sizeof(buf), NULL, NULL);
+#else
+    buf[0] = (char)ch;
+    byteCount = 1;
+#endif
+    if (byteCount <= 0) return;
+
+    // 把转换后的中文或普通字符追加到车主姓名
+    if(g_nowInput == INPUT_OWNER_NAME)
+    {
+        int curLen = (int)strlen(regState->ownerName);
+        if(curLen + byteCount < (int)sizeof(regState->ownerName))
+        {
+            memcpy(regState->ownerName + curLen, buf, byteCount);
+            regState->ownerName[curLen + byteCount] = '\0';
+        }
+    }
+}
+
+//切换到注册页面清空输入
+void ClearRegInput(void)
+{
+    PersonalUserInfo* regState = GetPersonalRegistrationState();
+    memset(regState->ownerName, 0, sizeof(regState->ownerName));
+    g_nowInput = INPUT_NOTHING;
 }
