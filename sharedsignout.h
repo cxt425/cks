@@ -19,6 +19,8 @@ typedef struct {
     char message[64];  // 状态提示信息
 } SharedUserInfo;
 
+int SaveSharedVehicleData(const SharedUserInfo* info); // 保存共享电动车数据
+
 SharedUserInfo* GetSharedSignoutState(void);// 获取共享登录状态信息的指针
 
 #endif

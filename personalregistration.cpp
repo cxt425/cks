@@ -5,6 +5,20 @@
 #include <string.h>        // 包含字符串处理函数的头文件
 
 static PersonalUserInfo gPersonalUserInfo; // 定义全局个人用户信息结构体，用于存储注册状态和输入信息
+static const char* PERSONAL_DATA_FILE = "personal_vehicle_data.txt";
+// 保存个人电动车数据到文件中，返回保存是否成功
+int SavePersonalVehicleData(const PersonalUserInfo* info)
+{
+    if (!info) return 0;
+
+    FILE* file = fopen(PERSONAL_DATA_FILE, "a");
+    if (!file) return 0;
+    int success = fprintf(file, "%s|%s|%s|%s|%s|%s|%s\n",
+        info->licensePlate, info->ownerName, info->college, info->personalID,
+        info->ownerPhone, info->vehicleType, info->registrationDate) >= 0;
+    fclose(file);
+    return success;
+}
  PersonalUserInfo* GetPersonalRegistrationState(void) // 获取个人注册状态信息的指针
 {
     return &gPersonalUserInfo; // 返回全局个人用户信息结构体的地址
@@ -30,10 +44,21 @@ static int IsDateValid(const char* d)
     }
     return 1;
 }
+// Helper: 检查学号/工号格式，1位大写字母 + 9位数字
+static int IsPersonalIDValid(const char* personalID)
+{
+    if (!personalID || strlen(personalID) != 10) return 0;
+    if (personalID[0] < 'A' || personalID[0] > 'Z') return 0;
+    for (int i = 1; i < 10; ++i) {
+        if (personalID[i] < '0' || personalID[i] > '9') return 0;
+    }
+    return 1;
+}
+
 // Helper: 判断当前输入框是否允许输入该字符
 static int IsValidInputChar(int focus, char key)
 {
-    if (focus == 3 || focus == 4) // personalID, phone -> digits
+    if (focus == 4) // phone -> digits
         return (key >= '0' && key <= '9');
     if (focus == 6) // date -> digits and -
         return (key >= '0' && key <= '9') || key == '-';
@@ -45,6 +70,13 @@ static void AppendCharToField(char* dest, int maxLen, int focus, char key)
 {
     int len = (int)strlen(dest);
     if (len >= maxLen - 1) return;
+    if (focus == 3) {
+        if ((len == 0 && (key < 'A' || key > 'Z')) ||
+            (len > 0 && (key < '0' || key > '9')) || len >= 10) return;
+        dest[len] = key;
+        dest[len + 1] = '\0';
+        return;
+    }
     if (!IsValidInputChar(focus, key)) return;// 检查输入字符是否合法
     dest[len] = key;
     dest[len+1] = '\0';
@@ -72,10 +104,15 @@ void TryPersonalRegistration(void)
     if (strlen(s->licensePlate) < 2) { strcpy(s->message, "请输入有效车牌号"); s->registered = 0; return; }
     if (strlen(s->ownerName) < 2) { strcpy(s->message, "请输入车主姓名"); s->registered = 0; return; }
     if (strlen(s->college) < 2) { strcpy(s->message, "请输入院系信息"); s->registered = 0; return; }
-    if (strlen(s->personalID) < 4) { strcpy(s->message, "请输入有效学号/工号"); s->registered = 0; return; }
+    if (!IsPersonalIDValid(s->personalID)) { strcpy(s->message, "学号格式应为1位大写字母加9位数字"); s->registered = 0; return; }
     if (!IsPhoneValid(s->ownerPhone)) { strcpy(s->message, "手机号必须为11位数字"); s->registered = 0; return; }
     if (strlen(s->vehicleType) < 1) { strcpy(s->message, "请输入车辆类型"); s->registered = 0; return; }
     if (!IsDateValid(s->registrationDate)) { strcpy(s->message, "注册日期格式应为 YYYY-MM-DD"); s->registered = 0; return; }
+    if (!SavePersonalVehicleData(s)) {
+        strcpy(s->message, "个人电动车数据保存失败");
+        s->registered = 0;
+        return;
+    }
     s->registered = 1;
     strcpy(s->message, "注册成功！");
 }

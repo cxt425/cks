@@ -20,6 +20,8 @@ typedef struct {
     char message[64];      // 状态提示信息
 } PersonalUserInfo;
 
+int SavePersonalVehicleData(const PersonalUserInfo* info); // 保存个人电动车数据
+
 PersonalUserInfo* GetPersonalRegistrationState(void); // 获取个人注册状态信息的指针
 
 #endif

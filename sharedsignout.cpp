@@ -6,6 +6,18 @@
 #include <time.h>         // 包含时间函数的头文件，用于获取当前时间作为随机数种子
 
 static SharedUserInfo gSharedUserInfo;// 定义全局共享用户信息结构体，用于存储登录状态和输入信息
+static const char* SHARED_DATA_FILE = "shared_vehicle_data.txt";
+
+int SaveSharedVehicleData(const SharedUserInfo* info)
+{
+    if (!info) return 0;
+
+    FILE* file = fopen(SHARED_DATA_FILE, "a");
+    if (!file) return 0;
+    int success = fprintf(file, "%s|%s\n", info->username, info->phone) >= 0;
+    fclose(file);
+    return success;
+}
 SharedUserInfo* GetSharedSignoutState(void)      // 获取共享登录状态信息的指针
 {
     return &gSharedUserInfo;// 返回全局共享用户信息结构体的地址
@@ -159,5 +171,11 @@ void TrySharedLogin(void)
     }
 // 如果所有检查通过，登录成功
     state->loginSuccess = 1;
+    // 尝试保存共享电动车数据，如果保存失败则更新状态信息
+    if (!SaveSharedVehicleData(state)) {
+        state->loginSuccess = 0;
+        strcpy(state->message, "共享电动车数据保存失败");
+        return;
+    }
     strcpy(state->message, "登录成功，欢迎使用共享电动车系统");
 }

@@ -5,49 +5,75 @@
 #include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
 #include "personalregistration.h"
-
+// 检测当前按键并转发给登录页面或注册页面
 static void PollKeyboardInput(void)
 {
     static unsigned char keyDown[256] = {0};
     static int initialized = 0;
-
-    if (!initialized) {
+    if (!initialized)
+    {
         memset(keyDown, 0, sizeof(keyDown));
         initialized = 1;
     }
 
-    for (int vk = 0; vk < 256; ++vk) {
+    for (int vk = 0; vk < 256; ++vk)
+    {
         short state = GetAsyncKeyState(vk);
         int isDown = (state & 0x8000) != 0;
 
-        if (isDown && !keyDown[vk]) {
+        if (isDown && !keyDown[vk])
+        {
             keyDown[vk] = 1;
+
+            // 获取Shift、Ctrl等键盘状态
+            BYTE keyState[256] = {0};
+            GetKeyboardState(keyState);
+
             char ch = 0;
+            WCHAR buf[2] = {0};
+            // ToAscii：虚拟键码 → ASCII字符，自动处理shift大小写、符号
+            int ret = ToAscii(vk, 0, keyState, (LPWORD)buf, 0);
 
-            if (vk >= '0' && vk <= '9') {
-                ch = (char)vk;
-            } else if (vk >= 'A' && vk <= 'Z') {
-                ch = (char)(vk + 32);
-            } else if (vk == VK_BACK) {
-                ch = 8;
-            } else if (vk == VK_RETURN) {
-                ch = 13;
-            } else if (vk == VK_TAB) {
-                ch = 9;
-            } else if (vk == VK_SPACE) {
-                ch = ' ';
+            if(ret > 0)
+            {
+                ch = (char)buf[0];
             }
 
-            if (ch != 0) {
-                if (currentPage == PAGE_LOGIN) HandleSharedSignoutKey(ch);
-                else if (currentPage == PAGE_PERSONAL_REGISTRATION) HandlePersonalRegistrationKey(ch);
+            // -------- 特殊键单独处理 --------
+            if(vk == VK_BACK)
+            {
+                ch = 8;    // 退格
             }
-        } else if (!isDown) {
+            else if(vk == VK_RETURN)
+            {
+                ch = 13;   // 回车
+            }
+            else if(vk == VK_TAB)
+            {
+                ch = 9;    // Tab
+            }
+            else if(vk == VK_SPACE)
+            {
+                ch = ' ';  // 空格
+            }
+
+            // ch不为0代表有有效输入字符，交给你的输入处理函数
+            if(ch != 0)
+            {
+                // 这里 ch 现在可以是：数字、大小写字母、!@#$%^&*等符号、退格8、回车13
+                // 把 ch 传给你的页面处理函数
+                if(currentPage == PAGE_PERSONAL_REGISTRATION)
+                {
+                    HandlePersonalRegistrationKey(ch);
+                }
+            }
+        }
+        else if (!isDown)
+        {
             keyDown[vk] = 0;
         }
     }
 }
-
 int main() {
     initgraph(480, 640);        // 初始化图形窗口，宽 480 像素，高 640 像素, 显示控制台窗口
     setbkcolor(WHITE);          // 设置背景颜色为白色
