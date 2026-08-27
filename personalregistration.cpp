@@ -82,6 +82,17 @@ static int IsPersonalIDValid(const char* personalID)
     }
     return 1;
 }
+// Helper: 检查车牌号格式，首位为大写字母，后四位为大写字母或数字
+static int IsLicensePlateValid(const char* licensePlate)
+{
+    if (!licensePlate || strlen(licensePlate) != 5) return 0;
+    if (licensePlate[0] < 'A' || licensePlate[0] > 'Z') return 0;
+    for (int i = 1; i < 5; ++i) {
+        if (!((licensePlate[i] >= 'A' && licensePlate[i] <= 'Z') ||
+              (licensePlate[i] >= '0' && licensePlate[i] <= '9'))) return 0;
+    }
+    return 1;
+}
 // Helper: 判断当前输入框是否允许输入该字符
 static int IsValidInputChar(int focus, char key)
 {
@@ -97,6 +108,14 @@ static void AppendCharToField(char* dest, int maxLen, int focus, char key)
 {
     int len = (int)strlen(dest);
     if (len >= maxLen - 1) return;
+    if (focus == 0) {
+        if ((len == 0 && (key < 'A' || key > 'Z')) ||
+            (len > 0 && !((key >= 'A' && key <= 'Z') ||
+                          (key >= '0' && key <= '9'))) || len >= 5) return;
+        dest[len] = key;
+        dest[len + 1] = '\0';
+        return;
+    }
     if (focus == 3) {
         if ((len == 0 && (key < 'A' || key > 'Z')) ||
             (len > 0 && (key < '0' || key > '9')) || len >= 10) return;
@@ -127,7 +146,7 @@ void InitPersonalRegistrationState(void)
 void TryPersonalRegistration(void)
 {
     PersonalUserInfo* s = GetPersonalRegistrationState();
-    if (strlen(s->licensePlate) < 2) { strcpy(s->message, "请输入有效车牌号"); s->registered = 0; return; }
+    if (!IsLicensePlateValid(s->licensePlate)) { strcpy(s->message, "车牌号须为1位大写字母加4位大写字母或数字"); s->registered = 0; return; }
     if (strlen(s->ownerName) < 2) { strcpy(s->message, "请输入车主姓名"); s->registered = 0; return; }
     if (strlen(s->college) < 2) { strcpy(s->message, "请输入院系信息"); s->registered = 0; return; }
     if (!IsPersonalIDValid(s->personalID)) { strcpy(s->message, "学号格式应为1位大写字母加9位数字"); s->registered = 0; return; }
