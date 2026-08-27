@@ -710,5 +710,62 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
 }
 void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于绘制共享电动车管理系统界面
 {
-    cleardevice();
+   setfillcolor(WHITE);
+   fillrectangle(0,0,480,640);//白色背景
+
+   setbkmode(TRANSPARENT);//设置文字背景为透明
+   settextcolor(WHITE);
+   settextstyle(25,0,_T("黑体"));
+   outtextxy(150,80  ,_T("共享电动车管理"));//顶部居中标题
+
+   setlinecolor(BLACK);
+   setlinestyle(PS_SOLID,2);
+   line(30,40,40,30);
+   line(30,40,40,50);//返回左箭头
+
+   setlinecolor(RGB(200,200,200));
+   fillroundrect(30,90,450,210,22,22);//登录状态显示框
+
+   settextstyle(18,0,_T("宋体"));
+   settextcolor(BLACK);
+   outtextxy(50,108,_T("姓名：张三"));
+   outtextxy(50,138,_T("学号:U202501001"));
+   outtextxy(50,168,_T("当前状态:已登录"));//登录状态信息卡片
+   
+   setfillcolor(RGB(0,130,220));
+   fillroundrect(30,225,450,460,18,18);
+   settextcolor(WHITE);
+   settextstyle(18,0,_T("宋体"));
+   int btn1_w=textwidth(_T("输入用车"));
+   outtextxy(50+(420-btn1_w)/2,270,_T("输入用车"));//输入用车按钮
+
+    setfillcolor(RGB(0,130,220));
+    fillroundrect(30,480,450,520,18,18);
+    settextcolor(WHITE);
+    settextstyle(18,0,_T("宋体"));
+    int btn2_w=textwidth(_T("换车结算"));
+    outtextxy(50+(420-btn2_w)/2,495,_T("换车结算"));//换车结算按钮
+
+    setfillcolor(RGB(0,130,220));
+    fillroundrect(30,540,450,580,18,18);
+    settextcolor(WHITE);
+    settextstyle(18,0,_T("宋体"));
+    int btn3_w=textwidth(_T("我的订单"));
+    outtextxy(50+(420-btn3_w)/2,555,_T("我的订单"));//我的订单按钮
+
+    setfillcolor(RGB(0,130,220));
+    fillroundrect(30,600,450,640,18,18);
+    settextcolor(WHITE);
+    settextstyle(18,0,_T("宋体"));
+    int btn4_w=textwidth(_T("退出登录"));
+    outtextxy(50+(420-btn4_w)/2,615,_T("退出登录"));//退出登录按钮
+
+    settextcolor(BLACK);
+    settextstyle(12,0,_T("黑体"));
+    int tip_w=textwidth(_T("请选择您的操作"));
+    outtextxy(240-tip_w/2, 650, _T("请选择您的操作"));//底部提示文字 
+
+   
+
+   
 }
