@@ -26,12 +26,22 @@ int main() {
             {
                 HandlePersonalRegistrationChar(ch);
             }
+            else if (currentPage == PAGE_LOGIN)
+            {
+                    HandleSharedSignoutKey(ch);
+            }
         }
         else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_REGISTRATION)
         {
             if (msg.vkcode == VK_BACK) HandlePersonalRegistrationKey(8);
             else if (msg.vkcode == VK_RETURN) HandlePersonalRegistrationKey(13);
             else if (msg.vkcode == VK_TAB) HandlePersonalRegistrationKey(9);
+        }
+        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_LOGIN)
+        {
+            if (msg.vkcode == VK_BACK) HandleSharedSignoutKey(8);
+            else if (msg.vkcode == VK_RETURN) HandleSharedSignoutKey(13);
+            else if (msg.vkcode == VK_TAB) HandleSharedSignoutKey(9);
         }
         // 鼠标左键，保留你原有逻辑
         else if (msg.message == WM_LBUTTONDOWN)
