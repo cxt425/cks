@@ -13,7 +13,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
 
     SharedUserInfo* state = GetSharedSignoutState();    // 获取共享登录状态信息的指针，用于在登录页面处理输入框和按钮的操作
     PersonalUserInfo* regState = GetPersonalRegistrationState(); // 获取个人注册状态信息的指针，用于在注册页面处理输入框和按钮的操作
-    
+
 if(nowPage == PAGE_PERSONAL_REGISTRATION)
 {
     //车主姓名输入框区域 x:240~420, y:210~240
