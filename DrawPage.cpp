@@ -702,9 +702,9 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
     fillroundrect(30,90,450,210,22,22);//车辆报废信息显示框
     settextstyle(18,0,_T("宋体"));
     settextcolor(BLACK);
-    outtextxy(50,108,_T("车牌号:鄂A12345"));
-    outtextxy(50,138,_T("车主姓名:张三"));
-    outtextxy(50,168,_T("当前状态:正常"));//车辆信息卡片
+    outtextxy(50,108,_T("车辆信息"));//小标题
+    outtextxy(50,138,_T("车牌号:"));
+    outtextxy(50,168,_T("车主姓名:"));//车辆信息卡片
 
     setfillcolor(RGB(255,255,255));
     fillroundrect(30,225,450,460,18,18);//报废信息显示框
@@ -734,7 +734,7 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
     fillroundrect(180,320,430,355,18,18);
     settextcolor(RGB(110,110,110));
     outtextxy(190,327,_T("请输入其他原因"));//其他原因复选栏+输入框
-
+ 
     setfillcolor(RGB(255,210,0));
     fillrectangle(30,365,450,400);
     settextcolor(BLACK);
@@ -748,7 +748,7 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
     fillroundrect(180,410,430,445,20,20);
     settextcolor(RGB(110,110,110));
     settextstyle(14,0,_T("宋体"));
-    outtextxy(190,420,_T("请输入报废时间：年|月|日"));//报废时间输入框
+    outtextxy(190,420,_T("请输入报废时间：XXXX-XX-XX"));//报废时间输入框
 
     setfillcolor(RGB(230,30,30));
     fillroundrect(40,475,440,530,30,30);
@@ -828,40 +828,47 @@ void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制�
     setbkmode(TRANSPARENT);//设置文字背景为透明
     settextcolor(WHITE);
     settextstyle(25,0,_T("黑体"));
-    outtextxy(150,32,_T("输入用车"));//顶部居中标题
+    outtextxy(185,32,_T("输入用车"));//顶部居中标题
+    
+    setfillcolor(WHITE);
+    fillroundrect(60,100,420,240,22,22);//车辆编号输入框
+    setlinecolor(RGB(200,200,200));
+    fillroundrect(60,100,420,240,22,22);//车辆编号输入框
+
+    setfillcolor(RGB(220,220,220));
+    fillroundrect(80,160,280,220,22,22);//输入框
 
     settextstyle(18,0,_T("黑体"));
     settextcolor(BLACK);
-    outtextxy(60,120,_T("请输入车辆编号"));//提示文字：请输入车辆编号
-    
-    setfillcolor(RGB(80,170,240));
-    fillroundrect(60,80,420,340,22,22);//车辆编号输入框背景色
-    setlinecolor(RGB(200,200,200));
-    fillroundrect(60,80,420,340,22,22);//车辆编号输入框
-
-    setfillcolor(RGB(220,220,220));
-    fillroundrect(80,160,280,260,22,22);//输入框
+    outtextxy(80,120,_T("请输入车辆编号"));//提示文字：请输入车辆编号
 
     settextcolor(BLACK);
-    settextstyle(20,0,_T("黑体"));
-    outtextxy(60,210,_T("E2001"));//车辆编号输入框默认文字
+    settextstyle(30,0,_T("黑体"));
+    outtextxy(90,180,_T("E2001"));//车辆编号输入框默认文字
 
     setfillcolor(RGB(0,146,198));
-    fillroundrect(300,400,360,460,32,32);
+    fillroundrect(305,170,405,220,32,32);
     settextcolor(WHITE);
-    settextstyle(20,0,_T("黑体"));
+    settextstyle(18,0,_T("黑体"));
     int lock_w = textwidth(_T("确认开锁"));
-    outtextxy(330-lock_w/2, 430, _T("确认开锁"));//确认开锁按钮
+    outtextxy(355-lock_w/2, 190, _T("确认开锁"));//确认开锁按钮
 
     setfillcolor(WHITE);
-    fillroundrect(60,400,420,460,32,32);
+    fillroundrect(60,270,420,400,32,32);
     setlinecolor(RGB(200,200,200));
-    fillroundrect(60,400,420,460,32,32);//车辆状态显示输入框
+    fillroundrect(60,270,420,400,32,32);//车辆状态显示输入框
 
     settextcolor(BLACK);
+    settextstyle(20,0,_T("黑体"));
+    outtextxy(80,300,_T("车辆状态:空闲"));
+    outtextxy(80,330,_T("预计费用:起步价2元"));
+    outtextxy(80,360,_T("可用电量:80%"));
 
-
-
-
+   setfillcolor(RGB(0,146,198));
+   fillroundrect(60,500,420,560,32,32);
+   settextcolor(WHITE);
+   settextstyle(20,0,_T("黑体"));
+   int btn_w = textwidth(_T("返回主菜单"));
+   outtextxy(240-btn_w/2, 520, _T("返回主菜单"));//返回主菜单按钮
 
 }
