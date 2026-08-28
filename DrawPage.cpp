@@ -844,7 +844,7 @@ void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制�
 
     settextcolor(BLACK);
     settextstyle(20,0,_T("黑体"));
-    outtextxy(60,210,_T("E2001"))//车辆编号输入框默认文字
+    outtextxy(60,210,_T("E2001"));//车辆编号输入框默认文字
 
     setfillcolor(RGB(0,146,198));
     fillroundrect(300,400,360,460,32,32);
@@ -858,11 +858,7 @@ void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制�
     setlinecolor(RGB(200,200,200));
     fillroundrect(60,400,420,460,32,32);//车辆状态显示输入框
 
-    settextcolor(BLAck);
-    
-
-
-
+    settextcolor(BLACK);
 
 
 
