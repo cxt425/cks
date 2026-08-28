@@ -801,11 +801,39 @@ void DrawSharedInputPage()//定义 DrawSharedInputPage 函数，用于绘制共�
     settextstyle(18,0,_T("黑体"));
     settextcolor(BLACK);
     outtextxy(60,120,_T("请输入车辆编号"));//提示文字：请输入车辆编号
-
+    
+    setfillcolor(RGB(80,170,240));
+    fillroundrect(60,80,420,340,22,22);//车辆编号输入框背景色
     setlinecolor(RGB(200,200,200));
-    fillroundrect(60,140,420,340,22,22);//车辆编号输入框
+    fillroundrect(60,80,420,340,22,22);//车辆编号输入框
 
     setfillcolor(RGB(220,220,220));
-    fillroundrect(60,360,420,460,22,22);//输入框
+    fillroundrect(80,160,280,260,22,22);//输入框
+
+    settextcolor(BLACK);
+    settextstyle(20,0,_T("黑体"));
+    outtextxy(60,210,_T("E2001"))//车辆编号输入框默认文字
+
+    setfillcolor(RGB(0,146,198));
+    fillroundrect(300,400,360,460,32,32);
+    settextcolor(WHITE);
+    settextstyle(20,0,_T("黑体"));
+    int lock_w = textwidth(_T("确认开锁"));
+    outtextxy(330-lock_w/2, 430, _T("确认开锁"));//确认开锁按钮
+
+    setfillcolor(WHITE);
+    fillroundrect(60,400,420,460,32,32);
+    setlinecolor(RGB(200,200,200));
+    fillroundrect(60,400,420,460,32,32);//车辆状态显示输入框
+
+    settextcolor(BLAck);
     
+
+
+
+
+
+
+
+
 }
