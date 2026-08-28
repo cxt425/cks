@@ -4,6 +4,7 @@
 #include <stdlib.h>       // 包含标准库头文件，用于 rand() 和 srand() 函数
 #include <string.h>        // 包含字符串处理函数的头文件
 #include <time.h>         // 包含时间函数的头文件，用于获取当前时间作为随机数种子
+#include <limits.h>
 
 static SharedUserInfo gSharedUserInfo;// 定义全局共享用户信息结构体，用于存储登录状态和输入信息
 static const char* SHARED_DATA_FILE = "shared_vehicle_data.txt";
@@ -59,7 +60,8 @@ static int IsValidInputChar(int focus, char key)
     if (focus == 1 || focus == 2) // 手机号和验证码只允许数字
         return (key >= '0' && key <= '9');
 
-    return (key >= '0' && key <= '9') || (key >= 'a' && key <= 'z') || (key >= 'A' && key <= 'Z');
+    // 用户名允许中文（GBK 双字节）、字母、数字、空格和常用符号
+    return (unsigned char)key >= 0x80 || (key >= 32 && key <= 126);
 }
 
 // 向当前输入框追加字符，限制输入长度
@@ -79,8 +81,38 @@ static void AppendCharToField(char* dest, int maxLen, int focus, char key)
 static void DeleteCharFromField(char* dest)
 {
     int len = (int)strlen(dest);
-    if (len > 0)
-        dest[len - 1] = '\0';
+    if (len <= 0) return;
+    if ((unsigned char)dest[len - 1] >= 0x80 && len >= 2) len -= 2;
+    else --len;
+    dest[len] = '\0';
+}
+
+void HandleSharedSignoutChar(TCHAR key)
+{
+    if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
+        HandleSharedSignoutKey((char)key);
+        return;
+    }
+
+    char converted[MB_LEN_MAX] = {0};
+    int byteCount = 0;
+#ifdef UNICODE
+    byteCount = WideCharToMultiByte(CP_ACP, 0, &key, 1, converted, sizeof(converted), NULL, NULL);
+#else
+    converted[0] = (char)key;
+    byteCount = 1;
+#endif
+    if (byteCount <= 0) return;
+
+    SharedUserInfo* state = GetSharedSignoutState();
+    for (int i = 0; i < byteCount; ++i) {
+        if (state->focus == 0)
+            AppendCharToField(state->username, sizeof(state->username), state->focus, converted[i]);
+        else if (state->focus == 1)
+            AppendCharToField(state->phone, sizeof(state->phone), state->focus, converted[i]);
+        else
+            AppendCharToField(state->code, sizeof(state->code), state->focus, converted[i]);
+    }
 }
 
 // 初始化共享登录页面的状态信息

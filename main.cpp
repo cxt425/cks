@@ -30,7 +30,7 @@ int main() {
             else if (currentPage == PAGE_LOGIN)
             {
                  if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
-                    HandleSharedSignoutKey(ch);
+                    HandleSharedSignoutChar(ch);
             }
         }
         else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_REGISTRATION)
