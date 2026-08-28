@@ -3,18 +3,11 @@
 
 #include "public.h"
 #include <windows.h> 
-#define INPUT_NOTHING      0
-#define INPUT_OWNER_NAME   1
-extern int g_nowInput;
-
-void RegisterPageKeyHandle(TCHAR ch);
-void ClearRegInput(void);
 
 void InitPersonalRegistrationState(void);     // 初始化个人注册页面的状态信息
 void HandlePersonalRegistrationKey(char key);      // 处理注册页面的键盘输入
 void HandlePersonalRegistrationChar(TCHAR key);   // 处理注册页面的字符输入
 void TryPersonalRegistration(void); // 尝试提交注册并校验输入
-void RegisterPageKeyHandle(TCHAR ch); // Updated function signature
 
 typedef struct {
     char licensePlate[10]; // 车牌号

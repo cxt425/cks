@@ -4,7 +4,7 @@
 #include <stdlib.h>       // 包含标准库头文件，用于 rand() 和 srand() 函数
 #include <string.h>        // 包含字符串处理函数的头文件
 #include <windows.h>    
-int g_nowInput = INPUT_NOTHING;
+#include <limits.h>
 static PersonalUserInfo gPersonalUserInfo; // 定义全局个人用户信息结构体，用于存储注册状态和输入信息
 static const char* PERSONAL_DATA_FILE = "personal_vehicle_data.txt";
 
@@ -131,7 +131,10 @@ static void AppendCharToField(char* dest, int maxLen, int focus, char key)
 static void DeleteCharFromField(char* dest)
 {
     int len = (int)strlen(dest);
-    if (len > 0) dest[len-1] = '\0';
+    if (len <= 0) return;
+    if ((unsigned char)dest[len - 1] >= 0x80 && len >= 2) len -= 2;
+    else --len;
+    dest[len] = '\0';
 }
 // 初始化个人注册页面的状态信息
 void InitPersonalRegistrationState(void)
@@ -197,7 +200,6 @@ void HandlePersonalRegistrationKey(char key)
         case 6: AppendCharToField(state->registrationDate, sizeof(state->registrationDate), state->focus, key); break;
     }
 }
-
 void HandlePersonalRegistrationChar(TCHAR key)
 {
     if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
@@ -205,6 +207,7 @@ void HandlePersonalRegistrationChar(TCHAR key)
         return;
     }
 
+    PersonalUserInfo* state = GetPersonalRegistrationState();
     char converted[MB_LEN_MAX] = {0};
     int byteCount = 0;
 #ifdef UNICODE
@@ -215,7 +218,6 @@ void HandlePersonalRegistrationChar(TCHAR key)
 #endif
     if (byteCount <= 0) return;
 
-    PersonalUserInfo* state = GetPersonalRegistrationState();
     for (int i = 0; i < byteCount; ++i) {
         switch (state->focus) {
             case 0: AppendCharToField(state->licensePlate, sizeof(state->licensePlate), state->focus, converted[i]); break;
@@ -227,63 +229,4 @@ void HandlePersonalRegistrationChar(TCHAR key)
             case 6: AppendCharToField(state->registrationDate, sizeof(state->registrationDate), state->focus, converted[i]); break;
         }
     }
-}
-
-// 接收键盘字符，转换为当前程序使用的 GBK 字节并写入车主姓名
-void RegisterPageKeyHandle(TCHAR ch)
-{
-    PersonalUserInfo* regState = GetPersonalRegistrationState();
-
-    //没有选中任何输入框，直接退出，不处理按键
-    if(g_nowInput == INPUT_NOTHING)
-        return;
-
-    // 退格键
-    if (ch == 8)
-    {
-        if(g_nowInput == INPUT_OWNER_NAME)
-        {
-            int len = (int)strlen(regState->ownerName);
-            if(len > 0)
-            {
-                regState->ownerName[len - 1] = '\0';
-            }
-        }
-        return;
-    }
-
-    // 回车交给原有提交逻辑
-    if(ch == 13)
-    {
-        return;
-    }
-
-    char buf[MB_LEN_MAX] = {0};
-    int byteCount = 0;
-#ifdef UNICODE
-    byteCount = WideCharToMultiByte(CP_ACP, 0, &ch, 1, buf, sizeof(buf), NULL, NULL);
-#else
-    buf[0] = (char)ch;
-    byteCount = 1;
-#endif
-    if (byteCount <= 0) return;
-
-    // 把转换后的中文或普通字符追加到车主姓名
-    if(g_nowInput == INPUT_OWNER_NAME)
-    {
-        int curLen = (int)strlen(regState->ownerName);
-        if(curLen + byteCount < (int)sizeof(regState->ownerName))
-        {
-            memcpy(regState->ownerName + curLen, buf, byteCount);
-            regState->ownerName[curLen + byteCount] = '\0';
-        }
-    }
-}
-
-//切换到注册页面清空输入
-void ClearRegInput(void)
-{
-    PersonalUserInfo* regState = GetPersonalRegistrationState();
-    memset(regState->ownerName, 0, sizeof(regState->ownerName));
-    g_nowInput = INPUT_NOTHING;
 }

@@ -24,10 +24,12 @@ int main() {
             TCHAR ch = msg.ch;
             if (currentPage == PAGE_PERSONAL_REGISTRATION)
             {
-                HandlePersonalRegistrationChar(ch);
+                 if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                    HandlePersonalRegistrationChar(ch);
             }
             else if (currentPage == PAGE_LOGIN)
             {
+                 if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
                     HandleSharedSignoutKey(ch);
             }
         }
