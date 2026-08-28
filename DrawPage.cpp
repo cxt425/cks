@@ -780,8 +780,4 @@ void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于
     settextstyle(12,0,_T("黑体"));
     int tip_w=textwidth(_T("请选择您的操作"));
     outtextxy(240-tip_w/2, 580, _T("请选择您的操作"));//底部提示文字 
-
-   
-
-   
 }
