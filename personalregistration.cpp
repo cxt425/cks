@@ -7,6 +7,27 @@
 #include <limits.h>
 static PersonalUserInfo gPersonalUserInfo; // 定义全局个人用户信息结构体，用于存储注册状态和输入信息
 static const char* PERSONAL_DATA_FILE = "personal_vehicle_data.txt";
+// Helper: 检查车牌号是否已注册
+static int IsPersonalVehicleRegistered(const char* licensePlate)
+{
+    if (!licensePlate) return 0;
+
+    FILE* file = fopen(PERSONAL_DATA_FILE, "r");
+    if (!file) return 0;
+// 读取文件中的每一行，检查车牌号是否已存在
+    char line[512];
+    char savedLicensePlate[32];
+    while (fgets(line, sizeof(line), file)) {
+        if (sscanf(line, "%31[^|]", savedLicensePlate) == 1 &&
+            strcmp(savedLicensePlate, licensePlate) == 0){
+            fclose(file);
+            return 1;
+        }
+    }
+
+    fclose(file);
+    return 0;
+}
 
 static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)
 {
@@ -31,19 +52,21 @@ int SavePersonalVehicleData(const PersonalUserInfo* info)
     char ownerPhone[128];
     char vehicleType[128];
     char registrationDate[128];
+    char vehicleStatus[128];
     if (!ConvertAnsiToUtf8(info->licensePlate, licensePlate, sizeof(licensePlate)) ||
         !ConvertAnsiToUtf8(info->ownerName, ownerName, sizeof(ownerName)) ||
         !ConvertAnsiToUtf8(info->college, college, sizeof(college)) ||
         !ConvertAnsiToUtf8(info->personalID, personalID, sizeof(personalID)) ||
         !ConvertAnsiToUtf8(info->ownerPhone, ownerPhone, sizeof(ownerPhone)) ||
         !ConvertAnsiToUtf8(info->vehicleType, vehicleType, sizeof(vehicleType)) ||
-        !ConvertAnsiToUtf8(info->registrationDate, registrationDate, sizeof(registrationDate))) return 0;
+        !ConvertAnsiToUtf8(info->registrationDate, registrationDate, sizeof(registrationDate)) ||
+        !ConvertAnsiToUtf8(info->vehicleStatus, vehicleStatus, sizeof(vehicleStatus))) return 0;
 
     FILE* file = fopen(PERSONAL_DATA_FILE, "a");
     if (!file) return 0;
-    int success = fprintf(file, "%s|%s|%s|%s|%s|%s|%s\n",
+    int success = fprintf(file, "%s|%s|%s|%s|%s|%s|%s|%s\n",
         licensePlate, ownerName, college, personalID,
-        ownerPhone, vehicleType, registrationDate) >= 0;
+        ownerPhone, vehicleType, registrationDate, vehicleStatus) >= 0;
     fclose(file);
     return success;
 }
@@ -143,6 +166,7 @@ void InitPersonalRegistrationState(void)
     memset(state, 0, sizeof(*state));// 将结构体清零，初始化所有字段为默认值
     state->focus = 0;
     state->registered = 0;
+    strcpy(state->vehicleStatus, "正常");
     strcpy(state->message, "请填写注册信息，按 Tab 切换输入框");
 }
 // 提交注册并做基本校验
@@ -150,12 +174,14 @@ void TryPersonalRegistration(void)
 {
     PersonalUserInfo* s = GetPersonalRegistrationState();
     if (!IsLicensePlateValid(s->licensePlate)) { strcpy(s->message, "车牌号须为1位大写字母加4位大写字母或数字"); s->registered = 0; return; }
+    if (IsPersonalVehicleRegistered(s->licensePlate)) { strcpy(s->message, "该车重复注册"); s->registered = 0; return; }
     if (strlen(s->ownerName) < 2) { strcpy(s->message, "请输入车主姓名"); s->registered = 0; return; }
     if (strlen(s->college) < 2) { strcpy(s->message, "请输入院系信息"); s->registered = 0; return; }
     if (!IsPersonalIDValid(s->personalID)) { strcpy(s->message, "学号格式应为1位大写字母加9位数字"); s->registered = 0; return; }
     if (!IsPhoneValid(s->ownerPhone)) { strcpy(s->message, "手机号必须为11位数字"); s->registered = 0; return; }
     if (strlen(s->vehicleType) < 1) { strcpy(s->message, "请输入车辆类型"); s->registered = 0; return; }
     if (!IsDateValid(s->registrationDate)) { strcpy(s->message, "注册日期格式应为 YYYY-MM-DD"); s->registered = 0; return; }
+    strcpy(s->vehicleStatus, "正常");
     if (!SavePersonalVehicleData(s)) {
         strcpy(s->message, "个人电动车数据保存失败");
         s->registered = 0;
@@ -229,4 +255,159 @@ void HandlePersonalRegistrationChar(TCHAR key)
             case 6: AppendCharToField(state->registrationDate, sizeof(state->registrationDate), state->focus, converted[i]); break;
         }
     }
+}
+
+static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)
+{
+    if (!source || !destination || destinationSize <= 0) return 0;
+    wchar_t wideText[128];
+    int wideLength = MultiByteToWideChar(CP_UTF8, 0, source, -1, wideText, 128);
+    if (wideLength <= 0) return 0;
+    return WideCharToMultiByte(CP_ACP, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
+}
+
+void QueryPersonalVehicleInfo(void)
+{
+    PersonalUserInfo* state = GetPersonalRegistrationState();
+    state->queryFound = 0;
+    strcpy(state->queryMessage, "未找到对应车辆");
+    PersonalVehicleRecord record;
+    FILE* file = fopen(PERSONAL_DATA_FILE, "r");
+    if (!file) return;
+
+    char line[512];
+    while (fgets(line, sizeof(line), file)) {
+        char* fields[8] = {0};
+        char* field = strtok(line, "|\r\n");
+        int count = 0;
+        while (field && count < 8) {
+            fields[count++] = field;
+            field = strtok(NULL, "|\r\n");
+        }
+        if (count < 7) continue;
+
+        char ansiFields[8][64] = {{0}};
+        int valid = 1;
+        for (int i = 0; i < count; ++i) {
+            if (!ConvertUtf8ToAnsi(fields[i], ansiFields[i], sizeof(ansiFields[i]))) {
+                valid = 0;
+                break;
+            }
+        }
+        if (valid && strcmp(ansiFields[0], state->queryLicensePlate) == 0) {
+            memset(&record, 0, sizeof(record));
+            strcpy(record.licensePlate, ansiFields[0]);
+            strcpy(record.ownerName, ansiFields[1]);
+            strcpy(record.college, ansiFields[2]);
+            strcpy(record.personalID, ansiFields[3]);
+            strcpy(record.ownerPhone, ansiFields[4]);
+            strcpy(record.vehicleType, ansiFields[5]);
+            strcpy(record.registrationDate, ansiFields[6]);
+            if (count >= 8) strcpy(record.vehicleStatus, ansiFields[7]);
+            else strcpy(record.vehicleStatus, "正常");
+            state->queryFound = 1;
+            state->queryResult = record;
+            strcpy(state->queryMessage, "查询成功");
+            fclose(file);
+            return;
+        }
+    }
+    fclose(file);
+}
+
+static int WritePersonalRecordUtf8(FILE* file, const PersonalVehicleRecord* record)
+{
+    char fields[8][128];
+    const char* source[8] = { record->licensePlate, record->ownerName, record->college,
+        record->personalID, record->ownerPhone, record->vehicleType,
+        record->registrationDate, record->vehicleStatus };
+    for (int i = 0; i < 8; ++i) {
+        if (!ConvertAnsiToUtf8(source[i], fields[i], sizeof(fields[i]))) return 0;
+    }
+    return fprintf(file, "%s|%s|%s|%s|%s|%s|%s|%s\n",
+        fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7]) >= 0;
+}
+
+void UpdatePersonalVehicleInfo(void)
+{
+    PersonalUserInfo* state = GetPersonalRegistrationState();
+    if (!state->queryFound) return;
+
+    FILE* sourceFile = fopen(PERSONAL_DATA_FILE, "r");
+    FILE* tempFile = fopen("personal_vehicle_data.tmp", "w");
+    if (!sourceFile || !tempFile) {
+        if (sourceFile) fclose(sourceFile);
+        if (tempFile) fclose(tempFile);
+        strcpy(state->queryMessage, "保存失败");
+        return;
+    }
+
+    char line[512];
+    int updated = 0;
+    while (fgets(line, sizeof(line), sourceFile)) {
+        char original[512];
+        strcpy(original, line);
+        char* licensePlate = strtok(line, "|\r\n");
+        if (!updated && licensePlate) {
+            char ansiLicensePlate[32];
+            if (ConvertUtf8ToAnsi(licensePlate, ansiLicensePlate, sizeof(ansiLicensePlate)) &&
+                strcmp(ansiLicensePlate, state->queryLicensePlate) == 0) {
+                updated = WritePersonalRecordUtf8(tempFile, &state->queryResult);
+                continue;
+            }
+        }
+        fputs(original, tempFile);
+    }
+    fclose(sourceFile);
+    fclose(tempFile);
+
+    if (updated) {
+        remove(PERSONAL_DATA_FILE);
+        rename("personal_vehicle_data.tmp", PERSONAL_DATA_FILE);
+        strcpy(state->queryMessage, "保存成功");
+    } else {
+        remove("personal_vehicle_data.tmp");
+        strcpy(state->queryMessage, "保存失败");
+    }
+}
+
+void HandlePersonalInformationKey(char key)
+{
+    PersonalUserInfo* state = GetPersonalRegistrationState();
+    if (key == 8 || key == 127) {
+        switch (state->focus) {
+            case 7: DeleteCharFromField(state->queryLicensePlate); state->queryFound = 0; break;
+            case 8: DeleteCharFromField(state->queryResult.ownerName); break;
+            case 9: DeleteCharFromField(state->queryResult.college); break;
+            case 10: DeleteCharFromField(state->queryResult.personalID); break;
+            case 11: DeleteCharFromField(state->queryResult.ownerPhone); break;
+        }
+    } else if (key == 13 || key == 10) {
+        QueryPersonalVehicleInfo();
+    } else {
+        switch (state->focus) {
+            case 7: AppendCharToField(state->queryLicensePlate, sizeof(state->queryLicensePlate), 0, key); break;
+            case 8: AppendCharToField(state->queryResult.ownerName, sizeof(state->queryResult.ownerName), 1, key); break;
+            case 9: AppendCharToField(state->queryResult.college, sizeof(state->queryResult.college), 2, key); break;
+            case 10: AppendCharToField(state->queryResult.personalID, sizeof(state->queryResult.personalID), 3, key); break;
+            case 11: AppendCharToField(state->queryResult.ownerPhone, sizeof(state->queryResult.ownerPhone), 4, key); break;
+        }
+    }
+}
+
+void HandlePersonalInformationChar(TCHAR key)
+{
+    if (key == 8 || key == 127 || key == 13 || key == 10) {
+        HandlePersonalInformationKey((char)key);
+        return;
+    }
+    char converted[MB_LEN_MAX] = {0};
+#ifdef UNICODE
+    int byteCount = WideCharToMultiByte(CP_ACP, 0, &key, 1, converted, sizeof(converted), NULL, NULL);
+#else
+    converted[0] = (char)key;
+    int byteCount = 1;
+#endif
+    for (int i = 0; i < byteCount; ++i)
+        HandlePersonalInformationKey(converted[i]);
 }
