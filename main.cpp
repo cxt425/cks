@@ -5,12 +5,14 @@
 #include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
 #include "personalregistration.h"
+#include "personalinspection.h"
 
 int main() {
     initgraph(480, 640);        // 初始化图形窗口，宽 480 像素，高 640 像素, 显示控制台窗口
     setbkcolor(WHITE);          // 设置背景颜色为白色
     BeginBatchDraw();           // 开始批量绘制，防止闪烁
     InitSharedSignoutState();
+    InitPersonalInspectionState();
     DWORD loginSuccessTime = 0;
     MOUSEMSG m;
     ExMessage msg;
@@ -37,6 +39,11 @@ int main() {
                  if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
                     HandleSharedSignoutChar(ch);
             }
+            else if (currentPage == PAGE_PERSONAL_INSPECTION)
+            {
+                if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                    HandlePersonalInspectionChar(ch);
+            }
         }
         else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_REGISTRATION)
         {
@@ -48,6 +55,12 @@ int main() {
         {
             if (msg.vkcode == VK_BACK) HandlePersonalInformationKey(8);
             else if (msg.vkcode == VK_RETURN) HandlePersonalInformationKey(13);
+        }
+        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_INSPECTION)
+        {
+            if (msg.vkcode == VK_BACK) HandlePersonalInspectionKey(8);
+            else if (msg.vkcode == VK_RETURN) HandlePersonalInspectionKey(13);
+            else if (msg.vkcode == VK_TAB) HandlePersonalInspectionKey(9);
         }
         else if (msg.message == WM_KEYDOWN && currentPage == PAGE_LOGIN)
         {

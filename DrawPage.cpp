@@ -7,6 +7,7 @@
 #include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
 #include "personalregistration.h"
+#include "personalinspection.h"
 
 static void DrawTextAt(int x, int y, const char* text)         // 定义 DrawTextAt 函数，用于在指定位置绘制文本
 {
@@ -326,6 +327,8 @@ void DrawPersonalRegistrationPage()//定义 DrawPersonalregistrationPage 函数�
 
 void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，用于绘制个人电动车年审管理系统界面
 {
+    const PersonalInspectionState* state = GetPersonalInspectionState();
+    cleardevice();
     cleardevice();              // 清空窗口并用背景颜色填充
     setfillcolor(RGB(0,146,198)); // 设置填充颜色为蓝色
     fillrectangle(0,0,480,80); //顶部蓝色标题栏
@@ -354,6 +357,26 @@ void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，�
 
     outtextxy(50,200,_T("当前状态:"));//当前年审状态
 
+    settextstyle(16,0,_T("黑体"));
+    settextcolor(state->licensePlate[0] ? BLACK : RGB(160,160,160));
+    if (state->licensePlate[0]) DrawTextAt(180, 112, state->licensePlate);
+    else outtextxy(180, 112, _T("请输入车牌号"));
+    settextcolor(state->ownerName[0] ? BLACK : RGB(160,160,160));
+    if (state->ownerName[0]) DrawTextAt(180, 157, state->ownerName);
+    else outtextxy(180, 157, _T("请输入车主姓名"));
+    settextcolor(state->queryFound ? RGB(0, 140, 80) : RGB(180, 60, 60));
+    if (state->queryFound) DrawTextAt(180, 202, state->vehicleStatus);
+    else outtextxy(180, 202, _T("未查询"));
+
+    setfillcolor(RGB(0, 130, 220));
+    fillroundrect(30, 500, 450, 535, 12, 12);
+    settextcolor(WHITE);
+    settextstyle(18, 0, _T("黑体"));
+    outtextxy(205, 508, _T("查询状态"));
+    settextcolor(RGB(180, 60, 60));
+    settextstyle(13, 0, _T("黑体"));
+    DrawTextAt(35, 615, state->message);
+
     fillroundrect(30,245,450,315,18,18);//更新年审日期
 
     setfillcolor(RGB(220,245,235));
@@ -366,8 +389,17 @@ void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，�
     outtextxy(110,260,_T("更新年审日期"));//更新年审日期文字
     settextstyle(14,0,_T("黑体"));
     settextcolor(RGB(90,90,90));
-    outtextxy(110,290,_T("设置下次年审时间"));//更新年审日期说明文字
+    outtextxy(110,290,_T("下次年审时间:"));//更新年审日期说明文字
+    settextcolor(BLACK);
+    if (state->queryFound)
+        DrawTextAt(235, 290, state->nextInspectionDate);
+    else
+        outtextxy(235, 290, _T("未查询"));
 
+    if (state->statusUpdated)
+        setfillcolor(RGB(120, 200, 150));
+    else
+        setfillcolor(WHITE);
     fillroundrect(30,330,450,400,18,18);//更新年审状态
 
     setfillcolor(RGB(220,238,250));
@@ -375,12 +407,12 @@ void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，�
     setlinecolor(RGB(0,120,200));
     circle(70, 365, 25);//左侧浅蓝色圆形图标
 
-    settextcolor(BLACK);
+    settextcolor(state->statusUpdated ? RGB(0, 100, 50) : BLACK);
     settextstyle(20,0,_T("黑体"));
-    outtextxy(110,345,_T("更新年审状态"));//更新年审状态文字
+    outtextxy(110,345,state->statusUpdated ? _T("年审状态已更新") : _T("点击更新年审状态"));//更新年审状态文字
     settextstyle(14,0,_T("黑体"));
     settextcolor(RGB(90,90,90));
-    outtextxy(110,375,_T("年审通过或标记待审核"));//更新年审状态说明文字
+    outtextxy(110,375,_T("年审通过后状态更新为正常"));//更新年审状态说明文字
 
     fillroundrect(30,415,450,485,18,18);
     setfillcolor(WHITE);
@@ -782,7 +814,7 @@ void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于
     outtextxy(240-tip_w/2, 580, _T("请选择您的操作"));//底部提示文字 
 }
 
-void DrawSharedInputPage()//定义 DrawSharedInputPage 函数，用于绘制共享电动车输入用车界面
+void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制函数
 {
     cleardevice();              // 清空窗口并用背景颜色填充
     setfillcolor(RGB(0,146,198)); // 设置填充颜色为蓝色

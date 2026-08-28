@@ -1,6 +1,7 @@
 #include "MouseCtrl.h"    // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
 #include "personalregistration.h"
+#include "personalinspection.h"
 #include <graphics.h>      // 包含 EasyX 图形库头文件
 
 MouseTarget currentMouseCtrl = MOUSE_NONE;      // 声明全局变量 currentMouseCtrl，表示当前选中的控件
@@ -150,6 +151,36 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                   currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
                   currentPage = PAGE_PERSONAL_MANAGEMENT;
                }
+                 else if (m.x >= 160 && m.x <= 430 && m.y >= 100 && m.y <= 140)
+                    {
+                        currentMouseCtrl = PERSON_BTN_YEAR;
+                        GetPersonalInspectionState()->focus = 0;
+                    }
+                 else if (m.x >= 160 && m.x <= 430 && m.y >= 145 && m.y <= 185)
+                    {
+                        currentMouseCtrl = PERSON_BTN_YEAR;
+                        GetPersonalInspectionState()->focus = 1;
+                    }
+                 else if (m.x >= 30 && m.x <= 450 && m.y >= 500 && m.y <= 535)
+                    {
+                        currentMouseCtrl = PERSON_BTN_YEAR;
+                        QueryPersonalInspection();
+                    }
+                 else if (m.x >= 30 && m.x <= 450 && m.y >= 245 && m.y <= 315)
+                    {
+                        currentMouseCtrl = PERSON_BTN_YEAR;
+                        RestorePersonalInspectionState();
+                    }
+                 else if (m.x >= 30 && m.x <= 450 && m.y >= 330 && m.y <= 400)
+                    {
+                        currentMouseCtrl = PERSON_BTN_YEAR;
+                        UpdatePersonalInspectionStatus();
+                    }
+                 else if (m.x >= 140 && m.x <= 340 && m.y >= 550 && m.y <= 600)
+                    {
+                        currentMouseCtrl = PERSON_BTN_YEAR;
+                        SavePersonalInspectionUpdate();
+                    }
             break;
         case PAGE_PERSONAL_INFORMATION:           // 如果当前页面是个人电动车信息变更页面，则判断鼠标点击位置是否在左上角返回按钮的范围内
                if(m.x >=35 && m.x <=320 && m.y >=145 && m.y <=185) {
