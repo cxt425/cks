@@ -5,6 +5,7 @@
 
 void InitSharedSignoutState(void);     // 初始化共享登录页面的状态信息
 void HandleSharedSignoutKey(char key);      // 处理登录页面的键盘输入
+void HandleSharedSignoutChar(TCHAR key);    // 处理登录页面的中文字符输入
 void GenerateSharedVerificationCode(void);    // 生成一次性验证码，并校验输入信息是否合法
 void TrySharedLogin(void);       // 尝试登录共享电动车系统，检查输入信息是否合法，并更新登录状态
 

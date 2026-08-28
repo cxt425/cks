@@ -14,18 +14,6 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
     SharedUserInfo* state = GetSharedSignoutState();    // 获取共享登录状态信息的指针，用于在登录页面处理输入框和按钮的操作
     PersonalUserInfo* regState = GetPersonalRegistrationState(); // 获取个人注册状态信息的指针，用于在注册页面处理输入框和按钮的操作
 
-if(nowPage == PAGE_PERSONAL_REGISTRATION)
-{
-    //车主姓名输入框区域 x:240~420, y:210~240
-    if(m.x >=240 && m.x <=420 && m.y >=210 && m.y <=240)
-    {
-        g_nowInput = INPUT_OWNER_NAME;
-    }
-    else
-    {
-        g_nowInput = INPUT_NOTHING;
-    }
-}
     switch(nowPage)                                 // 根据当前页面类型进行不同的鼠标事件处理
     {
         case PAGE_HOME:                             // 如果当前页面是首页，则判断鼠标点击位置是否在个人电动车管理系统按钮或共享电动车登录按钮的范围内
@@ -164,7 +152,18 @@ if(nowPage == PAGE_PERSONAL_REGISTRATION)
                }
             break;
         case PAGE_PERSONAL_INFORMATION:           // 如果当前页面是个人电动车信息变更页面，则判断鼠标点击位置是否在左上角返回按钮的范围内
-             if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮（坐标和你DrawPersonalInformationPage里返回框一致）
+               if(m.x >=35 && m.x <=320 && m.y >=145 && m.y <=185) {
+                   regState->focus = 7;
+               }
+               else if(m.x >=350 && m.x <=430 && m.y >=145 && m.y <=185) {
+                   QueryPersonalVehicleInfo();
+               }
+                    else if (m.x >=280 && m.x <=440 && m.y >=225 && m.y <=260) regState->focus = 8;
+                    else if (m.x >=280 && m.x <=440 && m.y >=270 && m.y <=305) regState->focus = 9;
+                    else if (m.x >=280 && m.x <=440 && m.y >=315 && m.y <=350) regState->focus = 10;
+                    else if (m.x >=280 && m.x <=440 && m.y >=360 && m.y <=395) regState->focus = 11;
+                    else if (m.x >=30 && m.x <=450 && m.y >=560 && m.y <=610) UpdatePersonalVehicleInfo();
+               else if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮
                {
                   currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
                   currentPage = PAGE_PERSONAL_MANAGEMENT;

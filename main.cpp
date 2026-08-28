@@ -24,11 +24,18 @@ int main() {
             TCHAR ch = msg.ch;
             if (currentPage == PAGE_PERSONAL_REGISTRATION)
             {
-                HandlePersonalRegistrationChar(ch);
+                 if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                    HandlePersonalRegistrationChar(ch);
+            }
+            else if (currentPage == PAGE_PERSONAL_INFORMATION)
+            {
+                if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                    HandlePersonalInformationChar(ch);
             }
             else if (currentPage == PAGE_LOGIN)
             {
-                    HandleSharedSignoutKey(ch);
+                 if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                    HandleSharedSignoutChar(ch);
             }
         }
         else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_REGISTRATION)
@@ -36,6 +43,11 @@ int main() {
             if (msg.vkcode == VK_BACK) HandlePersonalRegistrationKey(8);
             else if (msg.vkcode == VK_RETURN) HandlePersonalRegistrationKey(13);
             else if (msg.vkcode == VK_TAB) HandlePersonalRegistrationKey(9);
+        }
+        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_INFORMATION)
+        {
+            if (msg.vkcode == VK_BACK) HandlePersonalInformationKey(8);
+            else if (msg.vkcode == VK_RETURN) HandlePersonalInformationKey(13);
         }
         else if (msg.message == WM_KEYDOWN && currentPage == PAGE_LOGIN)
         {
@@ -52,6 +64,11 @@ int main() {
             tempMouse.uMsg = WM_LBUTTONDOWN;
             GlobalMouseCheck(tempMouse, currentPage);
         }
+    }
+
+    if (currentPage == PAGE_PERSONAL_REGISTRATION &&
+        GetPersonalRegistrationState()->registered) {
+        currentPage = PAGE_PERSONAL_MANAGEMENT;
     }
 
     cleardevice();

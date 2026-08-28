@@ -14,7 +14,13 @@ static void DrawTextAt(int x, int y, const char* text)         // 定义 DrawTex
         return;
 
     setbkmode(TRANSPARENT);          // 设置背景模式为透明，以便文本不会覆盖背景
+#ifdef UNICODE
+    wchar_t wideText[256];
+    if (MultiByteToWideChar(CP_ACP, 0, text, -1, wideText, 256) > 0)
+        outtextxy(x, y, wideText);
+#else
     outtextxy(x, y, text);
+#endif
 }
 
 void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制首页界面
@@ -221,7 +227,7 @@ void DrawPersonalManagementPage()    // 定义 DrawPersonalManagementPage 函数
 
     settextcolor(BLACK);
     settextstyle(12,0,_T("黑体"));
-    outtextxy(120,615,_T("当前登录:学号123456789|系统版本:V1.0"));//底部版权信息
+    outtextxy(120,615,_T("系统版本:V1.0"));//底部版权信息
 }
 
 void DrawPersonalRegistrationPage()//定义 DrawPersonalregistrationPage 函数，用于绘制个人电动车注册界面
@@ -340,13 +346,13 @@ void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，�
     settextcolor(BLACK);
     settextstyle(20,0,_T("黑体"));//顶部信息卡片:车牌号、车主、状态
 
-    outtextxy(50,110,_T("车牌号:鄂A12345"));//车牌号
+    outtextxy(50,110,_T("车牌号:"));//车牌号
     line(40, 140, 440, 140);//分割线
 
-    outtextxy(50,155,_T("车主姓名:张三"));//车主姓名
+    outtextxy(50,155,_T("车主姓名:"));//车主姓名
     line(40, 185, 440, 185);//分割线
 
-    outtextxy(50,200,_T("当前状态:正常"));//当前年审状态
+    outtextxy(50,200,_T("当前状态:"));//当前年审状态
 
     fillroundrect(30,245,450,315,18,18);//更新年审日期
 
@@ -392,6 +398,7 @@ void DrawPersonalInspectionPage()// 声明 DrawPersonalInspectionPage 函数，�
 
 void DrawPersonalInformationPage() // 声明，用于绘制个人电动车信息变更页面界面
 { 
+    const PersonalUserInfo* state = GetPersonalRegistrationState();
     setfillcolor(RGB(0,130,220));
     fillrectangle(0,0,480,80);//顶部蓝色标题栏
 
@@ -415,8 +422,9 @@ void DrawPersonalInformationPage() // 声明，用于绘制个人电动车信息
     rectangle(35,145,320,185);//车牌号输入框
 
     settextstyle(18,0,_T("黑体"));
-    settextcolor(RGB(160,160,160));
-    outtextxy(50,155,_T("请输入车牌号"));//输入框提示文字
+    settextcolor(state->queryLicensePlate[0] ? BLACK : RGB(160,160,160));
+    if (state->queryLicensePlate[0]) DrawTextAt(50, 155, state->queryLicensePlate);
+    else outtextxy(50,155,_T("请输入车牌号"));//输入框提示文字
 
     setfillcolor(RGB(0,130,220));
     fillroundrect(350,145,430,185,8,8);//查询按钮
@@ -428,6 +436,11 @@ void DrawPersonalInformationPage() // 声明，用于绘制个人电动车信息
     settextcolor(BLACK);
     settextstyle(20,0,_T("黑体"));
     outtextxy(35,230,_T("车主姓名"));//车主信息大卡片
+    rectangle(280,225,440,260);//车主姓名输入框
+    if (state->queryFound) {
+        settextstyle(16,0,_T("黑体"));
+        DrawTextAt(290, 232, state->queryResult.ownerName);
+    }
 
     setlinecolor(RGB(230,230,230));
     line(20,265,460,265);//分割线
@@ -435,27 +448,30 @@ void DrawPersonalInformationPage() // 声明，用于绘制个人电动车信息
     settextstyle(18,0,_T("黑体"));
     outtextxy(35,280,_T("院系"));
     rectangle(280,270,440,305);//院系输入框
+    if (state->queryFound) DrawTextAt(290, 280, state->queryResult.college);
     line(20,310,460,310);//院系行
 
     outtextxy(35,325,_T("学号/工号"));
     rectangle(280,315,440,350);//学号输入框
+    if (state->queryFound) DrawTextAt(290, 325, state->queryResult.personalID);
     line(20,355,460,355);//学号行
 
     outtextxy(35,370,_T("联系方式"));
     rectangle(280,360,440,395);//联系方式输入框
+    if (state->queryFound) DrawTextAt(290, 370, state->queryResult.ownerPhone);
     line(20,400,460,400);//联系方式行
 
     outtextxy(35,415,_T("车型"));
     rectangle(280,405,440,440);//车型输入框
+    if (state->queryFound) DrawTextAt(290, 415, state->queryResult.vehicleType);
     line(20,445,460,445);//车型行
 
     outtextxy(35,460,_T("备注信息"));
-    rectangle(280,450,440,485);//备注信息行
-    line(20,490,460,490);//备注信息行
+    if (state->queryFound) DrawTextAt(290, 460, state->queryResult.vehicleStatus);
 
     settextcolor(RGB(100,100,100));
     settextstyle(18,0,_T("黑体"));
-    outtextxy(35,497,_T("修改后请确认信息是否完整")); // 底部小字提醒
+    if (state->queryMessage[0]) DrawTextAt(35, 525, state->queryMessage);
 
     setfillcolor(RGB(0,130,220));
     fillroundrect(30,560,450,610,35,35);
