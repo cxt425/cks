@@ -781,6 +781,7 @@ void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于
     int tip_w=textwidth(_T("请选择您的操作"));
     outtextxy(240-tip_w/2, 580, _T("请选择您的操作"));//底部提示文字 
 }
+
 void DrawSharedInputPage()//定义 DrawSharedInputPage 函数，用于绘制共享电动车输入用车界面
 {
     cleardevice();              // 清空窗口并用背景颜色填充
@@ -806,7 +807,5 @@ void DrawSharedInputPage()//定义 DrawSharedInputPage 函数，用于绘制共�
 
     setfillcolor(RGB(220,220,220));
     fillroundrect(60,360,420,460,22,22);//输入框
-
     
-
 }

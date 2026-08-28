@@ -85,6 +85,7 @@ int main() {
             case PAGE_PERSONAL_ACCESSPAGE2: DrawPersonalAccessPage2(); break;
             case PAGE_PERSONAL_SCRAP: DrawPersonalScrapPage(); break;
             case PAGE_SHARED_MANAGEMENT: DrawSharedManagementPage(); break;
+            case PAGE_SHARED_USE_VEHICLE: DrawSharedUseVehiclePage(); break;
         }
 
         EndBatchDraw();             // 提交一帧绘制内容

@@ -200,5 +200,21 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                   currentPage = PAGE_PERSONAL_MANAGEMENT;
                 } 
                 break;
+        case PAGE_SHARED_MANAGEMENT:
+            if (m.x >= 0 && m.x <= 80 && m.y >= 0 && m.y <= 80) {
+                currentMouseCtrl = SHARED_BTN_BACK;
+                currentPage = PAGE_LOGIN;
+            }
+            else if (m.x >= 60 && m.x <= 420 && m.y >= 270 && m.y <= 330) {
+                currentMouseCtrl = SHARED_BTN_USE_VEHICLE;
+                currentPage = PAGE_SHARED_USE_VEHICLE;
+            }
+            break;
+        case PAGE_SHARED_USE_VEHICLE:
+            if (m.x >= 0 && m.x <= 80 && m.y >= 0 && m.y <= 80) {
+                currentMouseCtrl = SHARED_BTN_BACK;
+                currentPage = PAGE_SHARED_MANAGEMENT;
+            }
+            break;
     }
 }
