@@ -872,3 +872,28 @@ void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制�
    outtextxy(240-btn_w/2, 520, _T("返回主菜单"));//返回主菜单按钮
 
 }
+
+void DrawSharedSettlementPage() {
+    cleardevice();
+    setfillcolor(RGB(0,146,198));
+    fillrectangle(0,0,480,80);
+
+    setlinecolor(WHITE);
+    setlinestyle(PS_SOLID, 3);
+    line(30, 40, 40, 30);
+    line(30, 40, 40, 50);
+
+    setbkmode(TRANSPARENT);
+    settextcolor(WHITE);
+    settextstyle(25,0,_T("黑体"));
+    outtextxy(165,32,_T("换车结算"));
+
+   
+    
+    setfillcolor(RGB(0,146,198));
+    fillroundrect(70,520,410,570,28,28);
+    settextcolor(WHITE);
+    settextstyle(22,0,_T("黑体"));
+    int settle_w = textwidth(_T("确认结算"));
+    outtextxy(240 - settle_w / 2, 535, _T("确认结算"));
+}

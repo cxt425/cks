@@ -15,7 +15,8 @@ typedef enum {
     PAGE_PERSONAL_ACCESSPAGE2,
     PAGE_PERSONAL_SCRAP,
     PAGE_SHARED_MANAGEMENT,
-    PAGE_SHARED_USE_VEHICLE
+    PAGE_SHARED_USE_VEHICLE,
+    PAGE_SHARED_SETTLEMENT
 } PageType;
 
 // 鼠标目标枚举：定义界面中可点击的控件
@@ -47,7 +48,8 @@ typedef enum {
     PERSON_REG_INPUT_DATE,
     PERSON_REG_SUBMIT,
     SHARED_BTN_BACK,
-    SHARED_BTN_USE_VEHICLE
+    SHARED_BTN_USE_VEHICLE,
+    SHARED_BTN_SETTLEMENT
 } MouseTarget;
 
 // 全局变量声明：由 MouseCtrl.cpp 中定义
