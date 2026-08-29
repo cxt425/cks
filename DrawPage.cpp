@@ -818,7 +818,7 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
 }
 void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于绘制共享电动车管理系统界面
 {
-   setfillcolor(WHITE);
+   setfillcolor(WHITE);//白色背景
    fillrectangle(0,0,480,640);//白色背景
 
    setbkmode(TRANSPARENT);//设置文字背景为透明
@@ -851,8 +851,8 @@ void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于
     fillroundrect(60,350,420,410,18,18);
     settextcolor(WHITE);
     settextstyle(24,0,_T("宋体"));
-    int btn2_w=textwidth(_T("换车结算"));
-    outtextxy(35+(420-btn2_w)/2,365,_T("换车结算"));//换车结算按钮
+    int btn2_w=textwidth(_T("还车结算"));
+    outtextxy(35+(420-btn2_w)/2,365,_T("还车结算"));//还车结算按钮
 
     setfillcolor(RGB(0,130,220));
     fillroundrect(60,430,420,490,18,18);
@@ -933,27 +933,55 @@ void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制�
 
 }
 
-void DrawSharedSettlementPage() {
+void DrawSharedSettlementPage() //定义还车结算界面绘制函数
+{   
+    setfillcolor(WHITE);
+    fillrectangle(0,0,480,640);//白色背景
+
     cleardevice();
     setfillcolor(RGB(0,146,198));
-    fillrectangle(0,0,480,80);
+    fillrectangle(0,0,480,80);//顶部蓝色标题
 
     setlinecolor(WHITE);
     setlinestyle(PS_SOLID, 3);
     line(30, 40, 40, 30);
-    line(30, 40, 40, 50);
+    line(30, 40, 40, 50);//返回左箭头
 
     setbkmode(TRANSPARENT);
     settextcolor(WHITE);
     settextstyle(25,0,_T("黑体"));
-    outtextxy(165,32,_T("换车结算"));
+    outtextxy(185,32,_T("还车结算"));//顶部居中标题
 
-   
+    setfillcolor(WHITE);
+    fillroundrect(30,100,450,280,22,22);
+    setlinecolor(RGB(200,200,200));
+    fillroundrect(30,100,450,280,22,22);//支付信息显示边框
+
+    settextcolor(BLACK);
+    settextstyle(20,0,_T("黑体"));
+    outtextxy(50,120,_T("车辆编号: E2001"));
+    outtextxy(50,160,_T("用车时长: 25分钟"));
+    outtextxy(50,200,_T("骑行里程: 5.20公里"));
+    outtextxy(50,240,_T("应付金额: 2.8元"));//支付信息显示内容
+
+    settextcolor(RGB(100,100,100));
+    settextstyle(14,0,_T("黑体"));
+    outtextxy(50,300,_T("请确认以上信息无误后进行支付"));
+    outtextxy(50,320,_T("支付方式: 微信支付"));//支付提示文字
+
 
     setfillcolor(RGB(0,146,198));
-    fillroundrect(70,520,410,570,28,28);
+    fillroundrect(70,340,410,400,28,28);
     settextcolor(WHITE);
     settextstyle(22,0,_T("黑体"));
-    int settle_w = textwidth(_T("确认结算"));
-    outtextxy(240 - settle_w / 2, 535, _T("确认结算"));
+    int settle_w = textwidth(_T("确认还车并支付"));
+    outtextxy(240 - settle_w / 2,360, _T("确认还车并支付"));//确认还车按钮
+
+    setfillcolor(RGB(170,215,255));
+    fillroundrect(70,420,410,480,22,22);
+    settextcolor(BLACK);
+    settextstyle(22,0,_T("黑体"));
+    int cancel_w = textwidth(_T("返回主菜单"));
+    outtextxy(235 - cancel_w / 2, 440, _T("返回主菜单"));//返回主菜单按钮
+
 }
