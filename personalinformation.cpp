@@ -109,7 +109,11 @@ void QueryPersonalVehicleInfo(void)// Helper: 按车牌号查询车辆信息
             else strcpy(record.vehicleStatus, "正常");
             state->queryFound = 1;
             state->queryResult = record;
-            strcpy(state->queryMessage, "查询成功");
+            if (strcmp(record.vehicleStatus, "报废") == 0) {
+                strcpy(state->queryMessage, "该车辆已报废，禁止变更");
+            } else {
+                strcpy(state->queryMessage, "查询成功");
+            }
             fclose(file);
             return;
         }
@@ -133,7 +137,14 @@ static int WritePersonalRecordUtf8(FILE* file, const PersonalVehicleRecord* reco
 void UpdatePersonalVehicleInfo(void)// Helper: 更新个人车辆信息
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
-    if (!state->queryFound) return;
+    if (!state->queryFound) {
+        strcpy(state->queryMessage, "请先查询车辆信息");
+        return;
+    }
+    if (strcmp(state->queryResult.vehicleStatus, "报废") == 0) {
+        strcpy(state->queryMessage, "该车辆已报废，禁止保存变更");
+        return;
+    }
 
     FILE* sourceFile = fopen(PERSONAL_DATA_FILE, "r");
     FILE* tempFile = fopen("personal_vehicle_data.tmp", "w");
@@ -183,6 +194,7 @@ void HandlePersonalInformationKey(char key)// Helper: 处理车辆信息查询�
             case 9: DeleteCharFromField(state->queryResult.college); break;
             case 10: DeleteCharFromField(state->queryResult.personalID); break;
             case 11: DeleteCharFromField(state->queryResult.ownerPhone); break;
+            case 12: DeleteCharFromField(state->queryResult.vehicleType); break;
         }
     } else if (key == 13 || key == 10) {
         QueryPersonalVehicleInfo();
@@ -193,6 +205,7 @@ void HandlePersonalInformationKey(char key)// Helper: 处理车辆信息查询�
             case 9: AppendCharToField(state->queryResult.college, sizeof(state->queryResult.college), 2, key); break;
             case 10: AppendCharToField(state->queryResult.personalID, sizeof(state->queryResult.personalID), 3, key); break;
             case 11: AppendCharToField(state->queryResult.ownerPhone, sizeof(state->queryResult.ownerPhone), 4, key); break;
+            case 12: AppendCharToField(state->queryResult.vehicleType, sizeof(state->queryResult.vehicleType), 5, key); break;
         }
     }
 }

@@ -2,6 +2,7 @@
 #include "sharedsignout.h"
 #include "personalregistration.h"
 #include "personalinspection.h"
+#include "personalscrap.h"
 #include <graphics.h>      // 包含 EasyX 图形库头文件
 
 MouseTarget currentMouseCtrl = MOUSE_NONE;      // 声明全局变量 currentMouseCtrl，表示当前选中的控件
@@ -193,6 +194,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                     else if (m.x >=280 && m.x <=440 && m.y >=270 && m.y <=305) regState->focus = 9;
                     else if (m.x >=280 && m.x <=440 && m.y >=315 && m.y <=350) regState->focus = 10;
                     else if (m.x >=280 && m.x <=440 && m.y >=360 && m.y <=395) regState->focus = 11;
+                    else if (m.x >=280 && m.x <=440 && m.y >=405 && m.y <=440) regState->focus = 12;
                     else if (m.x >=30 && m.x <=450 && m.y >=560 && m.y <=610) UpdatePersonalVehicleInfo();
                else if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮
                {
@@ -211,6 +213,23 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                   currentMouseCtrl = PERSON_BTN_ENTRY_EXIT2;
                   currentPage = PAGE_PERSONAL_ACCESSPAGE2; // 保持在个人电动车出入校园管理2页面
                 }
+            else if (m.x >= 160 && m.x <= 440 && m.y >= 182 && m.y <= 228) {
+                  regState->accessFocus = 0;
+            }
+            else if (m.x >= 160 && m.x <= 440 && m.y >= 408 && m.y <= 454) {
+                  regState->accessFocus = 1;
+            }
+            else if (m.x >= 160 && m.x <= 280 && m.y >= 300 && m.y <= 350) {
+                  regState->accessTypeSelected = 0;
+                  strcpy(regState->accessType, "入校");
+            }
+            else if (m.x >= 300 && m.x <= 420 && m.y >= 300 && m.y <= 350) {
+                  regState->accessTypeSelected = 1;
+                  strcpy(regState->accessType, "出校");
+            }
+            else if (m.x >= 20 && m.x <= 460 && m.y >= 520 && m.y <= 590) {
+                  SubmitPersonalAccessRecord();
+             }
              break;
         case PAGE_PERSONAL_ACCESSPAGE2:         // 如果当前页面是个人电动车出入校园管理2页面，则判断鼠标点击位置是否在左上角返回按钮的范围内
                 if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮（坐标和你DrawPersonalAccessPage2里返回框一致）
@@ -224,12 +243,45 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                     currentPage = PAGE_PERSONAL_ACCESSPAGE1; // 保持在个人电动车出入校园管理1页面
                 }
                 break;
-        case PAGE_PERSONAL_SCRAP:         // 如果当前页面是个人电动车报废管理页面，则判断鼠标点击位置是否在左上角返回按钮的范围内
-             if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮（坐标和你DrawPersonalScrapPage里返回框一致）
+        case PAGE_PERSONAL_SCRAP:
+             if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)
                {
-                  currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面
+                  currentMouseCtrl = PERSON_BTN_BACK;
                   currentPage = PAGE_PERSONAL_MANAGEMENT;
-                } 
+                }
+             else if (m.x >= 180 && m.x <= 440 && m.y >= 130 && m.y <= 162) {
+                  currentMouseCtrl = PERSON_BTN_YEAR;
+                  GetPersonalRegistrationState()->focus = 0;
+             }
+             else if (m.x >= 180 && m.x <= 440 && m.y >= 160 && m.y <= 192) {
+                  currentMouseCtrl = PERSON_BTN_YEAR;
+                  GetPersonalRegistrationState()->focus = 1;
+             }
+             else if (m.x >= 350 && m.x <= 440 && m.y >= 220 && m.y <= 253) {
+                  currentMouseCtrl = PERSON_BTN_YEAR;
+                  QueryPersonalScrapStatus();
+             }
+             else if (m.x >= 40 && m.x <= 125 && m.y >= 315 && m.y <= 355) {
+                  GetPersonalRegistrationState()->scrapReasonType = 0;
+                  GetPersonalRegistrationState()->focus = 0;
+             }
+             else if (m.x >= 135 && m.x <= 275 && m.y >= 315 && m.y <= 355) {
+                  GetPersonalRegistrationState()->scrapReasonType = 1;
+                  GetPersonalRegistrationState()->focus = 0;
+             }
+             else if (m.x >= 285 && m.x <= 415 && m.y >= 315 && m.y <= 355) {
+                  GetPersonalRegistrationState()->scrapReasonType = 2;
+                  GetPersonalRegistrationState()->focus = 0;
+             }
+             else if ((m.x >= 40 && m.x <= 60 && m.y >= 370 && m.y <= 390) ||
+                      (m.x >= 180 && m.x <= 430 && m.y >= 365 && m.y <= 400)) {
+                  GetPersonalRegistrationState()->scrapReasonType = 3;
+                  GetPersonalRegistrationState()->focus = 2;
+             }
+             else if (m.x >= 40 && m.x <= 440 && m.y >= 520 && m.y <= 575) {
+                  currentMouseCtrl = PERSON_BTN_YEAR;
+                  SavePersonalScrapUpdate();
+             }
                 break;
         case PAGE_SHARED_MANAGEMENT:
             if (m.x >= 0 && m.x <= 80 && m.y >= 0 && m.y <= 80) {

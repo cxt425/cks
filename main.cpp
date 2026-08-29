@@ -6,6 +6,8 @@
 #include "sharedsignout.h"
 #include "personalregistration.h"
 #include "personalinspection.h"
+#include "personalscrap.h"
+#include "personalaccess.h"
 
 int main() {
     initgraph(480, 640);        // 初始化图形窗口，宽 480 像素，高 640 像素, 显示控制台窗口
@@ -44,6 +46,16 @@ int main() {
                 if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
                     HandlePersonalInspectionChar(ch);
             }
+            else if (currentPage == PAGE_PERSONAL_SCRAP)
+            {
+                if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                    HandlePersonalScrapChar(ch);
+            }
+            else if (currentPage == PAGE_PERSONAL_ACCESSPAGE1)
+            {
+                if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                    HandlePersonalAccessChar(ch);
+            }
         }
         else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_REGISTRATION)
         {
@@ -61,6 +73,18 @@ int main() {
             if (msg.vkcode == VK_BACK) HandlePersonalInspectionKey(8);
             else if (msg.vkcode == VK_RETURN) HandlePersonalInspectionKey(13);
             else if (msg.vkcode == VK_TAB) HandlePersonalInspectionKey(9);
+        }
+        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_SCRAP)
+        {
+            if (msg.vkcode == VK_BACK) HandlePersonalScrapKey(8);
+            else if (msg.vkcode == VK_RETURN) HandlePersonalScrapKey(13);
+            else if (msg.vkcode == VK_TAB) HandlePersonalScrapKey(9);
+        }
+        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_ACCESSPAGE1)
+        {
+            if (msg.vkcode == VK_BACK) HandlePersonalAccessKey(8);
+            else if (msg.vkcode == VK_RETURN) HandlePersonalAccessKey(13);
+            else if (msg.vkcode == VK_TAB) HandlePersonalAccessKey(9);
         }
         else if (msg.message == WM_KEYDOWN && currentPage == PAGE_LOGIN)
         {

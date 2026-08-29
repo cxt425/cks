@@ -514,6 +514,7 @@ void DrawPersonalInformationPage() // 声明，用于绘制个人电动车信息
 }
 void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校园管理出入记录查询
 {
+    const PersonalUserInfo* state = GetPersonalRegistrationState();
     setfillcolor(RGB(0,130,220));
     fillrectangle(0,0,480,80);//顶部蓝色标题栏
     settextcolor(WHITE);
@@ -552,8 +553,9 @@ void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校�
 
     setlinecolor(RGB(190,190,190));
     roundrect(160,182,440,228,20,20);
-    settextcolor(RGB(110,110,110));
-    outtextxy(180,194,_T("请输入车牌号"));//车牌号输入框
+    settextcolor(state->accessLicensePlate[0] ? BLACK : RGB(110,110,110));
+    if (state->accessLicensePlate[0]) DrawTextAt(180, 194, state->accessLicensePlate);
+    else outtextxy(180,194,_T("请输入车牌号"));//车牌号输入框
 
     setfillcolor(WHITE);
     fillroundrect(20,260,460,470,12,12);
@@ -561,25 +563,38 @@ void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校�
     settextcolor(RGB(0,0,0));
     outtextxy(35,282,_T("出入类型:"));//出入类型+时间卡片
 
-    setfillcolor(RGB(0,130,220));
+    int isOutType = (strcmp(state->accessType, "出校") == 0) || state->accessTypeSelected == 1;
+    setfillcolor(isOutType ? RGB(230,230,230) : RGB(0,130,220));
     fillroundrect(160,300,280,350,22,22);
-    settextcolor(WHITE);
-    outtextxy(198,312,_T("入校"));//入校按钮（默认选中）
+    settextcolor(isOutType ? RGB(110,110,110) : WHITE);
+    outtextxy(198,312,_T("入校"));//入校按钮
 
-    setfillcolor(RGB(230,230,230));
+    setfillcolor(isOutType ? RGB(0,130,220) : RGB(230,230,230));
     fillroundrect(300,300,420,350,22,22);
-    settextcolor(RGB(110,110,110));
+    settextcolor(isOutType ? WHITE : RGB(110,110,110));
     outtextxy(338,312,_T("出校"));//出校按钮
 
-    outtextxy(35,390,_T("出入时间:"));//记录时间
+    settextcolor(RGB(0,0,0));
+    const TCHAR* timeLabel = isOutType ? _T("出校日期:") : _T("入校日期:");
+    outtextxy(35,390,timeLabel);
 
     setlinecolor(RGB(160,160,160));
     rectangle(65,418,95,448);//左侧复选框
 
     setlinecolor(RGB(190,190,190));
     roundrect(160,408,440,454,20,20);
-    settextcolor(RGB(110,110,110));
-    outtextxy(180,420,_T("请输入时间"));//时间输入框
+    settextcolor(state->accessTime[0] ? BLACK : RGB(110,110,110));
+    if (state->accessTime[0]) DrawTextAt(180, 420, state->accessTime);
+    else {
+        const TCHAR* timePlaceholder = isOutType ? _T("请输入出校日期") : _T("请输入入校日期");
+        outtextxy(180,420,timePlaceholder);
+    }
+
+    if (state->accessMessage[0]) {
+        settextcolor(RGB(180,60,60));
+        settextstyle(16,0,_T("黑体"));
+        DrawTextAt(35, 480, state->accessMessage);
+    }
 
     setfillcolor(RGB(0,130,220));
     fillroundrect(20,520,460,590,32,32);
@@ -681,6 +696,7 @@ void DrawPersonalAccessPage2()
 }
 void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘制个人电动车报废管理系统界面
 {
+    const PersonalUserInfo* state = GetPersonalRegistrationState();
     cleardevice();              // 清空窗口并用背景颜色填充
     setfillcolor(RGB(0,146,198)); // 设置填充颜色为蓝色
     fillrectangle(0,0,480,80); //顶部蓝色标题栏
@@ -702,59 +718,103 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
     fillroundrect(30,90,450,210,22,22);//车辆报废信息显示框
     settextstyle(18,0,_T("宋体"));
     settextcolor(BLACK);
-    outtextxy(50,108,_T("车辆信息"));//小标题
+    outtextxy(50,108,_T("报废车辆信息"));//小标题
     outtextxy(50,138,_T("车牌号:"));
     outtextxy(50,168,_T("车主姓名:"));//车辆信息卡片
 
-    setfillcolor(RGB(255,255,255));
-    fillroundrect(30,225,450,460,18,18);//报废信息显示框
-
-    settextstyle(18,0,_T("黑体"));
-    outtextxy(50,240,_T("报废车辆处理"));//小标题
-
-    fillroundrect(40,270,125,310,22,22);
+    setfillcolor(RGB(245,245,245));
+    fillroundrect(180,130,440,162,8,8);
+    fillroundrect(180,160,440,192,8,8);
     settextstyle(16,0,_T("黑体"));
-    settextcolor(BLACK);
-    outtextxy(50,280,_T("车体损坏"));//报废车辆处理按钮
+    settextcolor(state->scrapLicensePlate[0] ? BLACK : RGB(160,160,160));
+    if (state->scrapLicensePlate[0]) DrawTextAt(190, 138, state->scrapLicensePlate);
+    else outtextxy(190,138,_T("请输入车牌号"));
+
+    settextcolor(state->scrapOwnerName[0] ? BLACK : RGB(160,160,160));
+    if (state->scrapOwnerName[0]) DrawTextAt(190, 168, state->scrapOwnerName);
+    else outtextxy(190,168,_T("请输入车主姓名"));
 
     setfillcolor(RGB(0,130,220));
-    fillroundrect(135,270,275,310,22,22);
+    fillroundrect(350,220,440,253,8,8);
     settextcolor(WHITE);
-    outtextxy(160,280,_T("达到使用年限"));//达到使用年限按钮（选中蓝色按钮）
+    settextstyle(16,0,_T("黑体"));
+    outtextxy(365,227,_T("查询"));
+
+    settextstyle(16,0,_T("黑体"));
+    settextcolor(BLACK);
+    outtextxy(50,220,_T("当前状态:"));
+    if (state->scrapMessage[0]) {
+        if (state->scrapFound) settextcolor(GREEN); else settextcolor(RGB(180,60,60));
+        DrawTextAt(140, 220, state->scrapMessage);
+    } else {
+        settextcolor(RGB(160,160,160));
+        outtextxy(140,220,_T("未查询"));
+    }
+
+    if (state->scrapFound && state->scrapStatus[0]) {
+        settextcolor(BLACK);
+        DrawTextAt(50, 242, state->scrapStatus);
+    }
 
     setfillcolor(RGB(255,255,255));
-    fillroundrect(285,270,415,310,22,22);
-    settextcolor(BLACK);
-    outtextxy(300,280,_T("丢失无法找回"));//丢失无法找回按钮
+    fillroundrect(30,270,450,505,18,18);//报废信息显示框
+
+    settextstyle(18,0,_T("黑体"));
+    outtextxy(50,285,_T("报废车辆处理"));//小标题
+
+    int reasonType = state->scrapReasonType;
+    setfillcolor(reasonType == 0 ? RGB(0,130,220) : RGB(255,255,255));
+    fillroundrect(40,315,125,355,22,22);
+    settextstyle(16,0,_T("黑体"));
+    settextcolor(reasonType == 0 ? WHITE : BLACK);
+    outtextxy(50,325,_T("车体损坏"));//报废车辆处理按钮
+
+    setfillcolor(reasonType == 1 ? RGB(0,130,220) : RGB(255,255,255));
+    fillroundrect(135,315,275,355,22,22);
+    settextcolor(reasonType == 1 ? WHITE : BLACK);
+    outtextxy(160,325,_T("达到使用年限"));//达到使用年限按钮（选中蓝色按钮）
+
+    setfillcolor(reasonType == 2 ? RGB(0,130,220) : RGB(255,255,255));
+    fillroundrect(285,315,415,355,22,22);
+    settextcolor(reasonType == 2 ? WHITE : BLACK);
+    outtextxy(300,325,_T("丢失无法找回"));//丢失无法找回按钮
 
     settextstyle(20,0,_T("宋体"));
     settextcolor(BLACK);
-    rectangle(40,325,60,345);
-    outtextxy(75,325,_T("其他原因"));
-    fillroundrect(180,320,430,355,18,18);
+    setfillcolor(reasonType == 3 ? RGB(0,130,220) : RGB(255,255,255));
+    rectangle(40,370,60,390);
+    if (reasonType == 3) {
+        setfillcolor(RGB(0,130,220));
+        fillrectangle(42,372,58,388);
+    }
+    outtextxy(75,370,_T("其他原因"));
+    setfillcolor(RGB(245,245,245));
+    fillroundrect(180,365,430,400,18,18);
     settextcolor(RGB(110,110,110));
-    outtextxy(190,327,_T("请输入其他原因"));//其他原因复选栏+输入框
+    if (state->scrapReason[0]) DrawTextAt(190, 372, state->scrapReason);
+    else outtextxy(190,372,_T("请输入其他原因"));
  
     setfillcolor(RGB(255,210,0));
-    fillrectangle(30,365,450,400);
+    fillrectangle(30,410,450,445);
     settextcolor(BLACK);
     settextstyle(18,0,_T("宋体"));
-    outtextxy(80,373,_T("注意：标记报废后将禁止该车后续操作"));//黄色警告提示栏
+    outtextxy(80,418,_T("注意：标记报废后将禁止该车后续操作"));//黄色警告提示栏
 
     settextcolor(BLACK);
     settextstyle(18,0,_T("宋体"));
-    outtextxy(60,420,_T("报废时间"));
+    outtextxy(60,465,_T("报废时间"));
     setfillcolor(RGB(245,245,245));
-    fillroundrect(180,410,430,445,20,20);
+    fillroundrect(180,455,430,490,20,20);
     settextcolor(RGB(110,110,110));
     settextstyle(14,0,_T("宋体"));
-    outtextxy(190,420,_T("请输入报废时间：XXXX-XX-XX"));//报废时间输入框
+    if (state->scrapDate[0]) DrawTextAt(190, 465, state->scrapDate);
+    else outtextxy(190,465,_T("请输入报废时间：XXXX-XX-XX"));
 
     setfillcolor(RGB(230,30,30));
-    fillroundrect(40,475,440,530,30,30);
+    fillroundrect(40,520,440,575,30,30);
     settextstyle(28,0,_T("黑体"));
     settextcolor(WHITE);
-    outtextxy(175,490,_T("确认报废"));//底部红色【确认报废】按钮
+    outtextxy(175,535,_T("确认报废"));//底部红色【确认报废】按钮
 }
 void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于绘制共享电动车管理系统界面
 {
@@ -889,7 +949,7 @@ void DrawSharedSettlementPage() {
     outtextxy(165,32,_T("换车结算"));
 
    
-    
+
     setfillcolor(RGB(0,146,198));
     fillroundrect(70,520,410,570,28,28);
     settextcolor(WHITE);

@@ -37,12 +37,29 @@ typedef struct {
     int queryFound;             // 是否查询到车辆
     PersonalVehicleRecord queryResult; // 查询到的车辆信息
     char queryMessage[64];      // 车辆信息变更页面提示信息
+    char scrapLicensePlate[10]; // 报废管理查询车牌号
+    char scrapOwnerName[20];    // 报废管理查询车主姓名
+    int scrapFound;             // 报废管理查询是否匹配
+    char scrapStatus[16];       // 报废管理当前状态
+    char scrapMessage[64];      // 报废管理状态提示
+    int scrapReasonType;        // 报废原因类型：0=车体损坏,1=达到使用年限,2=丢失无法找回,3=其他原因
+    char scrapReason[64];       // 报废原因内容
+    char scrapDate[11];         // 报废时间，YYYY-MM-DD
+    char accessLicensePlate[10]; // 出入记录车牌号
+    char accessType[8];          // 出入类型：入校/出校
+    char accessTime[32];         // 出入时间：YYYY-MM-DD HH:MM
+    int accessTypeSelected;      // 0=入校，1=出校
+    int accessFocus;             // 0=车牌号，1=时间
+    char accessMessage[64];      // 出入记录状态提示
     int focus;             // 当前输入框焦点，0-6
     int registered;        // 提交是否成功
     char message[64];      // 状态提示信息
 } PersonalUserInfo;
 
 int SavePersonalVehicleData(const PersonalUserInfo* info); // 保存个人电动车数据
+void HandlePersonalAccessKey(char key);
+void HandlePersonalAccessChar(TCHAR key);
+void SubmitPersonalAccessRecord(void);
 
 PersonalUserInfo* GetPersonalRegistrationState(void); // 获取个人注册状态信息的指针
 

@@ -40,6 +40,15 @@ static int ConvertAnsiToUtf8(const char* source, char* destination, int destinat
     return WideCharToMultiByte(CP_UTF8, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
 }
 
+static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)
+{
+    if (!source || !destination || destinationSize <= 0) return 0;
+    wchar_t wideText[128];
+    int wideLength = MultiByteToWideChar(CP_UTF8, 0, source, -1, wideText, 128);
+    if (wideLength <= 0) return 0;
+    return WideCharToMultiByte(CP_ACP, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
+}
+
 // 保存个人电动车数据到文件中，返回保存是否成功
 int SavePersonalVehicleData(const PersonalUserInfo* info)
 {
@@ -166,9 +175,23 @@ void InitPersonalRegistrationState(void)
     memset(state, 0, sizeof(*state));// 将结构体清零，初始化所有字段为默认值
     state->focus = 0;
     state->registered = 0;
+    state->scrapFound = 0;
+    state->scrapMessage[0] = '\0';
+    state->scrapStatus[0] = '\0';
+    state->scrapReasonType = 1;
+    state->scrapReason[0] = '\0';
+    state->scrapDate[0] = '\0';
+    state->accessLicensePlate[0] = '\0';
+    state->accessType[0] = '\0';
+    state->accessTime[0] = '\0';
+    state->accessTypeSelected = 0;
+    state->accessFocus = 0;
+    state->accessMessage[0] = '\0';
+    strcpy(state->accessType, "入校");
     strcpy(state->vehicleStatus, "正常");
     strcpy(state->message, "请填写注册信息，按 Tab 切换输入框");
 }
+
 // 提交注册并做基本校验
 void TryPersonalRegistration(void)
 {

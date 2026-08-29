@@ -159,8 +159,12 @@ void QueryPersonalInspection(void)
             strcpy(state->vehicleStatus, vehicleStatus);
             strcpy(state->originalVehicleStatus, vehicleStatus);
             strcpy(state->registrationDate, registrationDate);
-            strcpy(state->message, "查询成功");
             state->queryFound = 1;
+            if (strcmp(vehicleStatus, "报废") == 0) {
+                strcpy(state->message, "该车辆已报废，不能进行年审更新");
+            } else {
+                strcpy(state->message, "查询成功");
+            }
             fclose(file);
             return;
         }
@@ -173,6 +177,10 @@ void UpdatePersonalInspectionStatus(void)
     PersonalInspectionState* state = &gInspectionState;
     if (!state->queryFound) {
         strcpy(state->message, "请先查询车辆信息");
+        return;
+    }
+    if (strcmp(state->vehicleStatus, "报废") == 0) {
+        strcpy(state->message, "该车辆已报废，不能更新年审状态");
         return;
     }
 
@@ -192,7 +200,15 @@ void UpdatePersonalInspectionStatus(void)
 void SavePersonalInspectionUpdate(void)
 {
     PersonalInspectionState* state = &gInspectionState;
-    if (!state->queryFound || !state->statusUpdated) {
+    if (!state->queryFound) {
+        strcpy(state->message, "请先查询车辆信息");
+        return;
+    }
+    if (strcmp(state->vehicleStatus, "报废") == 0) {
+        strcpy(state->message, "该车辆已报废，不能保存年审信息");
+        return;
+    }
+    if (!state->statusUpdated) {
         strcpy(state->message, "请先点击更新年审状态");
         return;
     }
