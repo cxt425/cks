@@ -9,19 +9,23 @@
 #include "personalregistration.h"
 #include "personalinspection.h"
 
-static void DrawTextAt(int x, int y, const char* text)         // 定义 DrawTextAt 函数，用于在指定位置绘制文本
+static void DrawTextAt(int x, int y, const char* text)
 {
-    if (text == NULL || text[0] == '\0')         // 如果文本为空或首字符为空，则直接返回，不进行绘制
+    if (text == NULL || text[0] == '\0')
         return;
 
-    setbkmode(TRANSPARENT);          // 设置背景模式为透明，以便文本不会覆盖背景
-#ifdef UNICODE
-    wchar_t wideText[256];
-    if (MultiByteToWideChar(CP_ACP, 0, text, -1, wideText, 256) > 0)
-        outtextxy(x, y, wideText);
-#else
+    setbkmode(TRANSPARENT);
+
+    wchar_t wideText[256] = {0};
+    int wideLength = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text, -1, wideText, 256);
+    if (wideLength > 0) {
+        char ansiText[256] = {0};
+        WideCharToMultiByte(CP_ACP, 0, wideText, -1, ansiText, sizeof(ansiText), NULL, NULL);
+        outtextxy(x, y, ansiText);
+        return;
+    }
+
     outtextxy(x, y, text);
-#endif
 }
 
 void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制首页界面
@@ -604,7 +608,8 @@ void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校�
 }
 void DrawPersonalAccessPage2()
 {
-   setfillcolor(RGB(0,130,220));
+    const PersonalUserInfo* state = GetPersonalRegistrationState();
+    setfillcolor(RGB(0,130,220));
     fillrectangle(0,0,480,80);//顶部蓝色标题栏
     settextcolor(WHITE);
     settextstyle(30,0,_T("黑体"));
@@ -621,78 +626,98 @@ void DrawPersonalAccessPage2()
     setfillcolor(WHITE);
     fillroundrect(20,90,460,150,12,12);
     roundrect(20,90,460,150,12,12);
-    settextstyle(20,0,_T("黑体"));//Tab栏
+    settextstyle(20,0,_T("黑体"));
 
     settextcolor(RGB(110,110,110));
-    outtextxy(55,105,_T("出入记录添加"));//未激活Tab：出入记录添加
+    outtextxy(55,105,_T("出入记录添加"));
 
     settextcolor(RGB(0,130,220));
     outtextxy(270,105,_T("出入记录查询"));
     setlinecolor(RGB(0,130,220));
-    line(265,138,390,138);//激活Tab：出入记录查询
+    line(265,138,390,138);
 
     setlinecolor(RGB(215,215,215));
-    line(240,98,240,132);//中间分隔竖线
+    line(240,98,240,132);
 
-    fillroundrect(30,185,450,265,16,16);//车牌号输入框
-    setlinecolor(RGB(130,130,130));
     setfillcolor(RGB(255,255,255));
-    fillroundrect(50,200,320,245,22,22);//查询结果显示框
-    roundrect(50,200,320,245,22,22);
+    fillroundrect(30,175,320,245,18,18);
+    roundrect(30,175,320,245,18,18);
     settextstyle(18,0,_T("黑体"));
-    settextcolor(RGB(110,110,110));
-    outtextxy(60,215,_T("请输入车牌号"));//查询结果显示框提示文字
+    settextcolor(state->accessQueryPlate[0] ? BLACK : RGB(110,110,110));
+    if (state->accessQueryPlate[0]) DrawTextAt(50, 205, state->accessQueryPlate);
+    else outtextxy(50,205,_T("请输入车牌号"));
 
     setfillcolor(RGB(0,130,220));
-    fillroundrect(345,200,430,245,22,22);//查询按钮
-    settextstyle(20,0,_T("黑体"));
+    fillroundrect(345,175,430,245,18,18);
     settextcolor(WHITE);
-    outtextxy(368,211,_T("查询"));//查询按钮文字
+    outtextxy(368,205,_T("查询"));
+
+    settextstyle(16,0,_T("黑体"));
+    settextcolor(RGB(180,60,60));
+    if (state->accessQueryMessage[0]) DrawTextAt(35, 255, state->accessQueryMessage);
 
     setfillcolor(RGB(255,255,255));
     fillroundrect(30,280,450,525,16,16);
     settextstyle(20,0,_T("黑体"));
     settextcolor(BLACK);
-    outtextxy(45,302,_T("出入记录列表"));//出入记录列表
+    outtextxy(45,302,_T("出入记录列表"));
 
     setfillcolor(RGB(225,242,255));
-    fillroundrect(45,340,435,375,12,12);//出入记录显示框
+    fillroundrect(45,340,435,375,12,12);
     settextstyle(18,0,_T("黑体"));
     settextcolor(RGB(110,110,110));
     outtextxy(60,346,_T("车牌号"));
-    outtextxy(145,346,_T("车主姓名"));
-    outtextxy(245,346,_T("出入类型"));
-    outtextxy(335,346,_T("出入时间"));//表头底色
+    outtextxy(145,346,_T("车主"));
+    outtextxy(250,346,_T("类型"));
+    outtextxy(335,346,_T("时间"));
 
     line(130,340,130,495);
     line(240,340,240,495);
-    line(325,340,325,495);//表头竖线
+    line(325,340,325,495);
 
-    rectangle(45,375,435,405);//出入记录显示框边框
-    settextstyle(12,0,_T("宋体"));
-    outtextxy(52,380,_T("鄂A12345"));
-    outtextxy(147,380,_T("张三"));
-    outtextxy(257,380,_T("入校"));
-    outtextxy(334,380,_T("2024-06-01 08:30"));//第一条出入记录
+    if (state->accessQueryCount == 0) {
+        settextstyle(18,0,_T("黑体"));
+        settextcolor(RGB(160,160,160));
+        outtextxy(140,390,_T("暂无记录"));
+    } else {
+        int displayRows = 4;
+        int start = state->accessQueryScroll;
+        int end = start + displayRows;
+        if (end > state->accessQueryCount) end = state->accessQueryCount;
+        for (int i = start; i < end; ++i) {
+            char linebuf[128];
+            strcpy(linebuf, state->accessQueryRecords[i]);
+            char* items[4] = {0};
+            char* p = strtok(linebuf, "|");
+            int idx = 0;
+            while (p && idx < 4) {
+                items[idx++] = p;
+                p = strtok(NULL, "|");
+            }
 
-    rectangle(45,405,435,435);//出入记录显示框边框
-    outtextxy(52,410,_T("鄂A67890"));
-    outtextxy(147,410,_T("李四"));
-    outtextxy(257,410,_T("离校"));
-    outtextxy(334,410,_T("2024-06-01 17:22"));//第二条出入记录
+            int rowY = 380 + (i - start) * 30;
+            settextstyle(16,0,_T("黑体"));
+            settextcolor(BLACK);
+            if (idx >= 4) {
+                DrawTextAt(50, rowY, items[0]);
+                DrawTextAt(140, rowY, items[1]);
+                DrawTextAt(250, rowY, items[2]);
+                DrawTextAt(335, rowY, items[3]);
+            }
+        }
+    }
 
-    rectangle(45,435,435,465);//出入记录显示框边框
-    outtextxy(52,440,_T("鄂A54321"));
-    outtextxy(147,440,_T("李四"));
-    outtextxy(257,440,_T("入校"));
-    outtextxy(334,440,_T("2024-06-02 09:15"));//第三条出入记录
-
-    rectangle(45,465,435,495);//出入记录显示框边框
-    outtextxy(52,470,_T("鄂A98765"));
-    outtextxy(147,470,_T("张三"));
-    outtextxy(257,470,_T("离校"));
-    outtextxy(334,470,_T("2024-06-02 18:05"));//第四条出入记录
-
+    setfillcolor(RGB(230,230,230));
+    fillroundrect(448,340,456,505,8,8);
+    setfillcolor(RGB(150,150,150));
+    if (state->accessQueryCount > 4) {
+        int total = state->accessQueryCount;
+        int thumbHeight = (505 - 340) * 4 / total;
+        if (thumbHeight < 18) thumbHeight = 18;
+        int maxScroll = total - 4;
+        int thumbTop = 340 + (state->accessQueryScroll * (505 - 340 - thumbHeight)) / (maxScroll > 0 ? maxScroll : 1);
+        fillroundrect(449, thumbTop, 455, thumbTop + thumbHeight, 6, 6);
+    }
 }
 void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘制个人电动车报废管理系统界面
 {

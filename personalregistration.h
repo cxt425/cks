@@ -51,6 +51,13 @@ typedef struct {
     int accessTypeSelected;      // 0=入校，1=出校
     int accessFocus;             // 0=车牌号，1=时间
     char accessMessage[64];      // 出入记录状态提示
+    char accessQueryPlate[10];   // 出入记录查询车牌号
+    char accessQueryMessage[64]; // 出入记录查询状态提示
+    char accessQueryRecords[12][64]; // 出入记录查询结果（最多 12 条）
+    int accessQueryCount;        // 查询结果条数
+    int accessQueryScroll;       // 当前滚动偏移
+    int accessQueryFocus;        // 查询输入框焦点
+    int accessQueryDragging;     // 是否正在拖动查询滚动条
     int focus;             // 当前输入框焦点，0-6
     int registered;        // 提交是否成功
     char message[64];      // 状态提示信息

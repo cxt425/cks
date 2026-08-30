@@ -242,6 +242,14 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                     currentMouseCtrl = PERSON_BTN_ENTRY_EXIT1;
                     currentPage = PAGE_PERSONAL_ACCESSPAGE1; // 保持在个人电动车出入校园管理1页面
                 }
+                else if (m.x >= 30 && m.x <= 320 && m.y >= 175 && m.y <= 245) {
+                    regState->accessQueryFocus = 0;
+                    currentPage = PAGE_PERSONAL_ACCESSPAGE2;
+                }
+                else if (m.x >= 345 && m.x <= 430 && m.y >= 175 && m.y <= 245) {
+                    QueryPersonalAccessRecords();
+                    currentPage = PAGE_PERSONAL_ACCESSPAGE2;
+                }
                 break;
         case PAGE_PERSONAL_SCRAP:
              if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)

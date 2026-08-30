@@ -122,6 +122,11 @@ static void RefreshAccessScrapCheck(void)
 void SubmitPersonalAccessRecord(void)
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
+    if (state->accessType[0] == '\0' ||
+        (strcmp(state->accessType, "入校") != 0 && strcmp(state->accessType, "出校") != 0)) {
+        state->accessTypeSelected = 0;
+        strcpy(state->accessType, "入校");
+    }
     RefreshAccessScrapCheck();
     if (strcmp(state->accessMessage, "该车辆已报废，不能提交出入记录") == 0) {
         return;
@@ -271,4 +276,136 @@ void HandlePersonalAccessChar(TCHAR key)
             }
         }
     }
+}
+
+static void NormalizeQueryPlate(char* plate)
+{
+    if (!plate) return;
+    int len = (int)strlen(plate);
+    for (int i = 0; i < len; ++i) {
+        if (plate[i] >= 'a' && plate[i] <= 'z') plate[i] = plate[i] + 'A' - 'a';
+    }
+}
+
+void QueryPersonalAccessRecords(void)
+{
+    PersonalUserInfo* state = GetPersonalRegistrationState();
+    NormalizeQueryPlate(state->accessQueryPlate);
+    state->accessQueryCount = 0;
+    state->accessQueryScroll = 0;
+    state->accessQueryMessage[0] = '\0';
+    for (int i = 0; i < 12; ++i) state->accessQueryRecords[i][0] = '\0';
+
+    if (state->accessQueryPlate[0] == '\0') {
+        strcpy(state->accessQueryMessage, "请输入车牌号");
+        return;
+    }
+
+    FILE* file = fopen("access_records.txt", "r");
+    if (!file) {
+        strcpy(state->accessQueryMessage, "暂无出入记录");
+        return;
+    }
+
+    char line[256];
+    int count = 0;
+    while (fgets(line, sizeof(line), file) && count < 12) {
+        char record[128] = {0};
+        char plate[32] = {0};
+        char owner[64] = {0};
+        char type[16] = {0};
+        char time[32] = {0};
+
+        if (sscanf(line, "%31[^|]|%63[^|]|%15[^|]|%31[^|\n]", plate, owner, type, time) != 4) {
+            continue;
+        }
+
+        if (strcmp(plate, state->accessQueryPlate) != 0) {
+            continue;
+        }
+
+        snprintf(record, sizeof(record), "%s|%s|%s|%s", plate, owner, type, time);
+        snprintf(state->accessQueryRecords[count], 64, "%s", record);
+        count++;
+    }
+    fclose(file);
+
+    state->accessQueryCount = count;
+    if (count == 0) {
+        strcpy(state->accessQueryMessage, "未查询到该车出入记录");
+    } else {
+        strcpy(state->accessQueryMessage, "查询成功");
+    }
+}
+
+void HandlePersonalAccessQueryKey(char key)
+{
+    PersonalUserInfo* state = GetPersonalRegistrationState();
+    if (key == 8 || key == 127) {
+        int len = (int)strlen(state->accessQueryPlate);
+        if (len > 0) state->accessQueryPlate[len - 1] = '\0';
+        return;
+    }
+    if (key == 13 || key == 10) {
+        QueryPersonalAccessRecords();
+        return;
+    }
+    if (key == 9) {
+        state->accessQueryFocus = 1 - state->accessQueryFocus;
+        return;
+    }
+    if (state->accessQueryFocus == 0) {
+        if (strlen(state->accessQueryPlate) < 9) {
+            char ch = key;
+            if (ch >= 'a' && ch <= 'z') ch = ch + 'A' - 'a';
+            if ((ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')) {
+                int len = (int)strlen(state->accessQueryPlate);
+                state->accessQueryPlate[len] = ch;
+                state->accessQueryPlate[len + 1] = '\0';
+            }
+        }
+    }
+}
+
+void HandlePersonalAccessQueryChar(TCHAR key)
+{
+    if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
+        HandlePersonalAccessQueryKey((char)key);
+        return;
+    }
+
+    char converted[MB_LEN_MAX] = {0};
+    int byteCount = 0;
+#ifdef UNICODE
+    byteCount = WideCharToMultiByte(CP_ACP, 0, &key, 1, converted, sizeof(converted), NULL, NULL);
+#else
+    converted[0] = (char)key;
+    byteCount = 1;
+#endif
+    if (byteCount <= 0) return;
+
+    for (int i = 0; i < byteCount; ++i) {
+        char ch = converted[i];
+        if (ch >= 'a' && ch <= 'z') ch = ch + 'A' - 'a';
+        if ((ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')) {
+            if (strlen(GetPersonalRegistrationState()->accessQueryPlate) < 9) {
+                int len = (int)strlen(GetPersonalRegistrationState()->accessQueryPlate);
+                GetPersonalRegistrationState()->accessQueryPlate[len] = ch;
+                GetPersonalRegistrationState()->accessQueryPlate[len + 1] = '\0';
+            }
+        }
+    }
+}
+
+void ScrollPersonalAccessQuery(int delta)
+{
+    PersonalUserInfo* state = GetPersonalRegistrationState();
+    if (state->accessQueryCount <= 4) {
+        state->accessQueryScroll = 0;
+        return;
+    }
+    int maxScroll = state->accessQueryCount - 4;
+    state->accessQueryScroll += delta;
+    if (state->accessQueryScroll < 0) state->accessQueryScroll = 0;
+    if (state->accessQueryScroll > maxScroll) state->accessQueryScroll = maxScroll;
 }
