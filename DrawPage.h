@@ -16,4 +16,5 @@ void DrawPersonalScrapPage(void);
 void DrawSharedManagementPage(void);
 void DrawSharedUseVehiclePage(void);
 void DrawSharedSettlementPage(void);
+void DrawSharedRepairPage(void);
 #endif

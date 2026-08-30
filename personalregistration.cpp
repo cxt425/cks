@@ -49,6 +49,16 @@ static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinat
     return WideCharToMultiByte(CP_ACP, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
 }
 
+static void EnsureDefaultAccessType(PersonalUserInfo* state)
+{
+    if (!state) return;
+    if (state->accessType[0] == '\0' ||
+        (strcmp(state->accessType, "入校") != 0 && strcmp(state->accessType, "出校") != 0)) {
+        state->accessTypeSelected = 0;
+        strcpy(state->accessType, "入校");
+    }
+}
+
 // 保存个人电动车数据到文件中，返回保存是否成功
 int SavePersonalVehicleData(const PersonalUserInfo* info)
 {
@@ -187,7 +197,13 @@ void InitPersonalRegistrationState(void)
     state->accessTypeSelected = 0;
     state->accessFocus = 0;
     state->accessMessage[0] = '\0';
-    strcpy(state->accessType, "入校");
+    state->accessQueryPlate[0] = '\0';
+    state->accessQueryMessage[0] = '\0';
+    state->accessQueryCount = 0;
+    state->accessQueryScroll = 0;
+    state->accessQueryFocus = 0;
+    for (int i = 0; i < 12; ++i) state->accessQueryRecords[i][0] = '\0';
+    EnsureDefaultAccessType(state);
     strcpy(state->vehicleStatus, "正常");
     strcpy(state->message, "请填写注册信息，按 Tab 切换输入框");
 }

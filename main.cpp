@@ -21,96 +21,169 @@ int main() {
     while(1)
     {
         while (peekmessage(&msg))
-    {
-        // 接收输入法输入（中文、英文、数字、退格）
-        if (msg.message == WM_CHAR)
         {
-            TCHAR ch = msg.ch;
-            if (currentPage == PAGE_PERSONAL_REGISTRATION)
+            if (msg.message == WM_CHAR)
             {
-                 if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
-                    HandlePersonalRegistrationChar(ch);
+                TCHAR ch = msg.ch;
+                if (currentPage == PAGE_PERSONAL_REGISTRATION)
+                {
+                    if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                        HandlePersonalRegistrationChar(ch);
+                }
+                else if (currentPage == PAGE_PERSONAL_INFORMATION)
+                {
+                    if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                        HandlePersonalInformationChar(ch);
+                }
+                else if (currentPage == PAGE_LOGIN)
+                {
+                    if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                        HandleSharedSignoutChar(ch);
+                }
+                else if (currentPage == PAGE_PERSONAL_INSPECTION)
+                {
+                    if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                        HandlePersonalInspectionChar(ch);
+                }
+                else if (currentPage == PAGE_PERSONAL_SCRAP)
+                {
+                    if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                        HandlePersonalScrapChar(ch);
+                }
+                else if (currentPage == PAGE_PERSONAL_ACCESSPAGE1)
+                {
+                    if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                        HandlePersonalAccessChar(ch);
+                }
+                else if (currentPage == PAGE_PERSONAL_ACCESSPAGE2)
+                {
+                    if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                        HandlePersonalAccessQueryChar(ch);
+                }
             }
-            else if (currentPage == PAGE_PERSONAL_INFORMATION)
+            else if (msg.message == WM_KEYDOWN)
             {
-                if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
-                    HandlePersonalInformationChar(ch);
+                if (currentPage == PAGE_PERSONAL_REGISTRATION)
+                {
+                    if (msg.vkcode == VK_BACK) HandlePersonalRegistrationKey(8);
+                    else if (msg.vkcode == VK_RETURN) HandlePersonalRegistrationKey(13);
+                    else if (msg.vkcode == VK_TAB) HandlePersonalRegistrationKey(9);
+                }
+                else if (currentPage == PAGE_PERSONAL_INFORMATION)
+                {
+                    if (msg.vkcode == VK_BACK) HandlePersonalInformationKey(8);
+                    else if (msg.vkcode == VK_RETURN) HandlePersonalInformationKey(13);
+                }
+                else if (currentPage == PAGE_PERSONAL_INSPECTION)
+                {
+                    if (msg.vkcode == VK_BACK) HandlePersonalInspectionKey(8);
+                    else if (msg.vkcode == VK_RETURN) HandlePersonalInspectionKey(13);
+                    else if (msg.vkcode == VK_TAB) HandlePersonalInspectionKey(9);
+                }
+                else if (currentPage == PAGE_PERSONAL_SCRAP)
+                {
+                    if (msg.vkcode == VK_BACK) HandlePersonalScrapKey(8);
+                    else if (msg.vkcode == VK_RETURN) HandlePersonalScrapKey(13);
+                    else if (msg.vkcode == VK_TAB) HandlePersonalScrapKey(9);
+                }
+                else if (currentPage == PAGE_PERSONAL_ACCESSPAGE1)
+                {
+                    if (msg.vkcode == VK_BACK) HandlePersonalAccessKey(8);
+                    else if (msg.vkcode == VK_RETURN) HandlePersonalAccessKey(13);
+                    else if (msg.vkcode == VK_TAB) HandlePersonalAccessKey(9);
+                }
+                else if (currentPage == PAGE_PERSONAL_ACCESSPAGE2)
+                {
+                    if (msg.vkcode == VK_BACK) HandlePersonalAccessQueryKey(8);
+                    else if (msg.vkcode == VK_RETURN) HandlePersonalAccessQueryKey(13);
+                    else if (msg.vkcode == VK_TAB) HandlePersonalAccessQueryKey(9);
+                }
+                else if (currentPage == PAGE_LOGIN)
+                {
+                    if (msg.vkcode == VK_BACK) HandleSharedSignoutKey(8);
+                    else if (msg.vkcode == VK_RETURN) HandleSharedSignoutKey(13);
+                    else if (msg.vkcode == VK_TAB) HandleSharedSignoutKey(9);
+                }
             }
-            else if (currentPage == PAGE_LOGIN)
+            else if (msg.message == WM_MOUSEWHEEL && currentPage == PAGE_PERSONAL_ACCESSPAGE2)
             {
-                 if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
-                    HandleSharedSignoutChar(ch);
+                short delta = (short)HIWORD(msg.wParam);
+                ScrollPersonalAccessQuery(delta > 0 ? -1 : 1);
             }
-            else if (currentPage == PAGE_PERSONAL_INSPECTION)
+            else if (msg.message == WM_MOUSEMOVE && currentPage == PAGE_PERSONAL_ACCESSPAGE2)
             {
-                if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
-                    HandlePersonalInspectionChar(ch);
+                PersonalUserInfo* st = GetPersonalRegistrationState();
+                if (st->accessQueryDragging && st->accessQueryCount > 4)
+                {
+                    int barTop = 340;
+                    int barBottom = 505;
+                    int thumbHeight = (barBottom - barTop) * 4 / (st->accessQueryCount > 4 ? st->accessQueryCount : 4);
+                    if (thumbHeight < 18) thumbHeight = 18;
+                    int maxScroll = st->accessQueryCount - 4;
+                    int effective = barBottom - barTop - thumbHeight;
+                    if (effective <= 0) effective = 1;
+                    int target = msg.y - thumbHeight / 2;
+                    if (target < barTop) target = barTop;
+                    if (target > barBottom - thumbHeight) target = barBottom - thumbHeight;
+                    st->accessQueryScroll = (int)((target - barTop) * maxScroll / effective);
+                    if (st->accessQueryScroll < 0) st->accessQueryScroll = 0;
+                    if (st->accessQueryScroll > maxScroll) st->accessQueryScroll = maxScroll;
+                }
             }
-            else if (currentPage == PAGE_PERSONAL_SCRAP)
+            else if (msg.message == WM_LBUTTONDOWN)
             {
-                if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
-                    HandlePersonalScrapChar(ch);
+                if (currentPage == PAGE_PERSONAL_ACCESSPAGE2)
+                {
+                    PersonalUserInfo* st = GetPersonalRegistrationState();
+                    if (st->accessQueryCount > 4 && msg.x >= 448 && msg.x <= 456 && msg.y >= 340 && msg.y <= 505)
+                    {
+                        st->accessQueryDragging = 1;
+                        int barTop = 340;
+                        int barBottom = 505;
+                        int thumbHeight = (barBottom - barTop) * 4 / (st->accessQueryCount > 4 ? st->accessQueryCount : 4);
+                        if (thumbHeight < 18) thumbHeight = 18;
+                        int maxScroll = st->accessQueryCount - 4;
+                        int effective = barBottom - barTop - thumbHeight;
+                        if (effective <= 0) effective = 1;
+                        int target = msg.y - thumbHeight / 2;
+                        if (target < barTop) target = barTop;
+                        if (target > barBottom - thumbHeight) target = barBottom - thumbHeight;
+                        st->accessQueryScroll = (int)((target - barTop) * maxScroll / effective);
+                        if (st->accessQueryScroll < 0) st->accessQueryScroll = 0;
+                        if (st->accessQueryScroll > maxScroll) st->accessQueryScroll = maxScroll;
+                    }
+                    else
+                    {
+                        MOUSEMSG tempMouse;
+                        tempMouse.x = msg.x;
+                        tempMouse.y = msg.y;
+                        tempMouse.uMsg = WM_LBUTTONDOWN;
+                        GlobalMouseCheck(tempMouse, currentPage);
+                    }
+                }
+                else
+                {
+                    MOUSEMSG tempMouse;
+                    tempMouse.x = msg.x;
+                    tempMouse.y = msg.y;
+                    tempMouse.uMsg = WM_LBUTTONDOWN;
+                    GlobalMouseCheck(tempMouse, currentPage);
+                }
             }
-            else if (currentPage == PAGE_PERSONAL_ACCESSPAGE1)
+            else if (msg.message == WM_LBUTTONUP && currentPage == PAGE_PERSONAL_ACCESSPAGE2)
             {
-                if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
-                    HandlePersonalAccessChar(ch);
+                GetPersonalRegistrationState()->accessQueryDragging = 0;
             }
         }
-        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_REGISTRATION)
-        {
-            if (msg.vkcode == VK_BACK) HandlePersonalRegistrationKey(8);
-            else if (msg.vkcode == VK_RETURN) HandlePersonalRegistrationKey(13);
-            else if (msg.vkcode == VK_TAB) HandlePersonalRegistrationKey(9);
-        }
-        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_INFORMATION)
-        {
-            if (msg.vkcode == VK_BACK) HandlePersonalInformationKey(8);
-            else if (msg.vkcode == VK_RETURN) HandlePersonalInformationKey(13);
-        }
-        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_INSPECTION)
-        {
-            if (msg.vkcode == VK_BACK) HandlePersonalInspectionKey(8);
-            else if (msg.vkcode == VK_RETURN) HandlePersonalInspectionKey(13);
-            else if (msg.vkcode == VK_TAB) HandlePersonalInspectionKey(9);
-        }
-        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_SCRAP)
-        {
-            if (msg.vkcode == VK_BACK) HandlePersonalScrapKey(8);
-            else if (msg.vkcode == VK_RETURN) HandlePersonalScrapKey(13);
-            else if (msg.vkcode == VK_TAB) HandlePersonalScrapKey(9);
-        }
-        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_PERSONAL_ACCESSPAGE1)
-        {
-            if (msg.vkcode == VK_BACK) HandlePersonalAccessKey(8);
-            else if (msg.vkcode == VK_RETURN) HandlePersonalAccessKey(13);
-            else if (msg.vkcode == VK_TAB) HandlePersonalAccessKey(9);
-        }
-        else if (msg.message == WM_KEYDOWN && currentPage == PAGE_LOGIN)
-        {
-            if (msg.vkcode == VK_BACK) HandleSharedSignoutKey(8);
-            else if (msg.vkcode == VK_RETURN) HandleSharedSignoutKey(13);
-            else if (msg.vkcode == VK_TAB) HandleSharedSignoutKey(9);
-        }
-        // 鼠标左键，保留你原有逻辑
-        else if (msg.message == WM_LBUTTONDOWN)
-        {
-            MOUSEMSG tempMouse;
-            tempMouse.x = msg.x;
-            tempMouse.y = msg.y;
-            tempMouse.uMsg = WM_LBUTTONDOWN;
-            GlobalMouseCheck(tempMouse, currentPage);
-        }
-    }
 
-    if (currentPage == PAGE_PERSONAL_REGISTRATION &&
-        GetPersonalRegistrationState()->registered) {
-        currentPage = PAGE_PERSONAL_MANAGEMENT;
-    }
+        if (currentPage == PAGE_PERSONAL_REGISTRATION &&
+            GetPersonalRegistrationState()->registered) {
+            currentPage = PAGE_PERSONAL_MANAGEMENT;
+        }
 
-    cleardevice();
-    BeginBatchDraw();
-        switch(currentPage)               // 根据当前页面类型调用相应的绘制函数
+        cleardevice();
+        BeginBatchDraw();
+        switch(currentPage)
         {
             case PAGE_HOME: DrawFirstPage(); break;
             case PAGE_LOGIN: DrawSharedSignoutPage(); break;
@@ -124,25 +197,29 @@ int main() {
             case PAGE_SHARED_MANAGEMENT: DrawSharedManagementPage(); break;
             case PAGE_SHARED_USE_VEHICLE: DrawSharedUseVehiclePage(); break;
             case PAGE_SHARED_SETTLEMENT: DrawSharedSettlementPage(); break;
+            case PAGE_SHARED_REPAIR: DrawSharedRepairPage(); break;
         }
 
-        EndBatchDraw();             // 提交一帧绘制内容
-// 检查共享登录状态，如果登录成功且当前页面是登录页面，则在 3 秒后自动切换到个人管理页面
+        EndBatchDraw();
         SharedUserInfo* sharedState = GetSharedSignoutState();
-        if (currentPage == PAGE_LOGIN && sharedState->loginSuccess) {
+        if (currentPage == PAGE_LOGIN && sharedState->loginSuccess)
+        {
             if (loginSuccessTime == 0)
                 loginSuccessTime = GetTickCount();
-            else if (GetTickCount() - loginSuccessTime >= 3000) {
+            else if (GetTickCount() - loginSuccessTime >= 3000)
+            {
                 currentPage = PAGE_SHARED_MANAGEMENT;
                 loginSuccessTime = 0;
             }
-        } else {
+        }
+        else
+        {
             loginSuccessTime = 0;
         }
 
-        Sleep(10);                  // 暂停一小段时间，降低 CPU 占用率
-        BeginBatchDraw();           // 开始下一帧批量绘制
+        Sleep(10);
+        BeginBatchDraw();
     }
-    closegraph();                 // 关闭图形窗口并释放资源
-    return 0;                     // 返回 0 表示程序正常结束
+    closegraph();
+    return 0;
 }
