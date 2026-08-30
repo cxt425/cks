@@ -861,8 +861,8 @@ void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于
 
    settextstyle(18,0,_T("宋体"));
    settextcolor(BLACK);
-   outtextxy(50,138,_T("姓名：张三"));
-   outtextxy(50,168,_T("学号:U202501001"));
+   outtextxy(50,138,_T("姓名："));
+   outtextxy(50,168,_T("学号:"));
    outtextxy(50,198,_T("当前状态:已登录"));//登录状态信息卡片
    
    setfillcolor(RGB(0,130,220));
@@ -1077,23 +1077,7 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
     int pb2_w = textwidth(_T("刹车异常"));
     outtextxy(240 - pb2_w / 2,520, _T("刹车异常"));//刹车异常按钮
 
-    setfillcolor(WHITE);
-    fillroundrect(70,500,410,560,28,28);
-    settextcolor(BLACK);
-    settextstyle(22,0,_T("黑体"));
-    int pb2_w = textwidth(_T("刹车异常"));
-    outtextxy(240 - pb2_w / 2,520, _T("刹车异常"));//刹车异常按钮
-
-    setfillcolor(WHITE);
-    fillroundrect(70,500,410,560,28,28);
-    settextcolor(BLACK);
-    settextstyle(22,0,_T("黑体"));
-    int pb2_w = textwidth(_T("刹车异常"));
-    outtextxy(240 - pb2_w / 2,520, _T("刹车异常"));//刹车异常按钮
-
-    setlinecolor(RGB(200,200,200));
-    fillroundrect();
-    settextcolor(RGB(200,200,200));
+    settextcolor(RGB(100,100,100));
     settextstyle(16,0,_T("黑体"));
-    int  dc_w = textwidth(_T(""));
+    outtextxy(120,590,_T("请确认问题类型后提交报修"));
 }
