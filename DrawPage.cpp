@@ -1021,3 +1021,43 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
     outtextxy(245 - repair_w / 2, 560, _T("车辆报修"));//车辆报修按钮
 
 }
+
+void DrawSharedRepairPage(void)
+{
+    cleardevice();
+    setfillcolor(WHITE);
+    fillrectangle(0, 0, 480, 640);
+
+    setfillcolor(RGB(0,146,198));
+    fillrectangle(0, 0, 480, 80);
+
+    setlinecolor(WHITE);
+    setlinestyle(PS_SOLID, 3);
+    line(30, 40, 40, 30);
+    line(30, 40, 40, 50);
+
+    setbkmode(TRANSPARENT);
+    settextcolor(WHITE);
+    settextstyle(25,0,_T("黑体"));
+    outtextxy(175, 32, _T("车辆报修"));
+
+    setfillcolor(RGB(245,245,245));
+    solidroundrect(40, 120, 440, 510, 20, 20);
+
+    settextcolor(BLACK);
+    settextstyle(24,0,_T("黑体"));
+    outtextxy(120, 160, _T("报修信息已提交"));
+
+    settextstyle(18,0,_T("黑体"));
+    settextcolor(RGB(80,80,80));
+    outtextxy(70, 220, _T("车辆编号：E2001"));
+    outtextxy(70, 260, _T("故障类型：车轮/刹车异常"));
+    outtextxy(70, 300, _T("处理状态：等待维修人员接单"));
+
+    setfillcolor(RGB(0,146,198));
+    fillroundrect(70, 430, 410, 500, 20, 20);
+    settextcolor(WHITE);
+    settextstyle(22,0,_T("黑体"));
+    int back_w = textwidth(_T("返回结算页"));
+    outtextxy(240 - back_w / 2, 452, _T("返回结算页"));
+}
