@@ -984,4 +984,15 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
     int cancel_w = textwidth(_T("返回主菜单"));
     outtextxy(235 - cancel_w / 2, 440, _T("返回主菜单"));//返回主菜单按钮
 
+    settextcolor(RGB(100,100,100));
+    settextstyle(14,0,_T("黑体"));
+    outtextxy(50,500,_T("车辆故障?点击报修："));//报修提示文字
+
+    setfillcolor(RGB(255,185,100));
+    fillroundrect(70,540,410,600,22,22);
+    settextcolor(BLACK);
+    settextstyle(22,0,_T("黑体"));
+    int repair_w = textwidth(_T("车辆报修"));
+    outtextxy(245 - repair_w / 2, 560, _T("车辆报修"));//车辆报修按钮
+
 }
