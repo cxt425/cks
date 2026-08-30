@@ -18,6 +18,10 @@ static void DrawTextAt(int x, int y, const char* text)
 
     wchar_t wideText[256] = {0};
     int wideLength = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text, -1, wideText, 256);
+    if (wideLength <= 0) {
+        wideLength = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, text, -1, wideText, 256);
+    }
+
     if (wideLength > 0) {
         char ansiText[256] = {0};
         WideCharToMultiByte(CP_ACP, 0, wideText, -1, ansiText, sizeof(ansiText), NULL, NULL);
@@ -843,6 +847,8 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
 }
 void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于绘制共享电动车管理系统界面
 {
+   const SharedUserInfo* state = GetSharedSignoutState();
+
    setfillcolor(WHITE);//白色背景
    fillrectangle(0,0,480,640);//白色背景
 
@@ -851,18 +857,19 @@ void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于
    settextstyle(25,0,_T("黑体"));
    outtextxy(150,80  ,_T("共享电动车管理"));//顶部居中标题
 
-   setlinecolor(BLACK);
-   setlinestyle(PS_SOLID,2);
-   line(30,40,40,30);
-   line(30,40,40,50);//返回左箭头
-
    setlinecolor(RGB(200,200,200));
    fillroundrect(30,120,450,240,22,22);//登录状态显示框
 
    settextstyle(18,0,_T("宋体"));
    settextcolor(BLACK);
    outtextxy(50,138,_T("姓名："));
-   outtextxy(50,168,_T("学号:"));
+   if (state->username[0] != '\0') DrawTextAt(120, 138, state->username);
+   else outtextxy(120,138,_T("未登录"));
+
+   outtextxy(50,168,_T("学号："));
+   if (state->phone[0] != '\0') DrawTextAt(120, 168, state->phone);
+   else outtextxy(120,168,_T("未绑定"));
+
    outtextxy(50,198,_T("当前状态:已登录"));//登录状态信息卡片
    
    setfillcolor(RGB(0,130,220));
@@ -901,6 +908,8 @@ void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于
 
 void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制函数
 {
+    const SharedUserInfo* state = GetSharedSignoutState();
+
     cleardevice();              // 清空窗口并用背景颜色填充
     setfillcolor(RGB(0,146,198)); // 设置填充颜色为蓝色
     fillrectangle(0,0,480,80); //顶部蓝色标题栏
@@ -929,7 +938,8 @@ void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制�
 
     settextcolor(BLACK);
     settextstyle(30,0,_T("黑体"));
-    outtextxy(90,180,_T("E2001"));//车辆编号输入框默认文字
+    if (state->sharedUsePlate[0] != '\0') DrawTextAt(90,180,state->sharedUsePlate);
+    else outtextxy(90,180,_T(" "));
 
     setfillcolor(RGB(0,146,198));
     fillroundrect(305,170,405,220,32,32);
@@ -945,16 +955,16 @@ void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制�
 
     settextcolor(BLACK);
     settextstyle(20,0,_T("黑体"));
-    outtextxy(80,300,_T("车辆状态:空闲"));
+    char statusText[64];
+    snprintf(statusText, sizeof(statusText), "车辆状态:%s", state->sharedUseStatus[0] ? state->sharedUseStatus : "未查询");
+    DrawTextAt(80,300,statusText);
     outtextxy(80,330,_T("预计费用:起步价2元"));
-    outtextxy(80,360,_T("可用电量:80%"));
-
-   setfillcolor(RGB(0,146,198));
-   fillroundrect(60,500,420,560,32,32);
-   settextcolor(WHITE);
-   settextstyle(20,0,_T("黑体"));
-   int btn_w = textwidth(_T("返回主菜单"));
-   outtextxy(240-btn_w/2, 520, _T("返回主菜单"));//返回主菜单按钮
+    char batteryText[64];
+    snprintf(batteryText, sizeof(batteryText), "可用电量:%s", state->sharedUseBattery[0] ? state->sharedUseBattery : "--");
+    DrawTextAt(80,360,batteryText);
+    if (state->sharedUseMessage[0] != '\0') {
+        DrawTextAt(80, 410, state->sharedUseMessage);
+    }
 
 }
 
@@ -984,10 +994,17 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
 
     settextcolor(BLACK);
     settextstyle(20,0,_T("黑体"));
-    outtextxy(50,120,_T("车辆编号: E2001"));
-    outtextxy(50,160,_T("用车时长: 25分钟"));
-    outtextxy(50,200,_T("骑行里程: 5.20公里"));
-    outtextxy(50,240,_T("应付金额: 2.8元"));//支付信息显示内容
+    outtextxy(50,120,_T("车辆编号:"));
+    DrawTextAt(180,120, GetSharedSignoutState()->settlementPlate[0] ? GetSharedSignoutState()->settlementPlate : "");
+    outtextxy(50,160,_T("用车时长:"));
+    DrawTextAt(180,160, GetSharedSignoutState()->settlementDuration[0] ? GetSharedSignoutState()->settlementDuration : "0");
+    outtextxy(310,160,_T("分钟"));
+    outtextxy(50,200,_T("骑行里程:"));
+    DrawTextAt(180,200, GetSharedSignoutState()->settlementDistance[0] ? GetSharedSignoutState()->settlementDistance : "0");
+    outtextxy(310,200,_T("公里"));
+    outtextxy(50,240,_T("应付金额:"));
+    DrawTextAt(180,240, GetSharedSignoutState()->settlementAmount[0] ? GetSharedSignoutState()->settlementAmount : "0.8");
+    outtextxy(310,240,_T("元"));//支付信息显示内容
 
     settextcolor(RGB(100,100,100));
     settextstyle(14,0,_T("黑体"));

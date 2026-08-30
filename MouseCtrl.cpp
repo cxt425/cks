@@ -1,5 +1,6 @@
 #include "MouseCtrl.h"    // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
+#include "sharedusevehicle.h"
 #include "personalregistration.h"
 #include "personalinspection.h"
 #include "personalscrap.h"
@@ -292,11 +293,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
              }
                 break;
         case PAGE_SHARED_MANAGEMENT:
-            if (m.x >= 0 && m.x <= 80 && m.y >= 0 && m.y <= 80) {
-                currentMouseCtrl = SHARED_BTN_BACK;
-                currentPage = PAGE_LOGIN;
-            }
-            else if (m.x >= 60 && m.x <= 420 && m.y >= 270 && m.y <= 330) {
+            if (m.x >= 60 && m.x <= 420 && m.y >= 270 && m.y <= 330) {
                 currentMouseCtrl = SHARED_BTN_USE_VEHICLE;
                 currentPage = PAGE_SHARED_USE_VEHICLE;
             }
@@ -304,16 +301,35 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                 currentMouseCtrl = SHARED_BTN_SETTLEMENT;
                 currentPage = PAGE_SHARED_SETTLEMENT;
             }
+            else if (m.x >= 60 && m.x <= 420 && m.y >= 510 && m.y <= 570) {
+                currentMouseCtrl = MOUSE_NONE;
+                LogoutSharedUser();
+                currentPage = PAGE_LOGIN;
+            }
             break;
         case PAGE_SHARED_USE_VEHICLE:
             if (m.x >= 0 && m.x <= 80 && m.y >= 0 && m.y <= 80) {
                 currentMouseCtrl = SHARED_BTN_BACK;
                 currentPage = PAGE_SHARED_MANAGEMENT;
             }
+            else if (m.x >= 80 && m.x <= 280 && m.y >= 160 && m.y <= 220) {
+                currentMouseCtrl = MOUSE_NONE;
+            }
+            else if (m.x >= 305 && m.x <= 405 && m.y >= 170 && m.y <= 220) {
+                TryUnlockSharedVehicle();
+                if (strncmp(GetSharedSignoutState()->sharedUseMessage, "开锁成功", 9) == 0) {
+                    currentPage = PAGE_SHARED_SETTLEMENT;
+                }
+            }
             break;
         case PAGE_SHARED_SETTLEMENT:
             if (m.x >= 0 && m.x <= 80 && m.y >= 0 && m.y <= 80) {
                 currentMouseCtrl = SHARED_BTN_BACK;
+                currentPage = PAGE_SHARED_MANAGEMENT;
+            }
+            else if (m.x >= 70 && m.x <= 410 && m.y >= 340 && m.y <= 400) {
+                currentMouseCtrl = MOUSE_NONE;
+                ConfirmSharedSettlementPayment();
                 currentPage = PAGE_SHARED_MANAGEMENT;
             }
             else if (m.x >= 70 && m.x <= 410 && m.y >= 540 && m.y <= 600) {
