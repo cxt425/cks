@@ -8,6 +8,7 @@
 
 static SharedUserInfo gSharedUserInfo;// 定义全局共享用户信息结构体，用于存储登录状态和输入信息
 static const char* SHARED_DATA_FILE = "shared_vehicle_data.txt";
+static const char* SHARED_BICYCLE_DATA_FILE = "shared_bicycle_data.txt";
 
 static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)
 {
@@ -124,6 +125,19 @@ void InitSharedSignoutState(void)
     state->codeSent = 0;
     state->loginSuccess = 0;
     strcpy(state->message, "请先输入用户名和手机号，再获取验证码");
+    strcpy(state->sharedUseStatus, "未查询");
+    strcpy(state->sharedUseBattery, "--");
+    strcpy(state->sharedUseMessage, "请输入车辆编号");    strcpy(state->settlementPlate, "");
+    strcpy(state->settlementDuration, "0");
+    strcpy(state->settlementDistance, "0");
+    strcpy(state->settlementAmount, "0.8");
+    strcpy(state->settlementStatus, "未支付");
+    state->settlementFocus = 0;    strcpy(state->settlementPlate, "");
+    strcpy(state->settlementDuration, "0");
+    strcpy(state->settlementDistance, "0");
+    strcpy(state->settlementAmount, "0.8");
+    strcpy(state->settlementStatus, "未支付");
+    state->settlementFocus = 0;
 }
 
 // 处理登录页面的键盘输入
@@ -226,4 +240,15 @@ void TrySharedLogin(void)
         return;
     }
     strcpy(state->message, "登录成功，欢迎使用共享电动车系统");
+}
+
+
+void LogoutSharedUser(void)
+{
+    SharedUserInfo* state = GetSharedSignoutState();
+    memset(state, 0, sizeof(*state));
+    state->focus = 0;
+    state->codeSent = 0;
+    state->loginSuccess = 0;
+    strcpy(state->message, "请先输入用户名和手机号，再获取验证码");
 }
