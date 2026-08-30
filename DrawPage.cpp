@@ -996,3 +996,79 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
     outtextxy(245 - repair_w / 2, 560, _T("车辆报修"));//车辆报修按钮
 
 }
+void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
+{
+    setfillcolor(WHITE);
+    fillrectangle(0,0,480,640);//白色背景
+
+    cleardevice();
+    setfillcolor(RGB(0,146,198));
+    fillrectangle(0,0,480,80);//顶部蓝色标题
+
+    setlinecolor(WHITE);
+    setlinestyle(PS_SOLID, 3);
+    line(30, 40, 40, 30);
+    line(30, 40, 40, 50);//返回左箭头
+
+    setbkmode(TRANSPARENT);
+    settextcolor(WHITE);
+    settextstyle(25,0,_T("黑体"));
+    outtextxy(185,32,_T("车辆报修"));//顶部居中标题
+
+    setfillcolor(RGB(255,255,255));
+    fillroundrect(30,100,450,280,22,22);
+    setlinecolor(RGB(200,200,200));
+    fillroundrect(30,100,450,280,22,22);//报修信息显示边框
+    settextcolor(BLACK);
+    settextstyle(20,0,_T("黑体"));
+    outtextxy(50,120,_T("车辆编号: E2001"));
+
+    setfillcolor(WHITE);
+    fillroundrect(30,300,450,400,22,22);
+    setlinecolor(RGB(200,200,200));
+    fillroundrect(30,300,450,400,22,22);//报修原因输入框
+    settextcolor(BLACK);
+    settextstyle(20,0,_T("黑体"));
+    int pb_w = textwidth(_T("问题类型"));
+    outtextxy(50,320,_T("问题类型:"));//报修原因输入框提示文字
+
+    setlinecolor(RGB(200,200,200));
+    fillroundrect(150,310,430,350,18,18);
+    fillroundrect(150,310,430,350,18,18);
+    fillroundrect(150,310,430,350,18,18);
+    fillroundrect(150,310,430,350,18,18);
+
+    setfillcolor(RGB(0,146,198));
+    fillroundrect(70,420,410,480,28,28);
+    settextcolor(WHITE);
+    settextstyle(22,0,_T("黑体"));
+    int pb1_w = textwidth(_T("无法开锁"));
+    outtextxy(240 - pb1_w / 2,440, _T("无法开锁"));//无法开锁按钮
+
+    setfillcolor(WHITE);
+    fillroundrect(70,500,410,560,28,28);
+    settextcolor(BLACK);
+    settextstyle(22,0,_T("黑体"));
+    int pb2_w = textwidth(_T("刹车异常"));
+    outtextxy(240 - pb2_w / 2,520, _T("刹车异常"));//刹车异常按钮
+
+    setfillcolor(WHITE);
+    fillroundrect(70,500,410,560,28,28);
+    settextcolor(BLACK);
+    settextstyle(22,0,_T("黑体"));
+    int pb2_w = textwidth(_T("刹车异常"));
+    outtextxy(240 - pb2_w / 2,520, _T("刹车异常"));//刹车异常按钮
+
+    setfillcolor(WHITE);
+    fillroundrect(70,500,410,560,28,28);
+    settextcolor(BLACK);
+    settextstyle(22,0,_T("黑体"));
+    int pb2_w = textwidth(_T("刹车异常"));
+    outtextxy(240 - pb2_w / 2,520, _T("刹车异常"));//刹车异常按钮
+
+    setlinecolor(RGB(200,200,200));
+    fillroundrect();
+    settextcolor(RGB(200,200,200));
+    settextstyle(16,0,_T("黑体"));
+    int  dc_w = textwidth(_T(""));
+}
