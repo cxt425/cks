@@ -46,6 +46,63 @@ static void AppendSharedUseRecord(const char* plate)
     fclose(file);
 }
 
+static void UpdateSharedUseRecordPaid(const char* plate, const char* duration, const char* distance, const char* amount)
+{
+    if (!plate || plate[0] == '\0') return;
+
+    FILE* in = fopen(SHARED_USE_RECORD_FILE, "r");
+    if (!in) {
+        return;
+    }
+
+    FILE* out = fopen("shared_use_records.tmp", "w");
+    if (!out) {
+        fclose(in);
+        return;
+    }
+
+    char line[256];
+    int found = 0;
+    while (fgets(line, sizeof(line), in)) {
+        char buffer[256];
+        strncpy(buffer, line, sizeof(buffer) - 1);
+        buffer[sizeof(buffer) - 1] = '\0';
+
+        char* parts[6] = {0};
+        int count = 0;
+        char* token = strtok(buffer, "|\r\n");
+        while (token && count < 6) {
+            parts[count++] = token;
+            token = strtok(NULL, "|\r\n");
+        }
+
+        if (count >= 5 && parts[0] && strcmp(parts[0], plate) == 0 && parts[4] && strcmp(parts[4], "未支付") == 0) {
+            char newLine[256];
+            snprintf(newLine, sizeof(newLine), "%s|%s分钟|%s公里|%s元|已支付\n",
+                     plate,
+                     duration[0] ? duration : "0",
+                     distance[0] ? distance : "0",
+                     amount);
+            WriteUtf8Text(out, newLine);
+            found = 1;
+        }
+        else {
+            WriteUtf8Text(out, line);
+        }
+    }
+
+    fclose(in);
+    fclose(out);
+
+    if (found) {
+        remove(SHARED_USE_RECORD_FILE);
+        rename("shared_use_records.tmp", SHARED_USE_RECORD_FILE);
+    }
+    else {
+        remove("shared_use_records.tmp");
+    }
+}
+
 static const char* SHARED_SETTLEMENT_RECORD_FILE = "shared_use_records.txt";
 
 static void AppendSharedUsePlateChar(char* dest, int maxLen, char key)
@@ -142,6 +199,36 @@ static int ParseBatteryPercent(const char* batteryText)
     return atoi(tmp);
 }
 
+static int ConvertLocalToUtf8(const char* source, char* destination, int destinationSize)
+{
+    if (!source || !destination || destinationSize <= 0) return 0;
+
+    int wideLen = MultiByteToWideChar(CP_ACP, 0, source, -1, NULL, 0);
+    if (wideLen > 0) {
+        wchar_t* wide = (wchar_t*)malloc((size_t)wideLen * sizeof(wchar_t));
+        if (wide) {
+            MultiByteToWideChar(CP_ACP, 0, source, -1, wide, wideLen);
+            int utf8Len = WideCharToMultiByte(CP_UTF8, 0, wide, -1, NULL, 0, NULL, NULL);
+            if (utf8Len > 0) {
+                char* utf8 = (char*)malloc((size_t)utf8Len);
+                if (utf8) {
+                    WideCharToMultiByte(CP_UTF8, 0, wide, -1, utf8, utf8Len, NULL, NULL);
+                    strncpy(destination, utf8, destinationSize - 1);
+                    destination[destinationSize - 1] = '\0';
+                    free(utf8);
+                    free(wide);
+                    return 1;
+                }
+            }
+            free(wide);
+        }
+    }
+
+    strncpy(destination, source, destinationSize - 1);
+    destination[destinationSize - 1] = '\0';
+    return 1;
+}
+
 static void UpdateSharedBicycleRecordInFile(const char* plate, const char* status, const char* battery)
 {
     if (!plate || plate[0] == '\0' || !status || !battery) return;
@@ -155,6 +242,11 @@ static void UpdateSharedBicycleRecordInFile(const char* plate, const char* statu
         return;
     }
 
+    char plateUtf8[32], statusUtf8[32], batteryUtf8[16];
+    ConvertLocalToUtf8(plate, plateUtf8, sizeof(plateUtf8));
+    ConvertLocalToUtf8(status, statusUtf8, sizeof(statusUtf8));
+    ConvertLocalToUtf8(battery, batteryUtf8, sizeof(batteryUtf8));
+
     char line[128];
     int found = 0;
     while (fgets(line, sizeof(line), in)) {
@@ -164,7 +256,7 @@ static void UpdateSharedBicycleRecordInFile(const char* plate, const char* statu
 
         char* field = strtok(buffer, "|\r\n");
         if (field && strcmp(field, plate) == 0) {
-            fprintf(out, "%s|%s|%s\n", plate, status, battery);
+            fprintf(out, "%s|%s|%s\n", plateUtf8, statusUtf8, batteryUtf8);
             found = 1;
         }
         else {
@@ -173,7 +265,7 @@ static void UpdateSharedBicycleRecordInFile(const char* plate, const char* statu
     }
 
     if (!found) {
-        fprintf(out, "%s|%s|%s\n", plate, status, battery);
+        fprintf(out, "%s|%s|%s\n", plateUtf8, statusUtf8, batteryUtf8);
     }
 
     fclose(in);
@@ -181,6 +273,22 @@ static void UpdateSharedBicycleRecordInFile(const char* plate, const char* statu
 
     remove(SHARED_BICYCLE_DATA_FILE);
     rename("shared_bicycle_data.tmp", SHARED_BICYCLE_DATA_FILE);
+}
+
+static void ResetSharedRideState(void)
+{
+    SharedUserInfo* state = GetSharedSignoutState();
+    state->sharedUsePlate[0] = '\0';
+    strcpy(state->sharedUseStatus, "未查询");
+    strcpy(state->sharedUseBattery, "--");
+    strcpy(state->sharedUseMessage, "请输入车辆编号");
+
+    state->settlementPlate[0] = '\0';
+    strcpy(state->settlementDuration, "0");
+    strcpy(state->settlementDistance, "0");
+    strcpy(state->settlementAmount, "0.8");
+    strcpy(state->settlementStatus, "未支付");
+    state->settlementFocus = 0;
 }
 
 static void NormalizeLocalText(char* dest, size_t destSize, const char* src)
@@ -353,22 +461,17 @@ void ConfirmSharedSettlementPayment(void)
     snprintf(batteryText, sizeof(batteryText), "%d%%", batteryAfterRide >= 0 ? batteryAfterRide : 0);
     UpdateSharedBicycleRecordInFile(state->settlementPlate, "空闲中", batteryText);
 
-    FILE* file = fopen(SHARED_SETTLEMENT_RECORD_FILE, "a");
-    if (!file) return;
+    UpdateSharedUseRecordPaid(state->settlementPlate,
+                             state->settlementDuration[0] ? state->settlementDuration : "0",
+                             state->settlementDistance[0] ? state->settlementDistance : "0",
+                             state->settlementAmount);
 
-    char line[256];
-    snprintf(line, sizeof(line), "%s|%s分钟|%s公里|%s元|已支付\n",
-             state->settlementPlate,
-             state->settlementDuration[0] ? state->settlementDuration : "0",
-             state->settlementDistance[0] ? state->settlementDistance : "0",
-             state->settlementAmount);
-    WriteUtf8Text(file, line);
-    fclose(file);
-
+    strcpy(state->settlementStatus, "已支付");
     strcpy(state->sharedUseStatus, "空闲中");
     strcpy(state->sharedUseBattery, batteryText);
-    strcpy(state->settlementStatus, "已支付");
     strcpy(state->sharedUseMessage, "还车结算成功：已支付");
+
+    ResetSharedRideState();
 }
 
 void TryUnlockSharedVehicle(void)
