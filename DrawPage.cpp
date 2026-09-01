@@ -1135,4 +1135,29 @@ void DrawSharedOrderPage(void)
     setfillcolor(RGB(0,146,198));
     fillrectangle(0,0,480,80);
 
+    setbkmode(TRANSPARENT);
+    settextcolor(WHITE);
+    settextstyle(25,0,_T("黑体"));
+    outtextxy(185,32,_T("我的订单"));//顶部居中标题
+
+    setfillcolor(WHITE);
+    fillroundrect(30,100,450,260,22,22);
+    setlinecolor(RGB(0,120,220));
+    fillroundrect(30,100,450,2 60,22,22);
+
+    settextcolor(BLACK);
+    settextstyle(18,0,_T("黑体"));
+    outtextxy(50,120,_T("车辆编号: E2001"));
+    outtextxy(50,140,_T("用车时间: 2026-06-15 14:30:01"));
+    outtextxy(50,160,_T("还车时间: 2026-06-15 14:45:23"));
+    outtextxy(50,180,_T("骑行时长: 15分22秒"));
+    outtextxy(50,200,_T("骑行里程: 3公里"));
+    outtextxy(50,220,_T("支付金额: 2元"));//订单信息显示内容
+
+    setfillcolor(RGB(0,146,198));
+    fillroundrect(70,270,410,330,28,28);
+    settextcolor(WHITE);
+    settextstyle(22,0,_T("黑体"));
+    int btn1_w = textwidth(_T("返回主界面"));
+    outtextxy(240 - btn1_w / 2, 290, _T("返回主界面"));//返回主界面按钮
 }
