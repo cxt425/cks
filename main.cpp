@@ -220,6 +220,7 @@ int main() {
             case PAGE_SHARED_MANAGEMENT: DrawSharedManagementPage(); break;
             case PAGE_SHARED_USE_VEHICLE: DrawSharedUseVehiclePage(); break;
             case PAGE_SHARED_SETTLEMENT: DrawSharedSettlementPage(); break;
+            case PAGE_SHARED_ORDER: DrawSharedOrderPage(); break;
             case PAGE_SHARED_REPAIR: DrawSharedRepairPage(); break;
         }
 

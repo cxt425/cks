@@ -17,6 +17,7 @@ typedef enum {
     PAGE_SHARED_MANAGEMENT,
     PAGE_SHARED_USE_VEHICLE,
     PAGE_SHARED_SETTLEMENT,
+    PAGE_SHARED_ORDER,
     PAGE_SHARED_REPAIR
 } PageType;
 
@@ -50,7 +51,8 @@ typedef enum {
     PERSON_REG_SUBMIT,
     SHARED_BTN_BACK,
     SHARED_BTN_USE_VEHICLE,
-    SHARED_BTN_SETTLEMENT
+    SHARED_BTN_SETTLEMENT,
+    SHARED_BTN_ORDER
 } MouseTarget;
 
 // 全局变量声明：由 MouseCtrl.cpp 中定义

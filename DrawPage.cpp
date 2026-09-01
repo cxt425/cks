@@ -1038,6 +1038,7 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
     outtextxy(245 - repair_w / 2, 560, _T("车辆报修"));//车辆报修按钮
 
 }
+
 void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
 {
     setfillcolor(WHITE);
@@ -1124,4 +1125,14 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
     settextstyle(22,0,_T("黑体"));
     int fh_w = textwidth(_T("返回主菜单"));
     outtextxy(235 - textwidth(_T("返回主菜单")) / 2, 570, _T("返回主菜单"));//返回主菜单按钮
+}
+void DrawSharedOrderPage(void)
+{
+    cleardevice();
+    setfillcolor(WHITE);
+    fillrectangle(0,0,480,640);
+
+    setfillcolor(RGB(0,146,198));
+    fillrectangle(0,0,480,80);
+
 }

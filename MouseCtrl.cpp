@@ -301,10 +301,20 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                 currentMouseCtrl = SHARED_BTN_SETTLEMENT;
                 currentPage = PAGE_SHARED_SETTLEMENT;
             }
+            else if (m.x >= 60 && m.x <= 420 && m.y >= 430 && m.y <= 490) {
+                currentMouseCtrl = SHARED_BTN_ORDER;
+                currentPage = PAGE_SHARED_ORDER;
+            }
             else if (m.x >= 60 && m.x <= 420 && m.y >= 510 && m.y <= 570) {
                 currentMouseCtrl = MOUSE_NONE;
                 LogoutSharedUser();
                 currentPage = PAGE_LOGIN;
+            }
+            break;
+        case PAGE_SHARED_ORDER:
+            if (m.x >= 0 && m.x <= 80 && m.y >= 0 && m.y <= 80) {
+                currentMouseCtrl = SHARED_BTN_BACK;
+                currentPage = PAGE_SHARED_MANAGEMENT;
             }
             break;
         case PAGE_SHARED_USE_VEHICLE:
