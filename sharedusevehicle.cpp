@@ -142,6 +142,47 @@ static int ParseBatteryPercent(const char* batteryText)
     return atoi(tmp);
 }
 
+static void UpdateSharedBicycleRecordInFile(const char* plate, const char* status, const char* battery)
+{
+    if (!plate || plate[0] == '\0' || !status || !battery) return;
+
+    FILE* in = fopen(SHARED_BICYCLE_DATA_FILE, "r");
+    if (!in) return;
+
+    FILE* out = fopen("shared_bicycle_data.tmp", "w");
+    if (!out) {
+        fclose(in);
+        return;
+    }
+
+    char line[128];
+    int found = 0;
+    while (fgets(line, sizeof(line), in)) {
+        char buffer[128];
+        strncpy(buffer, line, sizeof(buffer) - 1);
+        buffer[sizeof(buffer) - 1] = '\0';
+
+        char* field = strtok(buffer, "|\r\n");
+        if (field && strcmp(field, plate) == 0) {
+            fprintf(out, "%s|%s|%s\n", plate, status, battery);
+            found = 1;
+        }
+        else {
+            fputs(line, out);
+        }
+    }
+
+    if (!found) {
+        fprintf(out, "%s|%s|%s\n", plate, status, battery);
+    }
+
+    fclose(in);
+    fclose(out);
+
+    remove(SHARED_BICYCLE_DATA_FILE);
+    rename("shared_bicycle_data.tmp", SHARED_BICYCLE_DATA_FILE);
+}
+
 static void NormalizeLocalText(char* dest, size_t destSize, const char* src)
 {
     if (!dest || destSize == 0) return;
@@ -297,6 +338,21 @@ void ConfirmSharedSettlementPayment(void)
     if (state->settlementPlate[0] == '\0') return;
 
     UpdateSettlementAmount(state);
+
+    double distance = atof(state->settlementDistance);
+    int currentBattery = ParseBatteryPercent(state->sharedUseBattery);
+    int batteryAfterRide = currentBattery;
+    if (currentBattery >= 0) {
+        int consume = (int)(distance + 0.5f);
+        if (consume < 0) consume = 0;
+        batteryAfterRide = currentBattery - consume;
+        if (batteryAfterRide < 0) batteryAfterRide = 0;
+    }
+
+    char batteryText[16];
+    snprintf(batteryText, sizeof(batteryText), "%d%%", batteryAfterRide >= 0 ? batteryAfterRide : 0);
+    UpdateSharedBicycleRecordInFile(state->settlementPlate, "空闲中", batteryText);
+
     FILE* file = fopen(SHARED_SETTLEMENT_RECORD_FILE, "a");
     if (!file) return;
 
@@ -309,6 +365,8 @@ void ConfirmSharedSettlementPayment(void)
     WriteUtf8Text(file, line);
     fclose(file);
 
+    strcpy(state->sharedUseStatus, "空闲中");
+    strcpy(state->sharedUseBattery, batteryText);
     strcpy(state->settlementStatus, "已支付");
     strcpy(state->sharedUseMessage, "还车结算成功：已支付");
 }
@@ -344,6 +402,9 @@ void TryUnlockSharedVehicle(void)
     strcpy(state->settlementAmount, "0.8");
     strcpy(state->settlementStatus, "未支付");
     state->settlementFocus = 0;
+
+    strcpy(state->sharedUseStatus, "骑行中");
+    UpdateSharedBicycleRecordInFile(state->sharedUsePlate, "骑行中", state->sharedUseBattery);
     AppendSharedUseRecord(state->sharedUsePlate);
     strcpy(state->sharedUseMessage, "开锁成功：车辆已解锁");
 }

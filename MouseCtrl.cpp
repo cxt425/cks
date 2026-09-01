@@ -297,11 +297,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                 currentMouseCtrl = SHARED_BTN_USE_VEHICLE;
                 currentPage = PAGE_SHARED_USE_VEHICLE;
             }
-            else if (m.x >= 60 && m.x <= 420 && m.y >= 350 && m.y <= 410) {
-                currentMouseCtrl = SHARED_BTN_SETTLEMENT;
-                currentPage = PAGE_SHARED_SETTLEMENT;
-            }
-            else if (m.x >= 60 && m.x <= 420 && m.y >= 430 && m.y <= 490) {
+            else if (m.x >= 60 && m.x <= 420 && m.y >= 390 && m.y <= 450) {
                 currentMouseCtrl = SHARED_BTN_ORDER;
                 currentPage = PAGE_SHARED_ORDER;
             }
@@ -331,16 +327,32 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                     currentPage = PAGE_SHARED_SETTLEMENT;
                 }
             }
+            else if (m.x >= 60 && m.x <= 420 && m.y >= 470 && m.y <= 530) {
+                currentMouseCtrl = SHARED_BTN_SETTLEMENT;
+                currentPage = PAGE_SHARED_SETTLEMENT;
+            }
             break;
         case PAGE_SHARED_SETTLEMENT:
             if (m.x >= 0 && m.x <= 80 && m.y >= 0 && m.y <= 80) {
                 currentMouseCtrl = SHARED_BTN_BACK;
-                currentPage = PAGE_SHARED_MANAGEMENT;
+                currentPage = PAGE_SHARED_USE_VEHICLE;
+            }
+            else if (m.x >= 170 && m.x <= 300 && m.y >= 150 && m.y <= 185) {
+                currentMouseCtrl = MOUSE_NONE;
+                GetSharedSignoutState()->settlementFocus = 0;
+            }
+            else if (m.x >= 170 && m.x <= 300 && m.y >= 190 && m.y <= 225) {
+                currentMouseCtrl = MOUSE_NONE;
+                GetSharedSignoutState()->settlementFocus = 1;
             }
             else if (m.x >= 70 && m.x <= 410 && m.y >= 340 && m.y <= 400) {
                 currentMouseCtrl = MOUSE_NONE;
                 ConfirmSharedSettlementPayment();
                 currentPage = PAGE_SHARED_MANAGEMENT;
+            }
+            else if (m.x >= 70 && m.x <= 410 && m.y >= 420 && m.y <= 480) {
+                currentMouseCtrl = MOUSE_NONE;
+                currentPage = PAGE_SHARED_USE_VEHICLE;
             }
             else if (m.x >= 70 && m.x <= 410 && m.y >= 540 && m.y <= 600) {
                 currentMouseCtrl = MOUSE_NONE;

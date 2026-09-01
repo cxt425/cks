@@ -880,18 +880,11 @@ void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于
    outtextxy(35+(420-btn1_w)/2,285,_T("输入用车"));//输入用车按钮
 
     setfillcolor(RGB(0,130,220));
-    fillroundrect(60,350,420,410,18,18);
-    settextcolor(WHITE);
-    settextstyle(24,0,_T("宋体"));
-    int btn2_w=textwidth(_T("还车结算"));
-    outtextxy(35+(420-btn2_w)/2,365,_T("还车结算"));//还车结算按钮
-
-    setfillcolor(RGB(0,130,220));
-    fillroundrect(60,430,420,490,18,18);
+    fillroundrect(60,390,420,450,18,18);
     settextcolor(WHITE);
     settextstyle(24,0,_T("宋体"));
     int btn3_w=textwidth(_T("我的订单"));
-    outtextxy(35+(420-btn3_w)/2,445,_T("我的订单"));//我的订单按钮
+    outtextxy(35+(420-btn3_w)/2,405,_T("我的订单"));//我的订单按钮
 
     setfillcolor(RGB(0,130,220));
     fillroundrect(60,510,420,570,18,18);
@@ -966,6 +959,12 @@ void DrawSharedUseVehiclePage()//定义共享电动车输入用车界面绘制�
         DrawTextAt(80, 410, state->sharedUseMessage);
     }
 
+    setfillcolor(RGB(0,146,198));
+    fillroundrect(60,470,420,530,24,24);
+    settextcolor(WHITE);
+    settextstyle(22,0,_T("黑体"));
+    int settle_w = textwidth(_T("还车结算"));
+    outtextxy(240 - settle_w / 2, 490, _T("还车结算"));
 }
 
 void DrawSharedSettlementPage() //定义还车结算界面绘制函数
@@ -996,9 +995,25 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
     settextstyle(20,0,_T("黑体"));
     outtextxy(50,120,_T("车辆编号:"));
     DrawTextAt(180,120, GetSharedSignoutState()->settlementPlate[0] ? GetSharedSignoutState()->settlementPlate : "");
+
+    if (GetSharedSignoutState()->settlementFocus == 0) {
+        setfillcolor(RGB(255,245,220));
+        fillroundrect(170,150,300,185,8,8);
+    } else {
+        setfillcolor(RGB(245,245,245));
+        fillroundrect(170,150,300,185,8,8);
+    }
     outtextxy(50,160,_T("用车时长:"));
     DrawTextAt(180,160, GetSharedSignoutState()->settlementDuration[0] ? GetSharedSignoutState()->settlementDuration : "0");
     outtextxy(310,160,_T("分钟"));
+
+    if (GetSharedSignoutState()->settlementFocus == 1) {
+        setfillcolor(RGB(255,245,220));
+        fillroundrect(170,190,300,225,8,8);
+    } else {
+        setfillcolor(RGB(245,245,245));
+        fillroundrect(170,190,300,225,8,8);
+    }
     outtextxy(50,200,_T("骑行里程:"));
     DrawTextAt(180,200, GetSharedSignoutState()->settlementDistance[0] ? GetSharedSignoutState()->settlementDistance : "0");
     outtextxy(310,200,_T("公里"));
@@ -1023,8 +1038,8 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
     fillroundrect(70,420,410,480,22,22);
     settextcolor(BLACK);
     settextstyle(22,0,_T("黑体"));
-    int cancel_w = textwidth(_T("返回主菜单"));
-    outtextxy(235 - cancel_w / 2, 440, _T("返回主菜单"));//返回主菜单按钮
+    int cancel_w = textwidth(_T("返回上一页"));
+    outtextxy(235 - cancel_w / 2, 440, _T("返回上一页"));//返回上一页按钮
 
     settextcolor(RGB(100,100,100));
     settextstyle(14,0,_T("黑体"));
