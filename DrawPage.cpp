@@ -9,6 +9,9 @@
 #include "personalregistration.h"
 #include "personalinspection.h"
 
+extern int GetSharedOrderScroll(void);
+extern void SetSharedOrderCount(int count);
+
 static void DrawTextAt(int x, int y, const char* text)
 {
     if (text == NULL || text[0] == '\0')
@@ -30,6 +33,27 @@ static void DrawTextAt(int x, int y, const char* text)
     }
 
     outtextxy(x, y, text);
+}
+
+static int IsLegacyOrderForPhone(const char* legacyUsername, const char* phone)
+{
+    if (!legacyUsername || !phone || legacyUsername[0] == '\0' || phone[0] == '\0') return 0;
+
+    FILE* file = fopen("shared_vehicle_data.txt", "r");
+    if (!file) return 0;
+
+    char lineBuffer[256];
+    int matched = 0;
+    while (fgets(lineBuffer, sizeof(lineBuffer), file)) {
+        char* username = strtok(lineBuffer, "|\r\n");
+        char* savedPhone = strtok(NULL, "|\r\n");
+        if (username && savedPhone && strcmp(username, legacyUsername) == 0 && strcmp(savedPhone, phone) == 0) {
+            matched = 1;
+            break;
+        }
+    }
+    fclose(file);
+    return matched;
 }
 
 void DrawFirstPage() {             // 定义 DrawFirstPage 函数，用于绘制首页界面
@@ -866,7 +890,7 @@ void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于
    if (state->username[0] != '\0') DrawTextAt(120, 138, state->username);
    else outtextxy(120,138,_T("未登录"));
 
-   outtextxy(50,168,_T("学号："));
+   outtextxy(50,168,_T("手机号："));
    if (state->phone[0] != '\0') DrawTextAt(120, 168, state->phone);
    else outtextxy(120,168,_T("未绑定"));
 
@@ -1140,6 +1164,8 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
 }
 void DrawSharedOrderPage(void)
 {
+    SharedUserInfo* state = GetSharedSignoutState();
+
     cleardevice();
     setfillcolor(WHITE);
     fillrectangle(0,0,480,640);//白色背景
@@ -1161,15 +1187,88 @@ void DrawSharedOrderPage(void)
     fillroundrect(45,110,435,145,12,12);
     settextstyle(16,0,_T("黑体"));
     settextcolor(RGB(110,110,110));
-    outtextxy(60,120,_T("车辆编号"));
-    outtextxy(160,120,_T("骑行时长"));
-    outtextxy(260,120,_T("骑行里程"));
-    outtextxy(350,120,_T("支付金额"));
+    outtextxy(52,120,_T("车辆编号"));
+    outtextxy(145,120,_T("骑行时长"));
+    outtextxy(235,120,_T("骑行里程"));
+    outtextxy(325,120,_T("金额/状态"));
     
     
-    line(140,110,140,540);
-    line(240,110,240,540);
-    line(335,110,335,540);
+    line(135,110,135,540);
+    line(225,110,225,540);
+    line(315,110,315,540);
+
+    settextcolor(BLACK);
+    settextstyle(12,0,_T("黑体"));
+    FILE* file = fopen("shared_use_records.txt", "r");
+    int matchedCount = 0;
+    if (file) {
+        char lineBuffer[256];
+        while (fgets(lineBuffer, sizeof(lineBuffer), file)) {
+            char* fields[7] = {0};
+            int fieldCount = 0;
+            char* token = strtok(lineBuffer, "|\r\n");
+            while (token && fieldCount < 7) {
+                fields[fieldCount++] = token;
+                token = strtok(NULL, "|\r\n");
+            }
+
+            if (fieldCount < 6 || !fields[0] ||
+                (strcmp(fields[0], state->phone) != 0 && !IsLegacyOrderForPhone(fields[0], state->phone))) continue;
+
+            matchedCount++;
+        }
+        fclose(file);
+    }
+
+    int maxScroll = matchedCount > 8 ? matchedCount - 8 : 0;
+    SetSharedOrderCount(matchedCount);
+    int scroll = GetSharedOrderScroll();
+    if (scroll > maxScroll) scroll = maxScroll;
+
+    file = fopen("shared_use_records.txt", "r");
+    int matchedIndex = 0;
+    int displayed = 0;
+    if (file) {
+        char lineBuffer[256];
+        while (displayed < 8 && fgets(lineBuffer, sizeof(lineBuffer), file)) {
+            char* fields[7] = {0};
+            int fieldCount = 0;
+            char* token = strtok(lineBuffer, "|\r\n");
+            while (token && fieldCount < 7) {
+                fields[fieldCount++] = token;
+                token = strtok(NULL, "|\r\n");
+            }
+
+            if (fieldCount < 6 || !fields[0] ||
+                (strcmp(fields[0], state->phone) != 0 && !IsLegacyOrderForPhone(fields[0], state->phone))) continue;
+            if (matchedIndex++ < scroll) continue;
+
+            int rowY = 155 + displayed * 42;
+            DrawTextAt(52, rowY, fields[1]);
+            DrawTextAt(145, rowY, fields[2]);
+            DrawTextAt(235, rowY, fields[3]);
+            DrawTextAt(325, rowY, fields[4]);
+            DrawTextAt(325, rowY + 17, fields[5]);
+            displayed++;
+        }
+        fclose(file);
+    }
+
+    if (displayed == 0) {
+        settextcolor(RGB(110,110,110));
+        settextstyle(16,0,_T("黑体"));
+        outtextxy(145,300,_T("暂无订单"));
+    }
+
+    if (matchedCount > 8) {
+        setfillcolor(RGB(225,225,225));
+        fillroundrect(420,155,428,491,4,4);
+        int thumbHeight = 336 * 8 / matchedCount;
+        if (thumbHeight < 24) thumbHeight = 24;
+        int thumbTop = 155 + (336 - thumbHeight) * scroll / maxScroll;
+        setfillcolor(RGB(0,146,198));
+        fillroundrect(420,thumbTop,428,thumbTop + thumbHeight,4,4);
+    }
 
     setfillcolor(RGB(0,146,198));
     fillroundrect(70,560,410,620,28,28);

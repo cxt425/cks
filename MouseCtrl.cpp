@@ -300,6 +300,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
             }
             else if (m.x >= 60 && m.x <= 420 && m.y >= 390 && m.y <= 450) {
                 currentMouseCtrl = SHARED_BTN_ORDER;
+                ResetSharedOrderScroll();
                 currentPage = PAGE_SHARED_ORDER;
             }
             else if (m.x >= 60 && m.x <= 420 && m.y >= 510 && m.y <= 570) {

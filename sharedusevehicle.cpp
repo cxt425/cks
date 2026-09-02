@@ -7,7 +7,65 @@
 static const char* SHARED_BICYCLE_DATA_FILE = "shared_bicycle_data.txt";
 static const char* SHARED_USE_RECORD_FILE = "shared_use_records.txt";
 static const char* UTF8_UNPAID_STATUS = "\xE6\x9C\xAA\xE6\x94\xAF\xE4\xBB\x98";
+static int sharedOrderScroll = 0;
+static int sharedOrderCount = 0;
+static int sharedOrderDragging = 0;
 
+static void SetSharedOrderScrollFromBar(int y)
+{
+    int maxScroll = sharedOrderCount > 8 ? sharedOrderCount - 8 : 0;
+    if (maxScroll <= 0) return;
+
+    int barTop = 155;
+    int barBottom = 491;
+    int thumbHeight = 336 * 8 / sharedOrderCount;
+    if (thumbHeight < 24) thumbHeight = 24;
+    int effective = barBottom - barTop - thumbHeight;
+    int target = y - thumbHeight / 2;
+    if (target < barTop) target = barTop;
+    if (target > barBottom - thumbHeight) target = barBottom - thumbHeight;
+    sharedOrderScroll = (target - barTop) * maxScroll / effective;
+}
+
+void ResetSharedOrderScroll(void)
+{
+    sharedOrderScroll = 0;
+    sharedOrderDragging = 0;
+}
+
+void SetSharedOrderCount(int count)
+{
+    sharedOrderCount = count;
+    if (sharedOrderScroll > sharedOrderCount - 8)
+        sharedOrderScroll = sharedOrderCount > 8 ? sharedOrderCount - 8 : 0;
+}
+
+void ScrollSharedOrder(int offset)
+{
+    sharedOrderScroll += offset;
+    if (sharedOrderScroll < 0) sharedOrderScroll = 0;
+}
+
+int GetSharedOrderScroll(void)
+{
+    return sharedOrderScroll;
+}
+void BeginSharedOrderDrag(int y)
+{
+    if (sharedOrderCount <= 8 || y < 155 || y > 491) return;
+    sharedOrderDragging = 1;
+    SetSharedOrderScrollFromBar(y);
+}
+
+void UpdateSharedOrderDrag(int y)
+{
+    if (sharedOrderDragging) SetSharedOrderScrollFromBar(y);
+}
+
+void EndSharedOrderDrag(void)
+{
+    sharedOrderDragging = 0;
+}
 static void WriteUtf8Text(FILE* file, const char* text)
 {
     if (!file || !text) return;
@@ -34,22 +92,22 @@ static void WriteUtf8Text(FILE* file, const char* text)
     fwrite(text, 1, strlen(text), file);
 }
 
-static void AppendSharedUseRecord(const char* plate)
+static void AppendSharedUseRecord(const char* phone, const char* plate)
 {
-    if (!plate || plate[0] == '\0') return;
+    if (!phone || phone[0] == '\0' || !plate || plate[0] == '\0') return;
 
     FILE* file = fopen(SHARED_USE_RECORD_FILE, "a");
     if (!file) return;
 
     char line[128];
-    snprintf(line, sizeof(line), "%s|--小时|--公里|--元|未支付\n", plate);
+    snprintf(line, sizeof(line), "%s|%s|--小时|--公里|--元|未支付\n", phone, plate);
     WriteUtf8Text(file, line);
     fclose(file);
 }
 
-static void UpdateSharedUseRecordPaid(const char* plate, const char* duration, const char* distance, const char* amount)
+static void UpdateSharedUseRecordPaid(const char* phone, const char* plate, const char* duration, const char* distance, const char* amount)
 {
-    if (!plate || plate[0] == '\0') return;
+    if (!phone || phone[0] == '\0' || !plate || plate[0] == '\0') return;
 
     FILE* in = fopen(SHARED_USE_RECORD_FILE, "r");
     if (!in) {
@@ -77,10 +135,11 @@ static void UpdateSharedUseRecordPaid(const char* plate, const char* duration, c
             token = strtok(NULL, "|\r\n");
         }
 
-        if (count >= 5 && parts[0] && strcmp(parts[0], plate) == 0 && parts[4] && strcmp(parts[4], UTF8_UNPAID_STATUS) == 0) {
+        if (count >= 6 && parts[0] && strcmp(parts[0], phone) == 0 &&
+            parts[1] && strcmp(parts[1], plate) == 0 && parts[5] && strcmp(parts[5], UTF8_UNPAID_STATUS) == 0) {
             char newLine[256];
-            snprintf(newLine, sizeof(newLine), "%s|%s分钟|%s公里|%s元|已支付\n",
-                     plate,
+            snprintf(newLine, sizeof(newLine), "%s|%s|%s分钟|%s公里|%s元|已支付\n",
+                     phone, plate,
                      duration[0] ? duration : "0",
                      distance[0] ? distance : "0",
                      amount);
@@ -477,7 +536,7 @@ void ConfirmSharedSettlementPayment(void)
 
     UpdateSharedBicycleRecordInFile(state->settlementPlate, finalStatus, batteryText);
 
-    UpdateSharedUseRecordPaid(state->settlementPlate,
+    UpdateSharedUseRecordPaid(state->phone, state->settlementPlate,
                              state->settlementDuration[0] ? state->settlementDuration : "0",
                              state->settlementDistance[0] ? state->settlementDistance : "0",
                              state->settlementAmount);
@@ -534,6 +593,6 @@ void TryUnlockSharedVehicle(void)
 
     strcpy(state->sharedUseStatus, "骑行中");
     UpdateSharedBicycleRecordInFile(state->sharedUsePlate, "骑行中", state->sharedUseBattery);
-    AppendSharedUseRecord(state->sharedUsePlate);
+    AppendSharedUseRecord(state->phone, state->sharedUsePlate);
     strcpy(state->sharedUseMessage, "开锁成功：车辆已解锁");
 }

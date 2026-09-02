@@ -145,6 +145,15 @@ int main() {
                 short delta = (short)HIWORD(msg.wParam);
                 ScrollPersonalAccessQuery(delta > 0 ? -1 : 1);
             }
+            else if (msg.message == WM_MOUSEWHEEL && currentPage == PAGE_SHARED_ORDER)
+            {
+                short delta = (short)HIWORD(msg.wParam);
+                ScrollSharedOrder(delta > 0 ? -1 : 1);
+            }
+            else if (msg.message == WM_MOUSEMOVE && currentPage == PAGE_SHARED_ORDER)
+            {
+                UpdateSharedOrderDrag(msg.y);
+            }
             else if (msg.message == WM_MOUSEMOVE && currentPage == PAGE_PERSONAL_ACCESSPAGE2)
             {
                 PersonalUserInfo* st = GetPersonalRegistrationState();
@@ -167,7 +176,11 @@ int main() {
             }
             else if (msg.message == WM_LBUTTONDOWN)
             {
-                if (currentPage == PAGE_PERSONAL_ACCESSPAGE2)
+                if (currentPage == PAGE_SHARED_ORDER && msg.x >= 410 && msg.x <= 440 && msg.y >= 145 && msg.y <= 500)
+                {
+                    BeginSharedOrderDrag(msg.y);
+                }
+                else if (currentPage == PAGE_PERSONAL_ACCESSPAGE2)
                 {
                     PersonalUserInfo* st = GetPersonalRegistrationState();
                     if (st->accessQueryCount > 4 && msg.x >= 448 && msg.x <= 456 && msg.y >= 340 && msg.y <= 505)
@@ -204,6 +217,10 @@ int main() {
                     tempMouse.uMsg = WM_LBUTTONDOWN;
                     GlobalMouseCheck(tempMouse, currentPage);
                 }
+            }
+            else if (msg.message == WM_LBUTTONUP && currentPage == PAGE_SHARED_ORDER)
+            {
+                EndSharedOrderDrag();
             }
             else if (msg.message == WM_LBUTTONUP && currentPage == PAGE_PERSONAL_ACCESSPAGE2)
             {
