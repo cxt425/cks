@@ -131,8 +131,8 @@ void InitSharedSignoutState(void)
     strcpy(state->repairType, "无法锁车");
     state->repairDetail[0] = '\0';
     strcpy(state->settlementPlate, "");
-    strcpy(state->settlementDuration, "0");
-    strcpy(state->settlementDistance, "0");
+    state->settlementDuration[0] = '\0';
+    state->settlementDistance[0] = '\0';
     strcpy(state->settlementAmount, "0.8");
     strcpy(state->settlementStatus, "未支付");
     state->settlementFocus = 0;

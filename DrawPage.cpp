@@ -1004,7 +1004,7 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
         fillroundrect(170,150,300,185,8,8);
     }
     outtextxy(50,160,_T("用车时长:"));
-    DrawTextAt(180,160, GetSharedSignoutState()->settlementDuration[0] ? GetSharedSignoutState()->settlementDuration : "0");
+    DrawTextAt(180,160, GetSharedSignoutState()->settlementDuration);
     outtextxy(310,160,_T("分钟"));
 
     if (GetSharedSignoutState()->settlementFocus == 1) {
@@ -1015,7 +1015,7 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
         fillroundrect(170,190,300,225,8,8);
     }
     outtextxy(50,200,_T("骑行里程:"));
-    DrawTextAt(180,200, GetSharedSignoutState()->settlementDistance[0] ? GetSharedSignoutState()->settlementDistance : "0");
+    DrawTextAt(180,200, GetSharedSignoutState()->settlementDistance);
     outtextxy(310,200,_T("公里"));
     outtextxy(50,240,_T("应付金额:"));
     DrawTextAt(180,240, GetSharedSignoutState()->settlementAmount[0] ? GetSharedSignoutState()->settlementAmount : "0.8");

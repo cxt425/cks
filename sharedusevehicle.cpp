@@ -285,8 +285,8 @@ static void ResetSharedRideState(void)
     strcpy(state->sharedUseMessage, "请输入车辆编号");
 
     state->settlementPlate[0] = '\0';
-    strcpy(state->settlementDuration, "0");
-    strcpy(state->settlementDistance, "0");
+    state->settlementDuration[0] = '\0';
+    state->settlementDistance[0] = '\0';
     strcpy(state->settlementAmount, "0.8");
     strcpy(state->settlementStatus, "未支付");
     state->settlementFocus = 0;
@@ -526,8 +526,8 @@ void TryUnlockSharedVehicle(void)
     }
 
     strcpy(state->settlementPlate, state->sharedUsePlate);
-    strcpy(state->settlementDuration, "0");
-    strcpy(state->settlementDistance, "0");
+    state->settlementDuration[0] = '\0';
+    state->settlementDistance[0] = '\0';
     strcpy(state->settlementAmount, "0.8");
     strcpy(state->settlementStatus, "未支付");
     state->settlementFocus = 0;
