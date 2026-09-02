@@ -1117,8 +1117,8 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
     }
 
     setlinecolor(RGB(200,200,200));
-    fillroundrect(30,320,450,450,22,22);
     setfillcolor(WHITE);
+    fillroundrect(30,320,450,450,22,22);
     settextcolor(BLACK);
     settextstyle(18,0,_T("黑体"));
     outtextxy(50,335,_T("请描述或补充故障情况:"));

@@ -313,6 +313,10 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                 currentMouseCtrl = SHARED_BTN_BACK;
                 currentPage = PAGE_SHARED_MANAGEMENT;
             }
+            else if (m.x >= 70 && m.x <= 410 && m.y >= 560 && m.y <= 620) {
+                currentMouseCtrl = MOUSE_NONE;
+                currentPage = PAGE_SHARED_MANAGEMENT;
+            }
             break;
         case PAGE_SHARED_USE_VEHICLE:
             if (m.x >= 0 && m.x <= 80 && m.y >= 0 && m.y <= 80) {
