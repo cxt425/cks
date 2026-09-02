@@ -6,6 +6,7 @@
 
 static const char* SHARED_BICYCLE_DATA_FILE = "shared_bicycle_data.txt";
 static const char* SHARED_USE_RECORD_FILE = "shared_use_records.txt";
+static const char* UTF8_UNPAID_STATUS = "\xE6\x9C\xAA\xE6\x94\xAF\xE4\xBB\x98";
 
 static void WriteUtf8Text(FILE* file, const char* text)
 {
@@ -76,7 +77,7 @@ static void UpdateSharedUseRecordPaid(const char* plate, const char* duration, c
             token = strtok(NULL, "|\r\n");
         }
 
-        if (count >= 5 && parts[0] && strcmp(parts[0], plate) == 0 && parts[4] && strcmp(parts[4], "未支付") == 0) {
+        if (count >= 5 && parts[0] && strcmp(parts[0], plate) == 0 && parts[4] && strcmp(parts[4], UTF8_UNPAID_STATUS) == 0) {
             char newLine[256];
             snprintf(newLine, sizeof(newLine), "%s|%s分钟|%s公里|%s元|已支付\n",
                      plate,
@@ -87,7 +88,7 @@ static void UpdateSharedUseRecordPaid(const char* plate, const char* duration, c
             found = 1;
         }
         else {
-            WriteUtf8Text(out, line);
+            fputs(line, out);
         }
     }
 
