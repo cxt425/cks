@@ -378,7 +378,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
             }
             else if (m.x >= 45 && m.x <= 135 && m.y >= 240 && m.y <= 280) {
                 currentMouseCtrl = MOUSE_NONE;
-                strcpy(state->repairType, "无法开锁");
+                strcpy(state->repairType, "无法锁车");
             }
             else if (m.x >= 145 && m.x <= 235 && m.y >= 240 && m.y <= 280) {
                 currentMouseCtrl = MOUSE_NONE;

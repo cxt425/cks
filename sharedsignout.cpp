@@ -128,7 +128,7 @@ void InitSharedSignoutState(void)
     strcpy(state->sharedUseStatus, "未查询");
     strcpy(state->sharedUseBattery, "--");
     strcpy(state->sharedUseMessage, "请输入车辆编号");
-    strcpy(state->repairType, "无法开锁");
+    strcpy(state->repairType, "无法锁车");
     state->repairDetail[0] = '\0';
     strcpy(state->settlementPlate, "");
     strcpy(state->settlementDuration, "0");

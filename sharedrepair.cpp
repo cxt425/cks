@@ -7,7 +7,7 @@
 void ResetSharedRepairState(void)
 {
     SharedUserInfo* state = GetSharedSignoutState();
-    strcpy(state->repairType, "无法开锁");
+    strcpy(state->repairType, "无法锁车");
     state->repairDetail[0] = '\0';
 }
 
@@ -74,7 +74,7 @@ void SubmitSharedRepair(void)
     snprintf(detailText, sizeof(detailText), "%s", state->repairDetail[0] ? state->repairDetail : "--");
 
     char statusText[256];
-    snprintf(statusText, sizeof(statusText), "报修中（%s|%s）", state->repairType[0] ? state->repairType : "无法开锁", detailText);
+    snprintf(statusText, sizeof(statusText), "报修中（%s|%s）", state->repairType[0] ? state->repairType : "无法锁车", detailText);
 
     char batteryText[16];
     snprintf(batteryText, sizeof(batteryText), "%s", state->sharedUseBattery[0] ? state->sharedUseBattery : "--");

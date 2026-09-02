@@ -1100,7 +1100,7 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
     fillroundrect(245,240,335,280,18,18);
     fillroundrect(345,240,435,280,18,18);//报修原因按钮
 
-    const char* choices[4] = {"无法开锁", "刹车异常", "电量异常", "车身损坏"};
+    const char* choices[4] = {"无法锁车", "刹车异常", "电量异常", "车身损坏"};
     int x1[4] = {45,145,245,345};
     int x2[4] = {135,235,335,435};
     for (int i = 0; i < 4; ++i) {
@@ -1110,7 +1110,7 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
         settextcolor(selected ? WHITE : BLACK);
         settextstyle(18,0,_T("黑体"));
         outtextxy(x1[i] + 8, 250, _T(""));
-        if (strcmp(choices[i], "无法开锁") == 0) outtextxy(52,250, _T("无法开锁"));
+        if (strcmp(choices[i], "无法锁车") == 0) outtextxy(52,250, _T("无法锁车"));
         else if (strcmp(choices[i], "刹车异常") == 0) outtextxy(152,250, _T("刹车异常"));
         else if (strcmp(choices[i], "电量异常") == 0) outtextxy(252,250, _T("电量异常"));
         else outtextxy(352,250, _T("车身损坏"));

@@ -468,7 +468,13 @@ void ConfirmSharedSettlementPayment(void)
 
     char batteryText[16];
     snprintf(batteryText, sizeof(batteryText), "%d%%", batteryAfterRide >= 0 ? batteryAfterRide : 0);
-    UpdateSharedBicycleRecordInFile(state->settlementPlate, "空闲中", batteryText);
+
+    const char* finalStatus = "空闲中";
+    if (strncmp(state->sharedUseStatus, "报修中", 3) == 0 || strncmp(state->sharedUseStatus, "保修中", 3) == 0) {
+        finalStatus = state->sharedUseStatus;
+    }
+
+    UpdateSharedBicycleRecordInFile(state->settlementPlate, finalStatus, batteryText);
 
     UpdateSharedUseRecordPaid(state->settlementPlate,
                              state->settlementDuration[0] ? state->settlementDuration : "0",
@@ -476,9 +482,15 @@ void ConfirmSharedSettlementPayment(void)
                              state->settlementAmount);
 
     strcpy(state->settlementStatus, "已支付");
-    strcpy(state->sharedUseStatus, "空闲中");
     strcpy(state->sharedUseBattery, batteryText);
-    strcpy(state->sharedUseMessage, "还车结算成功：已支付");
+    if (strncmp(state->sharedUseStatus, "报修中", 3) == 0 || strncmp(state->sharedUseStatus, "保修中", 3) == 0) {
+        strcpy(state->sharedUseStatus, finalStatus);
+        strcpy(state->sharedUseMessage, "还车结算成功：报修状态已保留");
+    }
+    else {
+        strcpy(state->sharedUseStatus, "空闲中");
+        strcpy(state->sharedUseMessage, "还车结算成功：已支付");
+    }
 
     ResetSharedRideState();
 }
@@ -492,7 +504,11 @@ void TryUnlockSharedVehicle(void)
     }
 
     QuerySharedVehicleInfo();
-    if (strcmp(state->sharedUseStatus, "空闲中") != 0 && strncmp(state->sharedUseStatus, "报修中", 3) != 0) {
+    if (strncmp(state->sharedUseStatus, "报修中", 3) == 0 || strncmp(state->sharedUseStatus, "保修中", 3) == 0) {
+        strcpy(state->sharedUseMessage, "开锁失败：车辆正在报修中，无法解锁");
+        return;
+    }
+    if (strcmp(state->sharedUseStatus, "空闲中") != 0) {
         if (strncmp(state->sharedUseStatus, "故障中", 3) == 0)
             strcpy(state->sharedUseMessage, "开锁失败：车辆状态为故障中");
         else if (strcmp(state->sharedUseStatus, "骑行中") == 0)

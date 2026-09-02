@@ -240,17 +240,8 @@ int main() {
         SharedUserInfo* sharedState = GetSharedSignoutState();
         if (currentPage == PAGE_LOGIN && sharedState->loginSuccess)
         {
-            if (loginSuccessTime == 0)
-                loginSuccessTime = GetTickCount();
-            else if (GetTickCount() - loginSuccessTime >= 3000)
-            {
-                currentPage = PAGE_SHARED_MANAGEMENT;
-                loginSuccessTime = 0;
-            }
-        }
-        else
-        {
-            loginSuccessTime = 0;
+            currentPage = PAGE_SHARED_MANAGEMENT;
+            sharedState->loginSuccess = 0;
         }
 
         Sleep(10);
