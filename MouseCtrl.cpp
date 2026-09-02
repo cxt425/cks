@@ -1,6 +1,7 @@
 #include "MouseCtrl.h"    // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
 #include "sharedusevehicle.h"
+#include "sharedrepair.h"
 #include "personalregistration.h"
 #include "personalinspection.h"
 #include "personalscrap.h"
@@ -328,8 +329,15 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                 }
             }
             else if (m.x >= 60 && m.x <= 420 && m.y >= 470 && m.y <= 530) {
-                currentMouseCtrl = SHARED_BTN_SETTLEMENT;
-                currentPage = PAGE_SHARED_SETTLEMENT;
+                SharedUserInfo* sharedState = GetSharedSignoutState();
+                if (strcmp(sharedState->sharedUseStatus, "骑行中") == 0 && sharedState->settlementPlate[0] != '\0') {
+                    currentMouseCtrl = SHARED_BTN_SETTLEMENT;
+                    currentPage = PAGE_SHARED_SETTLEMENT;
+                }
+                else {
+                    currentMouseCtrl = MOUSE_NONE;
+                    strcpy(sharedState->sharedUseMessage, "请先成功解锁车辆，再进入结算");
+                }
             }
             break;
         case PAGE_SHARED_SETTLEMENT:
@@ -364,8 +372,32 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                 currentMouseCtrl = SHARED_BTN_BACK;
                 currentPage = PAGE_SHARED_SETTLEMENT;
             }
-            else if (m.x >= 70 && m.x <= 410 && m.y >= 430 && m.y <= 500) {
+            else if (m.x >= 45 && m.x <= 135 && m.y >= 240 && m.y <= 280) {
                 currentMouseCtrl = MOUSE_NONE;
+                strcpy(state->repairType, "无法开锁");
+            }
+            else if (m.x >= 145 && m.x <= 235 && m.y >= 240 && m.y <= 280) {
+                currentMouseCtrl = MOUSE_NONE;
+                strcpy(state->repairType, "刹车异常");
+            }
+            else if (m.x >= 245 && m.x <= 335 && m.y >= 240 && m.y <= 280) {
+                currentMouseCtrl = MOUSE_NONE;
+                strcpy(state->repairType, "电量异常");
+            }
+            else if (m.x >= 345 && m.x <= 435 && m.y >= 240 && m.y <= 280) {
+                currentMouseCtrl = MOUSE_NONE;
+                strcpy(state->repairType, "车身损坏");
+            }
+            else if (m.x >= 30 && m.x <= 450 && m.y >= 320 && m.y <= 450) {
+                currentMouseCtrl = MOUSE_NONE;
+            }
+            else if (m.x >= 70 && m.x <= 410 && m.y >= 470 && m.y <= 530) {
+                currentMouseCtrl = MOUSE_NONE;
+                SubmitSharedRepair();
+            }
+            else if (m.x >= 70 && m.x <= 410 && m.y >= 550 && m.y <= 610) {
+                currentMouseCtrl = MOUSE_NONE;
+                ResetSharedRepairState();
                 currentPage = PAGE_SHARED_SETTLEMENT;
             }
             break;

@@ -229,7 +229,7 @@ static int ConvertLocalToUtf8(const char* source, char* destination, int destina
     return 1;
 }
 
-static void UpdateSharedBicycleRecordInFile(const char* plate, const char* status, const char* battery)
+void UpdateSharedBicycleRecordInFile(const char* plate, const char* status, const char* battery)
 {
     if (!plate || plate[0] == '\0' || !status || !battery) return;
 
@@ -242,7 +242,7 @@ static void UpdateSharedBicycleRecordInFile(const char* plate, const char* statu
         return;
     }
 
-    char plateUtf8[32], statusUtf8[32], batteryUtf8[16];
+    char plateUtf8[32], statusUtf8[64], batteryUtf8[16];
     ConvertLocalToUtf8(plate, plateUtf8, sizeof(plateUtf8));
     ConvertLocalToUtf8(status, statusUtf8, sizeof(statusUtf8));
     ConvertLocalToUtf8(battery, batteryUtf8, sizeof(batteryUtf8));
@@ -333,22 +333,31 @@ void QuerySharedVehicleInfo(void)
     char line[128];
     int found = 0;
     while (fgets(line, sizeof(line), file)) {
-        char* field[3] = {0};
-        char* ptr = strtok(line, "|\r\n");
-        int index = 0;
-        while (ptr && index < 3) {
-            field[index++] = ptr;
-            ptr = strtok(NULL, "|\r\n");
-        }
-        if (index >= 3 && field[0] && field[1] && field[2]) {
-            if (strcmp(field[0], state->sharedUsePlate) == 0) {
-                NormalizeLocalText(state->sharedUseStatus, sizeof(state->sharedUseStatus), field[1]);
-                NormalizeLocalText(state->sharedUseBattery, sizeof(state->sharedUseBattery), field[2]);
-                snprintf(state->sharedUseMessage, sizeof(state->sharedUseMessage), "车辆状态：%s", state->sharedUseStatus);
-                found = 1;
-                break;
-            }
-        }
+        char* firstPipe = strchr(line, '|');
+        if (!firstPipe) continue;
+
+        *firstPipe = '\0';
+        if (strcmp(line, state->sharedUsePlate) != 0) continue;
+
+        char* secondPipe = strrchr(firstPipe + 1, '|');
+        if (!secondPipe) continue;
+
+        *secondPipe = '\0';
+        char statusText[64];
+        char batteryText[16];
+        strncpy(statusText, firstPipe + 1, sizeof(statusText) - 1);
+        statusText[sizeof(statusText) - 1] = '\0';
+        strncpy(batteryText, secondPipe + 1, sizeof(batteryText) - 1);
+        batteryText[sizeof(batteryText) - 1] = '\0';
+
+        char* newline = strpbrk(batteryText, "\r\n");
+        if (newline) *newline = '\0';
+
+        NormalizeLocalText(state->sharedUseStatus, sizeof(state->sharedUseStatus), statusText);
+        NormalizeLocalText(state->sharedUseBattery, sizeof(state->sharedUseBattery), batteryText);
+        snprintf(state->sharedUseMessage, sizeof(state->sharedUseMessage), "车辆状态：%s", state->sharedUseStatus);
+        found = 1;
+        break;
     }
     fclose(file);
 
@@ -483,8 +492,8 @@ void TryUnlockSharedVehicle(void)
     }
 
     QuerySharedVehicleInfo();
-    if (strcmp(state->sharedUseStatus, "空闲中") != 0) {
-        if (strcmp(state->sharedUseStatus, "故障中") == 0)
+    if (strcmp(state->sharedUseStatus, "空闲中") != 0 && strncmp(state->sharedUseStatus, "报修中", 3) != 0) {
+        if (strncmp(state->sharedUseStatus, "故障中", 3) == 0)
             strcpy(state->sharedUseMessage, "开锁失败：车辆状态为故障中");
         else if (strcmp(state->sharedUseStatus, "骑行中") == 0)
             strcpy(state->sharedUseMessage, "开锁失败：车辆正在骑行中");

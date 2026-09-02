@@ -127,12 +127,10 @@ void InitSharedSignoutState(void)
     strcpy(state->message, "请先输入用户名和手机号，再获取验证码");
     strcpy(state->sharedUseStatus, "未查询");
     strcpy(state->sharedUseBattery, "--");
-    strcpy(state->sharedUseMessage, "请输入车辆编号");    strcpy(state->settlementPlate, "");
-    strcpy(state->settlementDuration, "0");
-    strcpy(state->settlementDistance, "0");
-    strcpy(state->settlementAmount, "0.8");
-    strcpy(state->settlementStatus, "未支付");
-    state->settlementFocus = 0;    strcpy(state->settlementPlate, "");
+    strcpy(state->sharedUseMessage, "请输入车辆编号");
+    strcpy(state->repairType, "无法开锁");
+    state->repairDetail[0] = '\0';
+    strcpy(state->settlementPlate, "");
     strcpy(state->settlementDuration, "0");
     strcpy(state->settlementDistance, "0");
     strcpy(state->settlementAmount, "0.8");

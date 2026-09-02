@@ -23,6 +23,8 @@ typedef struct {
     char sharedUseStatus[32]; // 查询到的车辆状态
     char sharedUseBattery[16]; // 查询到的可用电量
     char sharedUseMessage[64]; // 开锁结果提示信息
+    char repairType[32]; // 报修问题类型
+    char repairDetail[128]; // 报修补充说明
     char settlementPlate[16]; // 还车结算页面车辆编号
     char settlementDuration[16]; // 用车时长（分钟）
     char settlementDistance[16]; // 骑行里程（公里）

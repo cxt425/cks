@@ -5,6 +5,7 @@
 #include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
 #include "sharedsignout.h"
 #include "sharedusevehicle.h"
+#include "sharedrepair.h"
 #include "personalregistration.h"
 #include "personalinspection.h"
 #include "personalscrap.h"
@@ -50,6 +51,11 @@ int main() {
                 {
                     if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
                         HandleSharedSettlementChar(ch);
+                }
+                else if (currentPage == PAGE_SHARED_REPAIR)
+                {
+                    if (ch != 8 && ch != 9 && ch != 10 && ch != 13 && ch != 127)
+                        HandleSharedRepairChar(ch);
                 }
                 else if (currentPage == PAGE_PERSONAL_INSPECTION)
                 {
@@ -126,6 +132,12 @@ int main() {
                     if (msg.vkcode == VK_BACK) HandleSharedSettlementKey(8);
                     else if (msg.vkcode == VK_RETURN) HandleSharedSettlementKey(13);
                     else if (msg.vkcode == VK_TAB) HandleSharedSettlementKey(9);
+                }
+                else if (currentPage == PAGE_SHARED_REPAIR)
+                {
+                    if (msg.vkcode == VK_BACK) HandleSharedRepairKey(8);
+                    else if (msg.vkcode == VK_RETURN) HandleSharedRepairKey(13);
+                    else if (msg.vkcode == VK_TAB) HandleSharedRepairKey(9);
                 }
             }
             else if (msg.message == WM_MOUSEWHEEL && currentPage == PAGE_PERSONAL_ACCESSPAGE2)

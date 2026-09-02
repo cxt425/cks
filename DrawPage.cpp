@@ -1056,6 +1056,8 @@ void DrawSharedSettlementPage() //定义还车结算界面绘制函数
 
 void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
 {
+    const SharedUserInfo* state = GetSharedSignoutState();
+
     setfillcolor(WHITE);
     fillrectangle(0,0,480,640);//白色背景
 
@@ -1079,7 +1081,10 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
     fillroundrect(30,100,450,160,22,22);//报修信息显示边框
     settextcolor(BLACK);
     settextstyle(22,0,_T("黑体"));
-    outtextxy(50,120,_T("车辆编号: E2001"));
+    outtextxy(50,120,_T("车辆编号:"));
+    if (state->sharedUsePlate[0] != '\0') {
+        DrawTextAt(180,120, state->sharedUsePlate);
+    }
 
     setfillcolor(WHITE);
     fillroundrect(30,180,450,300,22,22);
@@ -1087,7 +1092,6 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
     fillroundrect(30,180,450,300,22,22);//报修原因输入框
     settextcolor(BLACK);
     settextstyle(20,0,_T("黑体"));
-    int pb_w = textwidth(_T("问题类型"));
     outtextxy(50,195,_T("问题类型:"));//报修原因输入框提示文字
 
     setlinecolor(RGB(200,200,200));
@@ -1096,50 +1100,43 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
     fillroundrect(245,240,335,280,18,18);
     fillroundrect(345,240,435,280,18,18);//报修原因按钮
 
-    setfillcolor(RGB(0,146,198));
-    fillroundrect(45,240,135,280,18,18);
-    settextcolor(WHITE);
-    settextstyle(18,0,_T("黑体"));
-    outtextxy(52,250, _T("无法开锁"));//无法开锁按钮
-
-    setfillcolor(WHITE);
-    fillroundrect(145,240,235,280,18,18);
-    settextcolor(BLACK);
-    settextstyle(18,0,_T("黑体"));
-    outtextxy(152,250, _T("刹车异常"));//刹车异常按钮
-
-    setfillcolor(WHITE);
-    fillroundrect(245,240,335,280,18,18);
-    settextcolor(BLACK);
-    settextstyle(18,0,_T("黑体"));
-    outtextxy(252,250, _T("电量异常"));//电量异常按钮
-
-    setfillcolor(WHITE);
-    fillroundrect(345,240,435,280,18,18);
-    settextcolor(BLACK);
-    settextstyle(18,0,_T("黑体"));
-    outtextxy(352,250, _T("车身损坏"));//车身损坏按钮
+    const char* choices[4] = {"无法开锁", "刹车异常", "电量异常", "车身损坏"};
+    int x1[4] = {45,145,245,345};
+    int x2[4] = {135,235,335,435};
+    for (int i = 0; i < 4; ++i) {
+        int selected = strcmp(state->repairType, choices[i]) == 0;
+        setfillcolor(selected ? RGB(0,146,198) : WHITE);
+        fillroundrect(x1[i],240,x2[i],280,18,18);
+        settextcolor(selected ? WHITE : BLACK);
+        settextstyle(18,0,_T("黑体"));
+        outtextxy(x1[i] + 8, 250, _T(""));
+        if (strcmp(choices[i], "无法开锁") == 0) outtextxy(52,250, _T("无法开锁"));
+        else if (strcmp(choices[i], "刹车异常") == 0) outtextxy(152,250, _T("刹车异常"));
+        else if (strcmp(choices[i], "电量异常") == 0) outtextxy(252,250, _T("电量异常"));
+        else outtextxy(352,250, _T("车身损坏"));
+    }
 
     setlinecolor(RGB(200,200,200));
     fillroundrect(30,320,450,450,22,22);
-    settextcolor(RGB(200,200,200));
+    setfillcolor(WHITE);
+    settextcolor(BLACK);
     settextstyle(18,0,_T("黑体"));
-    int fc_w = textwidth(_T("请描述或补充故障情况:"));
-    outtextxy(50,335,_T("请描述或补充故障情况"));//故障情况输入框
+    outtextxy(50,335,_T("请描述或补充故障情况:"));
+    char detailShow[128];
+    snprintf(detailShow, sizeof(detailShow), "%s", state->repairDetail[0] ? state->repairDetail : "--");
+    DrawTextAt(50, 360, detailShow);
 
     setfillcolor(RGB(0,146,198));
     fillroundrect(70,470,410,530,28,28);
     settextcolor(WHITE);
     settextstyle(22,0,_T("黑体"));
-    int tg_w = textwidth(_T("提交报修"));
     outtextxy(240 - textwidth(_T("提交报修")) / 2, 490, _T("提交报修"));//提交报修按钮
 
     setfillcolor(RGB(170,215,255));
     fillroundrect(70,550,410,610,22,22);
     settextcolor(BLACK);
     settextstyle(22,0,_T("黑体"));
-    int fh_w = textwidth(_T("返回主菜单"));
-    outtextxy(235 - textwidth(_T("返回主菜单")) / 2, 570, _T("返回主菜单"));//返回主菜单按钮
+    outtextxy(235 - textwidth(_T("返回上一页")) / 2, 570, _T("返回上一页"));//返回按钮
 }
 void DrawSharedOrderPage(void)
 {
@@ -1158,7 +1155,7 @@ void DrawSharedOrderPage(void)
     setfillcolor(WHITE);
     fillroundrect(30,100,450,260,22,22);
     setlinecolor(RGB(0,120,220));
-    fillroundrect(30,100,450,2 60,22,22);
+    fillroundrect(30,100,450,260,22,22);
 
     settextcolor(BLACK);
     settextstyle(18,0,_T("黑体"));
