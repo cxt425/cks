@@ -1,8 +1,7 @@
 #include <graphics.h>   // 包含 EasyX 图形库头文件
-#include <stdio.h>      // 包含标准输入输出头文件，用于 getchar()
 #include <windows.h>    // 包含 Windows 键盘状态接口
-#include "DrawPage.h"  // 包含自定义的 DrawPage.h 头文件，声明函数
-#include "MouseCtrl.h" // 包含自定义的 MouseCtrl.h 头文件，声明函数和变量
+#include "DrawPage.h"
+#include "MouseCtrl.h"
 #include "sharedsignout.h"
 #include "sharedusevehicle.h"
 #include "sharedrepair.h"
@@ -17,8 +16,6 @@ int main() {
     BeginBatchDraw();           // 开始批量绘制，防止闪烁
     InitSharedSignoutState();
     InitPersonalInspectionState();
-    DWORD loginSuccessTime = 0;
-    MOUSEMSG m;
     ExMessage msg;
     while(1)
     {

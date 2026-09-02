@@ -1,7 +1,6 @@
 #include "personalregistration.h"
 #include <ctype.h>     // 包含字符处理函数的头文件
 #include <stdio.h>     // 包含标准输入输出头文件
-#include <stdlib.h>       // 包含标准库头文件，用于 rand() 和 srand() 函数
 #include <string.h>        // 包含字符串处理函数的头文件
 #include <windows.h>    
 #include <limits.h>

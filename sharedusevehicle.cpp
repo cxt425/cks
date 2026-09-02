@@ -163,8 +163,6 @@ static void UpdateSharedUseRecordPaid(const char* phone, const char* plate, cons
     }
 }
 
-static const char* SHARED_SETTLEMENT_RECORD_FILE = "shared_use_records.txt";
-
 static void AppendSharedUsePlateChar(char* dest, int maxLen, char key)
 {
     int len = (int)strlen(dest);
