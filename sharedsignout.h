@@ -31,7 +31,7 @@ typedef struct {
     char settlementAmount[16]; // 应付金额
     char settlementStatus[16]; // 支付状态
     int settlementFocus; // 0=时长，1=里程
-} SharedUserInfo;
+} SharedUserInfo;// 共享登录状态信息结构体
 
 int SaveSharedVehicleData(const SharedUserInfo* info); // 保存共享电动车数据
 SharedUserInfo* GetSharedSignoutState(void);// 获取共享登录状态信息的指针

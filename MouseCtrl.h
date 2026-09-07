@@ -1,4 +1,4 @@
-#ifndef MOUSECTRL_H        // 声明 MouseCtrl.h 头文件，防止重复包含
+#ifndef MOUSECTRL_H
 #define MOUSECTRL_H
 #include "public.h"
 #include "personalaccess.h"

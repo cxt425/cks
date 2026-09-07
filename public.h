@@ -1,9 +1,8 @@
 #ifndef PUBLIC_H
 #define PUBLIC_H
 
-#include <graphics.h>
+#include <graphics.h>// 包含 EasyX 图形库头文件
 
-// 页面类型枚举：定义整个程序中有哪些页面
 typedef enum {
     PAGE_HOME,
     PAGE_LOGIN,
@@ -19,9 +18,8 @@ typedef enum {
     PAGE_SHARED_SETTLEMENT,
     PAGE_SHARED_ORDER,
     PAGE_SHARED_REPAIR
-} PageType;
+} PageType;// 页面类型枚举
 
-// 鼠标目标枚举：定义界面中可点击的控件
 typedef enum {
     MOUSE_NONE,       // 表示没有选中任何控件
     HOME_BTN_PERSON,
@@ -53,10 +51,10 @@ typedef enum {
     SHARED_BTN_USE_VEHICLE,
     SHARED_BTN_SETTLEMENT,
     SHARED_BTN_ORDER
-} MouseTarget;
+} MouseTarget;// 鼠标选中控件类型枚举
 
 // 全局变量声明：由 MouseCtrl.cpp 中定义
-extern PageType currentPage;
-extern MouseTarget currentMouseCtrl;
+extern PageType currentPage;// 当前页面类型
+extern MouseTarget currentMouseCtrl;// 当前鼠标选中的控件类型
 
 #endif

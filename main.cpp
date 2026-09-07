@@ -21,7 +21,7 @@ int main() {
     {
         while (peekmessage(&msg))
         {
-            if (msg.message == WM_CHAR)
+            if (msg.message == WM_CHAR)   //处理字符输入信息
             {
                 TCHAR ch = msg.ch;
                 if (currentPage == PAGE_PERSONAL_REGISTRATION)
@@ -75,7 +75,7 @@ int main() {
                         HandlePersonalAccessQueryChar(ch);
                 }
             }
-            else if (msg.message == WM_KEYDOWN)
+            else if (msg.message == WM_KEYDOWN)   //处理键盘按下信息
             {
                 if (currentPage == PAGE_PERSONAL_REGISTRATION)
                 {
@@ -137,12 +137,12 @@ int main() {
                     else if (msg.vkcode == VK_TAB) HandleSharedRepairKey(9);
                 }
             }
-            else if (msg.message == WM_MOUSEWHEEL && currentPage == PAGE_PERSONAL_ACCESSPAGE2)
+            else if (msg.message == WM_MOUSEWHEEL && currentPage == PAGE_PERSONAL_ACCESSPAGE2)  //处理鼠标滚轮事件
             {
                 short delta = (short)HIWORD(msg.wParam);
                 ScrollPersonalAccessQuery(delta > 0 ? -1 : 1);
             }
-            else if (msg.message == WM_MOUSEWHEEL && currentPage == PAGE_SHARED_ORDER)
+            else if (msg.message == WM_MOUSEWHEEL && currentPage == PAGE_SHARED_ORDER) 
             {
                 short delta = (short)HIWORD(msg.wParam);
                 ScrollSharedOrder(delta > 0 ? -1 : 1);
@@ -228,6 +228,7 @@ int main() {
         if (currentPage == PAGE_PERSONAL_REGISTRATION &&
             GetPersonalRegistrationState()->registered) {
             currentPage = PAGE_PERSONAL_MANAGEMENT;
+            InitPersonalRegistrationState();
         }
 
         cleardevice();

@@ -14,15 +14,15 @@ void UpdatePersonalVehicleInfo(void);             // 更新 TXT 中的个人车�
 void TryPersonalRegistration(void); // 尝试提交注册并校验输入
 
 typedef struct {
-    char licensePlate[10];
-    char ownerName[20];
-    char college[20];
-    char personalID[20];
-    char ownerPhone[12];
-    char vehicleType[20];
-    char registrationDate[11];
-    char vehicleStatus[16];
-} PersonalVehicleRecord;
+    char licensePlate[10];// 车牌号
+    char ownerName[20];// 车主姓名
+    char college[20];// 所属学院
+    char personalID[20];// 人员编号
+    char ownerPhone[12];// 车主手机号
+    char vehicleType[20];// 车辆类型
+    char registrationDate[11];// 注册日期
+    char vehicleStatus[16];// 车辆状态
+} PersonalVehicleRecord;// 个人车辆信息结构体
 
 typedef struct {
     char licensePlate[10]; // 车牌号
@@ -61,12 +61,12 @@ typedef struct {
     int focus;             // 当前输入框焦点，0-6
     int registered;        // 提交是否成功
     char message[64];      // 状态提示信息
-} PersonalUserInfo;
+} PersonalUserInfo;// 个人注册状态信息结构体
 
 int SavePersonalVehicleData(const PersonalUserInfo* info); // 保存个人电动车数据
-void HandlePersonalAccessKey(char key);
-void HandlePersonalAccessChar(TCHAR key);
-void SubmitPersonalAccessRecord(void);
+void HandlePersonalAccessKey(char key);// 处理个人出入记录页面的键盘输入
+void HandlePersonalAccessChar(TCHAR key);// 处理个人出入记录页面的字符输入
+void SubmitPersonalAccessRecord(void);// 提交个人出入记录
 
 PersonalUserInfo* GetPersonalRegistrationState(void); // 获取个人注册状态信息的指针
 
