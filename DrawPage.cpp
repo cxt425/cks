@@ -8,10 +8,10 @@
 #include "personalregistration.h"
 #include "personalinspection.h"
 
-extern int GetSharedOrderScroll(void);
-extern void SetSharedOrderCount(int count);
+extern int GetSharedOrderScroll(void);// 获取共享车辆我的订单界面滚动偏移
+extern void SetSharedOrderCount(int count);// 设置共享车辆我的订单界面订单数量
 
-static void DrawTextAt(int x, int y, const char* text)
+static void DrawTextAt(int x, int y, const char* text)// 在指定位置绘制文本，支持 UTF-8 编码
 {
     if (text == NULL || text[0] == '\0')
         return;
@@ -34,11 +34,11 @@ static void DrawTextAt(int x, int y, const char* text)
     outtextxy(x, y, text);
 }
 
-static int IsLegacyOrderForPhone(const char* legacyUsername, const char* phone)
+static int IsLegacyOrderForPhone(const char* legacyUsername, const char* phone)// 检查共享车辆订单文件中是否存在匹配的用户名和手机号
 {
     if (!legacyUsername || !phone || legacyUsername[0] == '\0' || phone[0] == '\0') return 0;
 
-    FILE* file = fopen("shared_vehicle_data.txt", "r");
+    FILE* file = fopen("shared_vehicle_data.txt", "r");// 打开共享车辆数据文件进行读取
     if (!file) return 0;
 
     char lineBuffer[256];
@@ -47,7 +47,7 @@ static int IsLegacyOrderForPhone(const char* legacyUsername, const char* phone)
         char* username = strtok(lineBuffer, "|\r\n");
         char* savedPhone = strtok(NULL, "|\r\n");
         if (username && savedPhone && strcmp(username, legacyUsername) == 0 && strcmp(savedPhone, phone) == 0) {
-            matched = 1;
+            matched = 1;// 找到匹配的用户名和手机号，设置 matched 为 1
             break;
         }
     }
@@ -351,7 +351,8 @@ void DrawPersonalRegistrationPage()//定义 DrawPersonalregistrationPage 函数�
     // 消息提示
     settextstyle(14,0,_T("黑体"));
     if (regState->message[0] != '\0') {
-        if (regState->registered) settextcolor(GREEN); else settextcolor(RGB(180,60,60));
+        if (regState->registered) settextcolor(GREEN); 
+        else settextcolor(RGB(180,60,60));
         DrawTextAt(40, 520, regState->message);
     }
 }
@@ -594,7 +595,7 @@ void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校�
     settextcolor(RGB(0,0,0));
     outtextxy(35,282,_T("出入类型:"));//出入类型+时间卡片
 
-    int isOutType = (strcmp(state->accessType, "出校") == 0) || state->accessTypeSelected == 1;
+    int isOutType = (strcmp(state->accessType, "出校") == 0) || state->accessTypeSelected == 1;//判断当前出入类型是否为出校
     setfillcolor(isOutType ? RGB(230,230,230) : RGB(0,130,220));
     fillroundrect(160,300,280,350,22,22);
     settextcolor(isOutType ? RGB(110,110,110) : WHITE);
@@ -606,7 +607,7 @@ void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校�
     outtextxy(338,312,_T("出校"));//出校按钮
 
     settextcolor(RGB(0,0,0));
-    const TCHAR* timeLabel = isOutType ? _T("出校日期:") : _T("入校日期:");
+    const TCHAR* timeLabel = isOutType ? _T("出校日期:") : _T("入校日期:");//根据出入类型显示不同的时间标签
     outtextxy(35,390,timeLabel);
 
     setlinecolor(RGB(160,160,160));
@@ -633,9 +634,10 @@ void DrawPersonalAccessPage1() // 声明，用于绘制个人电动车出入校�
     settextstyle(25,0,_T("黑体"));
     outtextxy(190,542,_T("提交记录"));//底部提交按钮
 }
+
 void DrawPersonalAccessPage2()
 {
-    const PersonalUserInfo* state = GetPersonalRegistrationState();
+    const PersonalUserInfo* state = GetPersonalRegistrationState();// 声明一个指向 PersonalUserInfo 结构体的指针 state，并将其初始化为获取个人注册状态的结果
     setfillcolor(RGB(0,130,220));
     fillrectangle(0,0,480,80);//顶部蓝色标题栏
     settextcolor(WHITE);
@@ -708,14 +710,14 @@ void DrawPersonalAccessPage2()
         outtextxy(140,390,_T("暂无记录"));
     } else {
         int displayRows = 4;
-        int start = state->accessQueryScroll;
+        int start = state->accessQueryScroll;// 获取当前滚动位置，确定显示的起始行
         int end = start + displayRows;
         if (end > state->accessQueryCount) end = state->accessQueryCount;
         for (int i = start; i < end; ++i) {
             char linebuf[128];
             strcpy(linebuf, state->accessQueryRecords[i]);
             char* items[4] = {0};
-            char* p = strtok(linebuf, "|");
+            char* p = strtok(linebuf, "|");// 使用 strtok 函数将记录字符串按 "|" 分割成多个字段，并存储在 items 数组中
             int idx = 0;
             while (p && idx < 4) {
                 items[idx++] = p;
@@ -814,7 +816,7 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
     settextstyle(18,0,_T("黑体"));
     outtextxy(50,285,_T("报废车辆处理"));//小标题
 
-    int reasonType = state->scrapReasonType;
+    int reasonType = state->scrapReasonType;//获取报废原因类型
     setfillcolor(reasonType == 0 ? RGB(0,130,220) : RGB(255,255,255));
     fillroundrect(40,315,125,355,22,22);
     settextstyle(16,0,_T("黑体"));
@@ -870,7 +872,7 @@ void DrawPersonalScrapPage()// 声明 DrawPersonalScrapPage 函数，用于绘�
 }
 void DrawSharedManagementPage()//定义 DrawSharedManagementPage 函数，用于绘制共享电动车管理系统界面
 {
-   const SharedUserInfo* state = GetSharedSignoutState();
+   const SharedUserInfo* state = GetSharedSignoutState();// 声明一个指向 SharedUserInfo 结构体的指针 state，并将其初始化为获取共享电动车登录状态的结果
 
    setfillcolor(WHITE);//白色背景
    fillrectangle(0,0,480,640);//白色背景
@@ -1161,6 +1163,7 @@ void DrawSharedRepairPage() //定义共享电动车报修界面绘制函数
     settextstyle(22,0,_T("黑体"));
     outtextxy(235 - textwidth(_T("返回上一页")) / 2, 570, _T("返回上一页"));//返回按钮
 }
+
 void DrawSharedOrderPage(void)
 {
     SharedUserInfo* state = GetSharedSignoutState();

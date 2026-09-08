@@ -197,7 +197,7 @@ void GlobalMouseCheck(MOUSEMSG m, PageType nowPage)     // 声明 GlobalMouseChe
                     else if (m.x >=280 && m.x <=440 && m.y >=315 && m.y <=350) regState->focus = 10;
                     else if (m.x >=280 && m.x <=440 && m.y >=360 && m.y <=395) regState->focus = 11;
                     else if (m.x >=280 && m.x <=440 && m.y >=405 && m.y <=440) regState->focus = 12;
-                    else if (m.x >=30 && m.x <=450 && m.y >=560 && m.y <=610) UpdatePersonalVehicleInfo();
+                    else if (m.x >=30 && m.x <=450 && m.y >=560 && m.y <=610) UpdatePersonalVehicleInfo();// 点击提交按钮，执行更新个人车辆信息操作
                else if(m.x >=0 && m.x <=80 && m.y >=0 && m.y <=80)// 左上角返回按钮
                {
                   currentMouseCtrl = PERSON_BTN_BACK;// 点击返回，切回个人管理页面

@@ -251,7 +251,7 @@ int main() {
             case PAGE_SHARED_REPAIR: DrawSharedRepairPage(); break;
         }
 
-        EndBatchDraw();
+        EndBatchDraw();// 结束批量绘制，显示绘制结果
         SharedUserInfo* sharedState = GetSharedSignoutState();
         if (currentPage == PAGE_LOGIN && sharedState->loginSuccess)
         {

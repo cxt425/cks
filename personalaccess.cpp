@@ -3,9 +3,9 @@
 #include <string.h>
 #include <windows.h>
 
-static const int ACCESS_TIME_MAX_LEN = 11;
+static const int ACCESS_TIME_MAX_LEN = 11;// 最大长度为 YYYY-MM-DD 格式的字符串长度为 10，加上终止符为 11
 
-static int IsAccessTimeValid(const char* timeStr)
+static int IsAccessTimeValid(const char* timeStr)// 检查时间字符串是否为有效的 YYYY-MM-DD 格式
 {
     if (!timeStr) return 0;
     int len = (int)strlen(timeStr);
@@ -18,17 +18,17 @@ static int IsAccessTimeValid(const char* timeStr)
     return 1;
 }
 
-static int IsAccessTimeKeyAllowed(const char* dest, char key)
+static int IsAccessTimeKeyAllowed(const char* dest, char key)// 检查当前输入框是否允许输入该字符，确保时间格式为 YYYY-MM-DD
 {
     int len = (int)strlen(dest);
     if (len >= ACCESS_TIME_MAX_LEN) return 0;
     if ((len == 4 || len == 7) && key == '-') return 1;
     if ((len == 4 || len == 7) && key != '-') return 0;
     if (key < '0' || key > '9') return 0;
-    return 1;
+    return 1;// 允许输入数字和特定位置的 '-'，确保时间格式为 YYYY-MM-DD
 }
 
-static void AppendAccessTimeChar(char* dest, int maxLen, char key)
+static void AppendAccessTimeChar(char* dest, int maxLen, char key)// 向时间输入框追加字符，限制输入长度和格式
 {
     int len = (int)strlen(dest);
     if (len >= ACCESS_TIME_MAX_LEN || len >= maxLen - 1) return;
@@ -37,7 +37,7 @@ static void AppendAccessTimeChar(char* dest, int maxLen, char key)
     dest[len + 1] = '\0';
 }
 
-static void AppendAccessPlateChar(char* dest, int maxLen, char key)
+static void AppendAccessPlateChar(char* dest, int maxLen, char key)// 向车牌号输入框追加字符，限制输入长度和格式
 {
     int len = (int)strlen(dest);
     if (len >= maxLen - 1) return;
@@ -47,7 +47,7 @@ static void AppendAccessPlateChar(char* dest, int maxLen, char key)
     dest[len + 1] = '\0';
 }
 
-static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)
+static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)// 将 UTF-8 编码的字符串转换为 ANSI 编码的字符串
 {
     if (!source || !destination || destinationSize <= 0) return 0;
     wchar_t wideText[128];
@@ -56,7 +56,7 @@ static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinat
     return WideCharToMultiByte(CP_ACP, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
 }
 
-static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)
+static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)// 将 ANSI 编码的字符串转换为 UTF-8 编码的字符串
 {
     if (!source || !destination || destinationSize <= 0) return 0;
     wchar_t wideText[128];
@@ -65,7 +65,7 @@ static int ConvertAnsiToUtf8(const char* source, char* destination, int destinat
     return WideCharToMultiByte(CP_UTF8, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
 }
 
-static int GetVehicleStatusByPlate(const char* plate, char* statusOut, int statusSize)
+static int GetVehicleStatusByPlate(const char* plate, char* statusOut, int statusSize)// 根据车牌号获取车辆状态，返回是否找到匹配的车辆
 {
     if (!plate || !statusOut || statusSize <= 0) return 0;
     FILE* file = fopen("personal_vehicle_data.txt", "r");
@@ -99,10 +99,10 @@ static int GetVehicleStatusByPlate(const char* plate, char* statusOut, int statu
     return found;
 }
 
-static void RefreshAccessScrapCheck(void)
+static void RefreshAccessScrapCheck(void)// 检查当前输入的车牌号是否已报废，并更新状态提示信息
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
-    if (state->accessLicensePlate[0] == '\0') {
+    if (state->accessLicensePlate[0] == '\0') {// 如果车牌号为空，则清空状态提示信息
         state->accessMessage[0] = '\0';
         return;
     }
@@ -119,7 +119,7 @@ static void RefreshAccessScrapCheck(void)
     }
 }
 
-void SubmitPersonalAccessRecord(void)
+void SubmitPersonalAccessRecord(void)// 提交个人电动车出入记录，保存到文件中
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
     if (state->accessType[0] == '\0' ||
@@ -127,7 +127,7 @@ void SubmitPersonalAccessRecord(void)
         state->accessTypeSelected = 0;
         strcpy(state->accessType, "入校");
     }
-    RefreshAccessScrapCheck();
+    RefreshAccessScrapCheck();// 检查当前输入的车牌号是否已报废，并更新状态提示信息
     if (strcmp(state->accessMessage, "该车辆已报废，不能提交出入记录") == 0) {
         return;
     }
@@ -158,7 +158,8 @@ void SubmitPersonalAccessRecord(void)
     int found = 0;
     char ownerName[64] = {0};
     char vehicleStatus[32] = {0};
-    while (fgets(line, sizeof(line), file)) {
+    while (fgets(line, sizeof(line), file))
+    {
         char* fields[8] = {0};
         char* field = strtok(line, "|\r\n");
         int count = 0;
@@ -173,10 +174,12 @@ void SubmitPersonalAccessRecord(void)
         char tempStatus[32] = {0};
         if (!ConvertUtf8ToAnsi(fields[0], licensePlate, sizeof(licensePlate)) ||
             !ConvertUtf8ToAnsi(fields[1], tempOwner, sizeof(tempOwner)) ||
-            !ConvertUtf8ToAnsi(fields[7], tempStatus, sizeof(tempStatus))) {
+            !ConvertUtf8ToAnsi(fields[7], tempStatus, sizeof(tempStatus))) 
+            {
             continue;
-        }
-        if (strcmp(licensePlate, state->accessLicensePlate) == 0) {
+            }
+        if (strcmp(licensePlate, state->accessLicensePlate) == 0) 
+        {
             found = 1;
             strcpy(ownerName, tempOwner);
             strcpy(vehicleStatus, tempStatus);
@@ -217,10 +220,10 @@ void SubmitPersonalAccessRecord(void)
     strcpy(state->accessMessage, "记录已提交成功");
 }
 
-void HandlePersonalAccessKey(char key)
+void HandlePersonalAccessKey(char key)// 处理个人电动车出入记录页面的键盘输入
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
-    if (key == 8 || key == 127) {
+    if (key == 8 || key == 127) {// 处理退格键，删除当前输入框的最后一个字符
         if (state->accessFocus == 0) {
             int len = (int)strlen(state->accessLicensePlate);
             if (len > 0) state->accessLicensePlate[len - 1] = '\0';
@@ -230,20 +233,20 @@ void HandlePersonalAccessKey(char key)
         }
         return;
     }
-    if (key == 13 || key == 10) {
+    if (key == 13 || key == 10) {// 处理回车键，提交当前输入的出入记录
         SubmitPersonalAccessRecord();
         return;
     }
-    if (key == 9) {
+    if (key == 9) {// 处理 Tab 键，切换输入框焦点
         state->accessFocus = (state->accessFocus == 0) ? 1 : 0;
         return;
     }
 
-    if (state->accessFocus == 0) {
+    if (state->accessFocus == 0) {// 当前焦点在车牌号输入框，处理车牌号输入
         AppendAccessPlateChar(state->accessLicensePlate, sizeof(state->accessLicensePlate), key);
         RefreshAccessScrapCheck();
     } else {
-        if ((key >= '0' && key <= '9') || key == '-' || key == ' ' || key == ':') {
+        if ((key >= '0' && key <= '9') || key == '-' || key == ' ' || key == ':') {// 当前焦点在时间输入框，处理时间输入
             AppendAccessTimeChar(state->accessTime, sizeof(state->accessTime), key);
         }
     }
@@ -251,7 +254,7 @@ void HandlePersonalAccessKey(char key)
 
 void HandlePersonalAccessChar(TCHAR key)
 {
-    if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
+    if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {// 处理退格、回车和 Tab 键
         HandlePersonalAccessKey((char)key);
         return;
     }
@@ -278,7 +281,7 @@ void HandlePersonalAccessChar(TCHAR key)
     }
 }
 
-static void NormalizeQueryPlate(char* plate)
+static void NormalizeQueryPlate(char* plate)// 将车牌号转换为大写字母，确保查询时不区分大小写
 {
     if (!plate) return;
     int len = (int)strlen(plate);
@@ -287,7 +290,7 @@ static void NormalizeQueryPlate(char* plate)
     }
 }
 
-void QueryPersonalAccessRecords(void)
+void QueryPersonalAccessRecords(void)// 查询个人电动车出入记录，根据输入的车牌号从文件中读取匹配的记录
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
     NormalizeQueryPlate(state->accessQueryPlate);
@@ -338,36 +341,36 @@ void QueryPersonalAccessRecords(void)
     }
 }
 
-void HandlePersonalAccessQueryKey(char key)
+void HandlePersonalAccessQueryKey(char key)// 处理个人电动车出入记录查询页面的键盘输入
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
-    if (key == 8 || key == 127) {
+    if (key == 8 || key == 127) {// 处理退格键，删除查询车牌号输入框的最后一个字符
         int len = (int)strlen(state->accessQueryPlate);
         if (len > 0) state->accessQueryPlate[len - 1] = '\0';
         return;
     }
-    if (key == 13 || key == 10) {
+    if (key == 13 || key == 10) {// 处理回车键，执行查询操作
         QueryPersonalAccessRecords();
         return;
     }
-    if (key == 9) {
+    if (key == 9) {// 处理Tab键，切换焦点
         state->accessQueryFocus = 1 - state->accessQueryFocus;
         return;
     }
-    if (state->accessQueryFocus == 0) {
+    if (state->accessQueryFocus == 0) {// 当前焦点在查询车牌号输入框，处理车牌号输入
         if (strlen(state->accessQueryPlate) < 9) {
             char ch = key;
             if (ch >= 'a' && ch <= 'z') ch = ch + 'A' - 'a';
             if ((ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9')) {
                 int len = (int)strlen(state->accessQueryPlate);
-                state->accessQueryPlate[len] = ch;
+                state->accessQueryPlate[len] = ch;// 将输入的字符追加到查询车牌号输入框中
                 state->accessQueryPlate[len + 1] = '\0';
             }
         }
     }
 }
 
-void HandlePersonalAccessQueryChar(TCHAR key)
+void HandlePersonalAccessQueryChar(TCHAR key)// 处理个人电动车出入记录查询页面的字符输入
 {
     if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
         HandlePersonalAccessQueryKey((char)key);
@@ -397,15 +400,15 @@ void HandlePersonalAccessQueryChar(TCHAR key)
     }
 }
 
-void ScrollPersonalAccessQuery(int delta)
+void ScrollPersonalAccessQuery(int delta)// 滚动个人电动车出入记录查询结果，delta 为滚动的行数，正数向下滚动，负数向上滚动
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
     if (state->accessQueryCount <= 4) {
         state->accessQueryScroll = 0;
         return;
     }
-    int maxScroll = state->accessQueryCount - 4;
-    state->accessQueryScroll += delta;
+    int maxScroll = state->accessQueryCount - 4;// 计算最大滚动偏移量，确保不会滚动超过查询结果的范围
+    state->accessQueryScroll += delta;// 根据 delta 调整滚动偏移量
     if (state->accessQueryScroll < 0) state->accessQueryScroll = 0;
     if (state->accessQueryScroll > maxScroll) state->accessQueryScroll = maxScroll;
 }
