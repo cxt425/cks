@@ -6,7 +6,7 @@
 static PersonalInspectionState gInspectionState;
 static const char* PERSONAL_DATA_FILE = "personal_vehicle_data.txt";
 
-static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)
+static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)// Helper: 将 UTF-8 字符串转换为 ANSI 字符串
 {
     if (!source || !destination || destinationSize <= 0) return 0;
 
@@ -19,7 +19,7 @@ static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinat
         destination, destinationSize, NULL, NULL) > 0;
 }
 
-static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)
+static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)// Helper: 将 ANSI 字符串转换为 UTF-8 字符串
 {
     if (!source || !destination || destinationSize <= 0) return 0;
 
@@ -32,8 +32,7 @@ static int ConvertAnsiToUtf8(const char* source, char* destination, int destinat
         destination, destinationSize, NULL, NULL) > 0;
 }
 
-static int CalculateNextInspectionDate(const char* registrationDate,
-    char* nextInspectionDate, int destinationSize)
+static int CalculateNextInspectionDate(const char* registrationDate,char* nextInspectionDate, int destinationSize)// Helper: 根据注册日期计算下次年审日期，返回是否成功
 {
     int year;
     int month;
@@ -47,7 +46,7 @@ static int CalculateNextInspectionDate(const char* registrationDate,
     return 1;
 }
 
-static int GetToday(char* date, int capacity)
+static int GetToday(char* date, int capacity)// Helper: 获取当前日期，格式为 YYYY-MM-DD，返回是否成功
 {
     if (!date || capacity < 11) return 0;
 
@@ -57,7 +56,7 @@ static int GetToday(char* date, int capacity)
     return 1;
 }
 
-static int WriteUpdatedRecord(FILE* file, char* fields[8], const char* today)
+static int WriteUpdatedRecord(FILE* file, char* fields[8], const char* today)// Helper: 将更新后的车辆信息写入文件，使用 UTF-8 编码，返回是否成功
 {
     char normalStatus[32] = {0};
     char utf8Today[32] = {0};
@@ -71,7 +70,7 @@ static int WriteUpdatedRecord(FILE* file, char* fields[8], const char* today)
         utf8Today, normalStatus) >= 0;
 }
 
-static void AppendChar(char* destination, int capacity, char key)
+static void AppendChar(char* destination, int capacity, char key)// Helper: 向字符串追加字符，限制输入长度和格式
 {
     int length = (int)strlen(destination);
     if (length >= capacity - 1) return;
@@ -89,7 +88,7 @@ static void AppendChar(char* destination, int capacity, char key)
     destination[length + 1] = '\0';
 }
 
-static void DeleteChar(char* destination)
+static void DeleteChar(char* destination)// Helper: 删除字符串最后一个字符，处理中文字符时删除两个字节
 {
     int length = (int)strlen(destination);
     if (length <= 0) return;
@@ -101,18 +100,18 @@ static void DeleteChar(char* destination)
     destination[length] = '\0';
 }
 
-void InitPersonalInspectionState(void)
+void InitPersonalInspectionState(void)// Helper: 初始化个人年审管理界面状态
 {
     memset(&gInspectionState, 0, sizeof(gInspectionState));
     strcpy(gInspectionState.message, "请输入车牌号和车主姓名");
 }
 
-PersonalInspectionState* GetPersonalInspectionState(void)
+PersonalInspectionState* GetPersonalInspectionState(void)// Helper: 获取个人年审管理界面状态的指针
 {
     return &gInspectionState;
 }
 
-void QueryPersonalInspection(void)
+void QueryPersonalInspection(void)// Helper: 查询个人车辆信息，根据车牌号和车主姓名匹配，更新状态结构体
 {
     PersonalInspectionState* state = &gInspectionState;
     state->queryFound = 0;
@@ -172,7 +171,7 @@ void QueryPersonalInspection(void)
     fclose(file);
 }
 
-void UpdatePersonalInspectionStatus(void)
+void UpdatePersonalInspectionStatus(void)// Helper: 更新个人车辆年审状态
 {
     PersonalInspectionState* state = &gInspectionState;
     if (!state->queryFound) {
@@ -197,7 +196,7 @@ void UpdatePersonalInspectionStatus(void)
     strcpy(state->message, "状态已更新，点击保存写入数据");
 }
 
-void SavePersonalInspectionUpdate(void)
+void SavePersonalInspectionUpdate(void)// Helper: 保存个人车辆年审状态更新到文件中
 {
     PersonalInspectionState* state = &gInspectionState;
     if (!state->queryFound) {
@@ -253,7 +252,7 @@ void SavePersonalInspectionUpdate(void)
     fclose(sourceFile);
     fclose(tempFile);
 
-    if (!updated) {
+    if (!updated) {// 如果没有找到匹配的车辆信息，则删除临时文件并返回错误信息
         remove("personal_vehicle_data.tmp");
         strcpy(state->message, "保存失败：未找到匹配车辆");
         return;
@@ -265,21 +264,20 @@ void SavePersonalInspectionUpdate(void)
     strcpy(state->message, "保存成功：车辆状态为正常");
 }
 
-void RestorePersonalInspectionState(void)
+void RestorePersonalInspectionState(void)// Helper: 恢复个人车辆年审状态为原始状态
 {
     PersonalInspectionState* state = &gInspectionState;
     if (!state->queryFound) return;
 
-    strcpy(state->vehicleStatus, state->originalVehicleStatus);
+    strcpy(state->vehicleStatus, state->originalVehicleStatus);// 恢复车辆状态为原始状态
     if (state->registrationDate[0]) {
-        CalculateNextInspectionDate(state->registrationDate,
-            state->nextInspectionDate, sizeof(state->nextInspectionDate));
-    }
+        CalculateNextInspectionDate(state->registrationDate,state->nextInspectionDate, sizeof(state->nextInspectionDate));
+    }// 恢复下次年审日期为原始注册日期的下一年
     state->statusUpdated = 0;
     strcpy(state->message, "已恢复原年审状态");
 }
 
-void HandlePersonalInspectionKey(char key)
+void HandlePersonalInspectionKey(char key)// Helper: 处理个人车辆年审输入
 {
     if (key == 8 || key == 127) {
         if (gInspectionState.focus == 0)
@@ -300,14 +298,14 @@ void HandlePersonalInspectionKey(char key)
         return;
     }
 
-    if (gInspectionState.focus == 0)
+    if (gInspectionState.focus == 0)// 车牌号输入框
         AppendChar(gInspectionState.licensePlate, sizeof(gInspectionState.licensePlate), key);
     else
         AppendChar(gInspectionState.ownerName, sizeof(gInspectionState.ownerName), key);
     gInspectionState.queryFound = 0;
 }
 
-void HandlePersonalInspectionChar(TCHAR key)
+void HandlePersonalInspectionChar(TCHAR key)// Helper: 处理个人车辆年审字符输入
 {
     if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
         HandlePersonalInspectionKey((char)key);

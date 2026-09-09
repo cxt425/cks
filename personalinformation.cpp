@@ -4,22 +4,22 @@
 #include <string.h>
 #include <limits.h>
 
-static const char* PERSONAL_DATA_FILE = "personal_vehicle_data.txt";
+static const char* PERSONAL_DATA_FILE = "personal_vehicle_data.txt";//
 
 static int IsValidInputChar(int focus, char key)// Helper: 判断当前输入框是否允许输入该字符
 {
-    if (focus == 4)
+    if (focus == 4)// 处理车牌号输入框
         return (key >= '0' && key <= '9');
-    if (focus == 6)
+    if (focus == 6)// 处理日期输入框
         return (key >= '0' && key <= '9') || key == '-';
-    return (unsigned char)key >= 0x80 || (key >= 32 && key <= 126);
+    return (unsigned char)key >= 0x80 || (key >= 32 && key <= 126);// 其他输入框允许中文、字母、数字、空格和常用符号
 }
 
 static void AppendCharToField(char* dest, int maxLen, int focus, char key)// Helper: 向当前输入框追加字符，限制输入长度
 {
     int len = (int)strlen(dest);
     if (len >= maxLen - 1) return;
-    if (focus == 0) {
+    if (focus == 0) {// 处理车牌号输入框
         if ((len == 0 && (key < 'A' || key > 'Z')) ||
             (len > 0 && !((key >= 'A' && key <= 'Z') ||
                           (key >= '0' && key <= '9'))) || len >= 5) return;
@@ -27,14 +27,14 @@ static void AppendCharToField(char* dest, int maxLen, int focus, char key)// Hel
         dest[len + 1] = '\0';
         return;
     }
-    if (focus == 3) {
+    if (focus == 3) {// 处理人员编号输入框
         if ((len == 0 && (key < 'A' || key > 'Z')) ||
             (len > 0 && (key < '0' || key > '9')) || len >= 10) return;
         dest[len] = key;
         dest[len + 1] = '\0';
         return;
     }
-    if (!IsValidInputChar(focus, key)) return;
+    if (!IsValidInputChar(focus, key)) return;// 检查输入字符是否合法
     dest[len] = key;
     dest[len + 1] = '\0';
 }
@@ -73,7 +73,7 @@ void QueryPersonalVehicleInfo(void)// Helper: 按车牌号查询车辆信息
     PersonalUserInfo* state = GetPersonalRegistrationState();
     state->queryFound = 0;
     strcpy(state->queryMessage, "未找到对应车辆");
-    PersonalVehicleRecord record;
+    PersonalVehicleRecord record;// 临时存储查询结果的车辆信息
     FILE* file = fopen(PERSONAL_DATA_FILE, "r");
     if (!file) return;
 
@@ -121,7 +121,7 @@ void QueryPersonalVehicleInfo(void)// Helper: 按车牌号查询车辆信息
     fclose(file);
 }
 
-static int WritePersonalRecordUtf8(FILE* file, const PersonalVehicleRecord* record)
+static int WritePersonalRecordUtf8(FILE* file, const PersonalVehicleRecord* record)// Helper: 将个人车辆信息写入文件，使用 UTF-8 编码
 {
     char fields[8][128];
     const char* source[8] = { record->licensePlate, record->ownerName, record->college,
@@ -134,7 +134,7 @@ static int WritePersonalRecordUtf8(FILE* file, const PersonalVehicleRecord* reco
         fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7]) >= 0;
 }
 
-void UpdatePersonalVehicleInfo(void)// Helper: 更新个人车辆信息
+void UpdatePersonalVehicleInfo(void)// Helper: 更新个人车辆信息，保存到文件中
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
     if (!state->queryFound) {
@@ -146,8 +146,8 @@ void UpdatePersonalVehicleInfo(void)// Helper: 更新个人车辆信息
         return;
     }
 
-    FILE* sourceFile = fopen(PERSONAL_DATA_FILE, "r");
-    FILE* tempFile = fopen("personal_vehicle_data.tmp", "w");
+    FILE* sourceFile = fopen(PERSONAL_DATA_FILE, "r");// 打开原始数据文件进行读取
+    FILE* tempFile = fopen("personal_vehicle_data.tmp", "w");// 创建临时文件用于保存更新后的数据
     if (!sourceFile || !tempFile) {
         if (sourceFile) fclose(sourceFile);
         if (tempFile) fclose(tempFile);
@@ -156,15 +156,15 @@ void UpdatePersonalVehicleInfo(void)// Helper: 更新个人车辆信息
     }
 
     char line[512];
-    int updated = 0;
+    int updated = 0;// 标记是否已更新车辆信息
     while (fgets(line, sizeof(line), sourceFile)) {
         char original[512];
-        strcpy(original, line);
+        strcpy(original, line);// 保存原始行内容
         char* licensePlate = strtok(line, "|\r\n");
-        if (!updated && licensePlate) {
+        if (!updated && licensePlate) {// 如果还没有更新过，并且当前行的车牌号不为空
             char ansiLicensePlate[32];
             if (ConvertUtf8ToAnsi(licensePlate, ansiLicensePlate, sizeof(ansiLicensePlate)) &&
-                strcmp(ansiLicensePlate, state->queryLicensePlate) == 0) {
+                strcmp(ansiLicensePlate, state->queryLicensePlate) == 0) {// 如果当前行的车牌号与查询的车牌号匹配，则写入更新后的车辆信息到临时文件
                 updated = WritePersonalRecordUtf8(tempFile, &state->queryResult);
                 continue;
             }
