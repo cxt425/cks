@@ -4,21 +4,21 @@
 #include <string.h>
 #include <windows.h>
 
-static const char* SHARED_BICYCLE_DATA_FILE = "shared_bicycle_data.txt";
-static const char* SHARED_USE_RECORD_FILE = "shared_use_records.txt";
-static const char* UTF8_UNPAID_STATUS = "\xE6\x9C\xAA\xE6\x94\xAF\xE4\xBB\x98";
-static int sharedOrderScroll = 0;
-static int sharedOrderCount = 0;
-static int sharedOrderDragging = 0;
+static const char* SHARED_BICYCLE_DATA_FILE = "shared_bicycle_data.txt";// 定义共享自行车数据文件路径
+static const char* SHARED_USE_RECORD_FILE = "shared_use_records.txt";// 定义共享使用记录文件路径
+static const char* UTF8_UNPAID_STATUS = "\xE6\x9C\xAA\xE6\x94\xAF\xE4\xBB\x98";// 定义 UTF-8 编码的 "未支付" 状态字符串
+static int sharedOrderScroll = 0;// 定义共享车辆我的订单界面滚动偏移，初始值为 0
+static int sharedOrderCount = 0;// 定义共享车辆我的订单界面订单数量，初始值为 0
+static int sharedOrderDragging = 0;// 定义共享车辆我的订单界面滚动条拖动状态，初始值为 0（未拖动）
 
-static void SetSharedOrderScrollFromBar(int y)
+static void SetSharedOrderScrollFromBar(int y)// Helper: 根据滚动条位置设置共享车辆我的订单界面滚动偏移
 {
     int maxScroll = sharedOrderCount > 8 ? sharedOrderCount - 8 : 0;
     if (maxScroll <= 0) return;
 
     int barTop = 155;
     int barBottom = 491;
-    int thumbHeight = 336 * 8 / sharedOrderCount;
+    int thumbHeight = 336 * 8 / sharedOrderCount;// 计算滚动条滑块高度，确保滑块高度与订单数量成反比
     if (thumbHeight < 24) thumbHeight = 24;
     int effective = barBottom - barTop - thumbHeight;
     int target = y - thumbHeight / 2;
@@ -27,46 +27,46 @@ static void SetSharedOrderScrollFromBar(int y)
     sharedOrderScroll = (target - barTop) * maxScroll / effective;
 }
 
-void ResetSharedOrderScroll(void)
+void ResetSharedOrderScroll(void)// 重置共享车辆我的订单界面滚动偏移和拖动状态
 {
     sharedOrderScroll = 0;
     sharedOrderDragging = 0;
 }
 
-void SetSharedOrderCount(int count)
+void SetSharedOrderCount(int count)// 设置共享车辆我的订单界面订单数量
 {
     sharedOrderCount = count;
     if (sharedOrderScroll > sharedOrderCount - 8)
         sharedOrderScroll = sharedOrderCount > 8 ? sharedOrderCount - 8 : 0;
 }
 
-void ScrollSharedOrder(int offset)
+void ScrollSharedOrder(int offset)// 滚动共享车辆我的订单界面，offset 为滚动偏移量（正数向下滚动，负数向上滚动）
 {
     sharedOrderScroll += offset;
     if (sharedOrderScroll < 0) sharedOrderScroll = 0;
 }
 
-int GetSharedOrderScroll(void)
+int GetSharedOrderScroll(void)// 获取共享车辆我的订单界面滚动偏移
 {
-    return sharedOrderScroll;
+    return sharedOrderScroll;// 返回当前滚动偏移量
 }
-void BeginSharedOrderDrag(int y)
+void BeginSharedOrderDrag(int y)// 开始拖动共享车辆我的订单界面滚动条
 {
     if (sharedOrderCount <= 8 || y < 155 || y > 491) return;
     sharedOrderDragging = 1;
     SetSharedOrderScrollFromBar(y);
 }
 
-void UpdateSharedOrderDrag(int y)
+void UpdateSharedOrderDrag(int y)// 更新共享车辆我的订单界面拖动滚动条
 {
     if (sharedOrderDragging) SetSharedOrderScrollFromBar(y);
 }
 
-void EndSharedOrderDrag(void)
+void EndSharedOrderDrag(void)// 结束拖动共享车辆我的订单界面滚动条
 {
     sharedOrderDragging = 0;
 }
-static void WriteUtf8Text(FILE* file, const char* text)
+static void WriteUtf8Text(FILE* file, const char* text)// Helper: 将文本写入文件，确保以 UTF-8 编码保存
 {
     if (!file || !text) return;
 
@@ -92,7 +92,7 @@ static void WriteUtf8Text(FILE* file, const char* text)
     fwrite(text, 1, strlen(text), file);
 }
 
-static void AppendSharedUseRecord(const char* phone, const char* plate)
+static void AppendSharedUseRecord(const char* phone, const char* plate)// Helper: 向共享使用记录文件追加一条记录，包含手机号、车牌号和默认的使用信息
 {
     if (!phone || phone[0] == '\0' || !plate || plate[0] == '\0') return;
 
@@ -105,7 +105,7 @@ static void AppendSharedUseRecord(const char* phone, const char* plate)
     fclose(file);
 }
 
-static void UpdateSharedUseRecordPaid(const char* phone, const char* plate, const char* duration, const char* distance, const char* amount)
+static void UpdateSharedUseRecordPaid(const char* phone, const char* plate, const char* duration, const char* distance, const char* amount)// Helper: 更新共享使用记录文件中指定手机号和车牌号的记录为已支付状态，并更新使用时长、行驶距离和支付金额
 {
     if (!phone || phone[0] == '\0' || !plate || plate[0] == '\0') return;
 
@@ -163,7 +163,7 @@ static void UpdateSharedUseRecordPaid(const char* phone, const char* plate, cons
     }
 }
 
-static void AppendSharedUsePlateChar(char* dest, int maxLen, char key)
+static void AppendSharedUsePlateChar(char* dest, int maxLen, char key)// Helper: 向共享使用车牌号输入框追加一个字符，确保不超过最大长度
 {
     int len = (int)strlen(dest);
     if (len >= maxLen - 1) return;
@@ -173,7 +173,7 @@ static void AppendSharedUsePlateChar(char* dest, int maxLen, char key)
     }
 }
 
-static void AppendSharedNumericChar(char* dest, int maxLen, char key)
+static void AppendSharedNumericChar(char* dest, int maxLen, char key)// Helper: 向共享使用数值输入框追加一个字符，确保不超过最大长度
 {
     int len = (int)strlen(dest);
     if (len >= maxLen - 1) return;
@@ -183,21 +183,21 @@ static void AppendSharedNumericChar(char* dest, int maxLen, char key)
     }
 }
 
-static void DeleteSharedNumericChar(char* dest)
+static void DeleteSharedNumericChar(char* dest)// Helper: 删除共享使用数值输入框的最后一个字符
 {
     int len = (int)strlen(dest);
     if (len <= 0) return;
     dest[len - 1] = '\0';
 }
 
-static void DeleteSharedUsePlateChar(char* dest)
+static void DeleteSharedUsePlateChar(char* dest)// Helper: 删除共享使用车牌号输入框的最后一个字符
 {
     int len = (int)strlen(dest);
     if (len <= 0) return;
     dest[len - 1] = '\0';
 }
 
-void HandleSharedUseVehicleKey(char key)
+void HandleSharedUseVehicleKey(char key)// 处理共享使用车辆页面的键盘输入，支持删除、回车和字符输入
 {
     SharedUserInfo* state = GetSharedSignoutState();
     if (key == 8 || key == 127) {
@@ -215,7 +215,7 @@ void HandleSharedUseVehicleKey(char key)
     }
 }
 
-void HandleSharedUseVehicleChar(TCHAR key)
+void HandleSharedUseVehicleChar(TCHAR key)// 处理共享使用车辆页面的字符输入，支持中文和英文字符
 {
     if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
         HandleSharedUseVehicleKey((char)key);
@@ -241,7 +241,7 @@ void HandleSharedUseVehicleChar(TCHAR key)
     }
 }
 
-static int ParseBatteryPercent(const char* batteryText)
+static int ParseBatteryPercent(const char* batteryText)// Helper: 从共享车辆电量文本中解析出电量百分比，返回 -1 表示解析失败
 {
     if (!batteryText || batteryText[0] == '\0') return -1;
 
@@ -257,7 +257,7 @@ static int ParseBatteryPercent(const char* batteryText)
     return atoi(tmp);
 }
 
-static int ConvertLocalToUtf8(const char* source, char* destination, int destinationSize)
+static int ConvertLocalToUtf8(const char* source, char* destination, int destinationSize)// Helper: 将本地编码的字符串转换为 UTF-8 编码的字符串，返回 1 表示成功，0 表示失败
 {
     if (!source || !destination || destinationSize <= 0) return 0;
 
@@ -287,7 +287,7 @@ static int ConvertLocalToUtf8(const char* source, char* destination, int destina
     return 1;
 }
 
-void UpdateSharedBicycleRecordInFile(const char* plate, const char* status, const char* battery)
+void UpdateSharedBicycleRecordInFile(const char* plate, const char* status, const char* battery)// Helper: 更新共享自行车数据文件中指定车牌号的记录，包含车辆状态和电量信息
 {
     if (!plate || plate[0] == '\0' || !status || !battery) return;
 
@@ -333,7 +333,7 @@ void UpdateSharedBicycleRecordInFile(const char* plate, const char* status, cons
     rename("shared_bicycle_data.tmp", SHARED_BICYCLE_DATA_FILE);
 }
 
-static void ResetSharedRideState(void)
+static void ResetSharedRideState(void)// Helper: 重置共享骑行状态信息，清空车辆编号、状态、电量和开锁结果提示信息
 {
     SharedUserInfo* state = GetSharedSignoutState();
     state->sharedUsePlate[0] = '\0';
@@ -349,7 +349,7 @@ static void ResetSharedRideState(void)
     state->settlementFocus = 0;
 }
 
-static void NormalizeLocalText(char* dest, size_t destSize, const char* src)
+static void NormalizeLocalText(char* dest, size_t destSize, const char* src)// Helper: 将本地编码的字符串转换为 UTF-8 编码的字符串
 {
     if (!dest || destSize == 0) return;
     dest[0] = '\0';
@@ -370,7 +370,7 @@ static void NormalizeLocalText(char* dest, size_t destSize, const char* src)
     dest[destSize - 1] = '\0';
 }
 
-void QuerySharedVehicleInfo(void)
+void QuerySharedVehicleInfo(void)// 查询共享车辆信息，根据输入的车牌号从数据文件中获取车辆状态和电量信息
 {
     SharedUserInfo* state = GetSharedSignoutState();
     if (state->sharedUsePlate[0] == '\0') {
@@ -426,7 +426,7 @@ void QuerySharedVehicleInfo(void)
     }
 }
 
-static void UpdateSettlementAmount(SharedUserInfo* state)
+static void UpdateSettlementAmount(SharedUserInfo* state)// Helper: 根据用车时长计算应付金额，并更新结算金额字段
 {
     if (!state) return;
 
@@ -444,7 +444,7 @@ static void UpdateSettlementAmount(SharedUserInfo* state)
     snprintf(state->settlementAmount, sizeof(state->settlementAmount), "%.1f", fee);
 }
 
-void HandleSharedSettlementKey(char key)
+void HandleSharedSettlementKey(char key)// 处理共享车辆结算页面的键盘输入，支持删除、切换焦点和字符输入
 {
     SharedUserInfo* state = GetSharedSignoutState();
     if (key == 8 || key == 127) {
@@ -476,7 +476,7 @@ void HandleSharedSettlementKey(char key)
     }
 }
 
-void HandleSharedSettlementChar(TCHAR key)
+void HandleSharedSettlementChar(TCHAR key)// 处理共享车辆结算页面的字符输入，支持中文和英文字符
 {
     if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
         HandleSharedSettlementKey((char)key);
@@ -507,7 +507,7 @@ void HandleSharedSettlementChar(TCHAR key)
     }
 }
 
-void ConfirmSharedSettlementPayment(void)
+void ConfirmSharedSettlementPayment(void)// 处理共享车辆结算支付确认，更新车辆状态、结算记录和用户信息
 {
     SharedUserInfo* state = GetSharedSignoutState();
     if (state->settlementPlate[0] == '\0') return;
@@ -553,7 +553,7 @@ void ConfirmSharedSettlementPayment(void)
     ResetSharedRideState();
 }
 
-void TryUnlockSharedVehicle(void)
+void TryUnlockSharedVehicle(void)// 尝试解锁共享车辆，根据车辆状态和电量判断是否可以开锁，并更新骑行状态和记录
 {
     SharedUserInfo* state = GetSharedSignoutState();
     if (state->sharedUsePlate[0] == '\0') {
