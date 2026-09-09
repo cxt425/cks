@@ -10,7 +10,7 @@ static SharedUserInfo gSharedUserInfo;// 定义全局共享用户信息结构体
 static const char* SHARED_DATA_FILE = "shared_vehicle_data.txt";
 static const char* SHARED_BICYCLE_DATA_FILE = "shared_bicycle_data.txt";
 
-static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)
+static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)// Helper: 将 ANSI 编码的字符串转换为 UTF-8 编码的字符串
 {
     if (!source || !destination || destinationSize <= 0) return 0;
 
@@ -21,7 +21,7 @@ static int ConvertAnsiToUtf8(const char* source, char* destination, int destinat
     return WideCharToMultiByte(CP_UTF8, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
 }
 
-int SaveSharedVehicleData(const SharedUserInfo* info)
+int SaveSharedVehicleData(const SharedUserInfo* info)// 保存共享车辆数据到文件中，返回保存是否成功
 {
     if (!info) return 0;
 
@@ -88,7 +88,7 @@ static void DeleteCharFromField(char* dest)
     dest[len] = '\0';
 }
 
-void HandleSharedSignoutChar(TCHAR key)
+void HandleSharedSignoutChar(TCHAR key)// 处理共享登录页面的字符输入，支持中文和英文字符
 {
     if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
         HandleSharedSignoutKey((char)key);
@@ -241,7 +241,7 @@ void TrySharedLogin(void)
 }
 
 
-void LogoutSharedUser(void)
+void LogoutSharedUser(void)// 退出共享电动车登录状态并清空登录表单
 {
     SharedUserInfo* state = GetSharedSignoutState();
     memset(state, 0, sizeof(*state));

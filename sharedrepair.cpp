@@ -4,7 +4,7 @@
 #include <string.h>
 #include <windows.h>
 
-void ResetSharedRepairState(void)
+void ResetSharedRepairState(void)// 重置共享车辆报修界面状态
 {
     SharedUserInfo* state = GetSharedSignoutState();
     strcpy(state->repairType, "无法锁车");
