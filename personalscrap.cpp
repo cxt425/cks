@@ -4,9 +4,9 @@
 #include <time.h>
 #include <windows.h>
 
-static void GetTodayDateString(char* buffer, int size);
+static void GetTodayDateString(char* buffer, int size);// Helper: 获取当前日期字符串，格式为 YYYY-MM-DD
 
-static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)
+static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)// Helper: 将 UTF-8 编码的字符串转换为 ANSI 编码的字符串
 {
     if (!source || !destination || destinationSize <= 0) return 0;
     wchar_t wideText[128];
@@ -15,7 +15,7 @@ static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinat
     return WideCharToMultiByte(CP_ACP, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
 }
 
-void QueryPersonalScrapStatus(void)
+void QueryPersonalScrapStatus(void)// 查询个人车辆报废状态
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
     if (state->scrapLicensePlate[0] == '\0' || state->scrapOwnerName[0] == '\0') {
@@ -59,19 +59,19 @@ void QueryPersonalScrapStatus(void)
             continue;
         }
 
-        if (strcmp(licensePlate, state->scrapLicensePlate) == 0 &&
-            strcmp(ownerName, state->scrapOwnerName) == 0) {
+        if (strcmp(licensePlate, state->scrapLicensePlate) == 0 &&strcmp(ownerName, state->scrapOwnerName) == 0) 
+        {
             strcpy(state->scrapStatus, vehicleStatus);
             state->scrapFound = 1;
             if (count >= 10 && fields[9] && ConvertUtf8ToAnsi(fields[9], scrapDate, sizeof(scrapDate))) {
                 strncpy(state->scrapDate, scrapDate, sizeof(state->scrapDate) - 1);
-                state->scrapDate[sizeof(state->scrapDate) - 1] = '\0';
+                state->scrapDate[sizeof(state->scrapDate) - 1] = '\0';// 如果有报废日期，则保存
             } else {
                 state->scrapDate[0] = '\0';
             }
             if (count >= 9 && fields[8] && ConvertUtf8ToAnsi(fields[8], reasonText, sizeof(reasonText))) {
                 strncpy(state->scrapReason, reasonText, sizeof(state->scrapReason) - 1);
-                state->scrapReason[sizeof(state->scrapReason) - 1] = '\0';
+                state->scrapReason[sizeof(state->scrapReason) - 1] = '\0';// 如果有报废原因，则保存
             } else {
                 state->scrapReason[0] = '\0';
             }
@@ -90,7 +90,7 @@ void QueryPersonalScrapStatus(void)
     strcpy(state->scrapMessage, "未查询到");
 }
 
-static void GetTodayDateString(char* buffer, int size)
+static void GetTodayDateString(char* buffer, int size)// Helper: 获取当前日期字符串，格式为 YYYY-MM-DD
 {
     time_t now = time(NULL);
     struct tm localTime;
@@ -98,7 +98,7 @@ static void GetTodayDateString(char* buffer, int size)
     snprintf(buffer, size, "%04d-%02d-%02d", localTime.tm_year + 1900, localTime.tm_mon + 1, localTime.tm_mday);
 }
 
-static void DeleteCharFromField(char* dest)
+static void DeleteCharFromField(char* dest)// Helper: 删除输入框中的最后一个字符
 {
     int len = (int)strlen(dest);
     if (len <= 0) return;
@@ -107,11 +107,11 @@ static void DeleteCharFromField(char* dest)
     dest[len] = '\0';
 }
 
-static void AppendCharToField(char* dest, int maxLen, int focus, char key)
+static void AppendCharToField(char* dest, int maxLen, int focus, char key)// Helper: 向输入框追加字符，限制输入长度和合法性
 {
     int len = (int)strlen(dest);
     if (len >= maxLen - 1) return;
-    if (focus == 0) {
+    if (focus == 0) {// 处理车牌号输入框
         if ((len == 0 && (key < 'A' || key > 'Z')) ||
             (len > 0 && !((key >= 'A' && key <= 'Z') ||
                           (key >= '0' && key <= '9'))) || len >= 5) return;
@@ -119,7 +119,7 @@ static void AppendCharToField(char* dest, int maxLen, int focus, char key)
         dest[len + 1] = '\0';
         return;
     }
-    if (focus == 2) {
+    if (focus == 2) {// 处理报废原因输入框
         if (!((unsigned char)key >= 0x80 || (key >= 32 && key <= 126))) return;
         dest[len] = key;
         dest[len + 1] = '\0';
@@ -130,7 +130,7 @@ static void AppendCharToField(char* dest, int maxLen, int focus, char key)
     dest[len + 1] = '\0';
 }
 
-void HandlePersonalScrapKey(char key)
+void HandlePersonalScrapKey(char key)// Helper: 处理个人车辆报废页面的按键输入
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
     if (key == 8 || key == 127) {
@@ -147,13 +147,13 @@ void HandlePersonalScrapKey(char key)
         QueryPersonalScrapStatus();
         return;
     }
-    if (key == 9) {
+    if (key == 9) {// Tab 键切换焦点
         if (state->focus == 2) state->focus = 0;
         else state->focus = (state->focus == 0) ? 1 : 0;
         return;
     }
 
-    if (state->focus == 0) {
+    if (state->focus == 0) {// 处理车牌号输入框
         AppendCharToField(state->scrapLicensePlate, sizeof(state->scrapLicensePlate), 0, key);
     } else if (state->focus == 1) {
         AppendCharToField(state->scrapOwnerName, sizeof(state->scrapOwnerName), 1, key);
@@ -162,7 +162,7 @@ void HandlePersonalScrapKey(char key)
     }
 }
 
-void SavePersonalScrapUpdate(void)
+void SavePersonalScrapUpdate(void)// Helper: 保存个人车辆报废状态更新
 {
     PersonalUserInfo* state = GetPersonalRegistrationState();
     if (!state->scrapFound) {
@@ -253,7 +253,7 @@ void SavePersonalScrapUpdate(void)
     }
 }
 
-void HandlePersonalScrapChar(TCHAR key)
+void HandlePersonalScrapChar(TCHAR key)// Helper: 处理个人车辆报废页面的字符输入
 {
     if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
         HandlePersonalScrapKey((char)key);

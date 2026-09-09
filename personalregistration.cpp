@@ -6,8 +6,8 @@
 #include <limits.h>
 static PersonalUserInfo gPersonalUserInfo; // 定义全局个人用户信息结构体，用于存储注册状态和输入信息
 static const char* PERSONAL_DATA_FILE = "personal_vehicle_data.txt";
-// Helper: 检查车牌号是否已注册
-static int IsPersonalVehicleRegistered(const char* licensePlate)
+
+static int IsPersonalVehicleRegistered(const char* licensePlate)// Helper: 检查车牌号是否已注册，返回 1=已注册，0=未注册
 {
     if (!licensePlate) return 0;
 
@@ -28,7 +28,7 @@ static int IsPersonalVehicleRegistered(const char* licensePlate)
     return 0;
 }
 
-static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)
+static int ConvertAnsiToUtf8(const char* source, char* destination, int destinationSize)// Helper: 将 ANSI 编码的字符串转换为 UTF-8 编码的字符串
 {
     if (!source || !destination || destinationSize <= 0) return 0;
 
@@ -39,7 +39,7 @@ static int ConvertAnsiToUtf8(const char* source, char* destination, int destinat
     return WideCharToMultiByte(CP_UTF8, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
 }
 
-static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)
+static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinationSize)// Helper: 将 UTF-8 编码的字符串转换为 ANSI 编码的字符串
 {
     if (!source || !destination || destinationSize <= 0) return 0;
     wchar_t wideText[128];
@@ -48,7 +48,7 @@ static int ConvertUtf8ToAnsi(const char* source, char* destination, int destinat
     return WideCharToMultiByte(CP_ACP, 0, wideText, -1, destination, destinationSize, NULL, NULL) > 0;
 }
 
-static void EnsureDefaultAccessType(PersonalUserInfo* state)
+static void EnsureDefaultAccessType(PersonalUserInfo* state)// Helper: 确保出入类型默认值为 "入校"
 {
     if (!state) return;
     if (state->accessType[0] == '\0' ||
@@ -264,7 +264,7 @@ void HandlePersonalRegistrationKey(char key)
         case 6: AppendCharToField(state->registrationDate, sizeof(state->registrationDate), state->focus, key); break;
     }
 }
-void HandlePersonalRegistrationChar(TCHAR key)
+void HandlePersonalRegistrationChar(TCHAR key)// Helper: 处理注册页面的字符输入
 {
     if (key == 8 || key == 127 || key == 13 || key == 10 || key == 9) {
         HandlePersonalRegistrationKey((char)key);
